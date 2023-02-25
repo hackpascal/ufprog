@@ -1,0 +1,20 @@
+{
+	"driver": "ft4222h-libusb",
+	"if_type": [ "spi", "i2c" ],
+	"config": {
+		"match": [
+			{
+				"vid": "0403",
+				"pid": "601c"
+			}
+		],
+		"spi": {
+			"drive-strength": {
+				"clk": 8,
+				"io": 8,
+				"cs": 8
+			},
+			"chip-select": 0
+		}
+	}
+}

@@ -1,0 +1,66 @@
+LIBRARY ufprog-spi-nor
+
+EXPORTS
+	ufprog_spi_nor_load_ext_id_file
+
+	ufprog_spi_nor_create
+	ufprog_spi_nor_destroy
+	ufprog_spi_nor_attach
+	ufprog_spi_nor_detach
+	ufprog_spi_nor_get_interface_device
+
+	ufprog_spi_nor_bus_lock
+	ufprog_spi_nor_bus_unlock
+
+	ufprog_spi_nor_get_allowed_io_caps
+	ufprog_spi_nor_set_allowed_io_caps
+
+	ufprog_spi_nor_get_speed_limit
+	ufprog_spi_nor_set_speed_limit
+	ufprog_spi_nor_get_speed_low
+	ufprog_spi_nor_get_speed_high
+
+	ufprog_spi_nor_list_vendors
+	ufprog_spi_nor_list_parts
+	ufprog_spi_nor_probe
+	ufprog_spi_nor_free_list
+
+	ufprog_spi_nor_probe_init
+	ufprog_spi_nor_part_init
+
+	ufprog_spi_nor_valid
+	ufprog_spi_nor_flash_param_signature
+	ufprog_spi_nor_info
+
+	ufprog_spi_nor_select_die
+
+	ufprog_spi_nor_set_bus_width
+
+	ufprog_spi_nor_read_no_check
+	ufprog_spi_nor_read
+
+	ufprog_spi_nor_write_page_no_check
+	ufprog_spi_nor_write_page
+	ufprog_spi_nor_write
+
+	ufprog_spi_nor_get_erase_region_at
+	ufprog_spi_nor_get_erase_range
+	ufprog_spi_nor_erase_at
+	ufprog_spi_nor_erase
+
+	ufprog_spi_nor_read_uid
+
+	ufprog_spi_nor_get_reg_bytes
+	ufprog_spi_nor_read_reg
+	ufprog_spi_nor_write_reg
+	ufprog_spi_nor_update_reg
+
+	ufprog_spi_nor_otp_read
+	ufprog_spi_nor_otp_write
+	ufprog_spi_nor_otp_erase
+	ufprog_spi_nor_otp_lock
+	ufprog_spi_nor_otp_locked
+
+	ufprog_spi_nor_get_wp_region_list
+	ufprog_spi_nor_get_wp_region
+	ufprog_spi_nor_set_wp_region

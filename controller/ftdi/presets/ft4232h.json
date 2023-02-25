@@ -1,0 +1,14 @@
+{
+	"driver": "mpsse-d2xx",
+	"if_type": [ "spi", "i2c" ],
+	"config": {
+		"match": [
+			{
+				"type": "description",
+				"value": "Quad RS232-HS A"
+			}
+		],
+		"spi": {
+		}
+	}
+}

@@ -1,0 +1,75 @@
+// SPDX-License-Identifier: LGPL-2.1-only
+/*
+ * Author: Weijie Gao <hackpascal@gmail.com>
+ *
+ * Intel SPI-NOR flash parts
+ */
+
+#include <ufprog/sizes.h>
+#include "core.h"
+#include "part.h"
+
+static DEFINE_SNOR_ALIAS(qb25f160s33b_alias, "QH25F160S33B");
+static DEFINE_SNOR_ALIAS(qb25f320s33b_alias, "QH25F320S33B");
+static DEFINE_SNOR_ALIAS(qb25f640s33b_alias, "QH25F640S33B");
+static DEFINE_SNOR_ALIAS(qb25f160s33t_alias, "QH25F160S33T");
+static DEFINE_SNOR_ALIAS(qb25f320s33t_alias, "QH25F320S33T");
+static DEFINE_SNOR_ALIAS(qb25f640s33t_alias, "QH25F640S33T");
+
+static const struct spi_nor_flash_part intel_parts[] = {
+	SNOR_PART("QB25F160S33B", SNOR_ID(0x89, 0x89, 0x11), SZ_2M,
+		  SNOR_ALIAS(&qb25f160s33b_alias),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_64K),
+		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_SPI_MAX_SPEED_MHZ(104),
+	),
+
+	SNOR_PART("QB25F320S33B", SNOR_ID(0x89, 0x89, 0x12), SZ_4M,
+		  SNOR_ALIAS(&qb25f320s33b_alias),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_64K),
+		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_SPI_MAX_SPEED_MHZ(104),
+	),
+
+	SNOR_PART("QB25F640S33B", SNOR_ID(0x89, 0x89, 0x13), SZ_8M,
+		  SNOR_ALIAS(&qb25f640s33b_alias),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_64K),
+		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_SPI_MAX_SPEED_MHZ(104),
+	),
+
+	SNOR_PART("QB25F160S33T", SNOR_ID(0x89, 0x89, 0x15), SZ_2M,
+		  SNOR_ALIAS(&qb25f160s33t_alias),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_64K),
+		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_SPI_MAX_SPEED_MHZ(104),
+	),
+
+	SNOR_PART("QB25F320S33T", SNOR_ID(0x89, 0x89, 0x16), SZ_4M,
+		  SNOR_ALIAS(&qb25f320s33t_alias),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_64K),
+		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_SPI_MAX_SPEED_MHZ(104),
+	),
+
+	SNOR_PART("QB25F640S33T", SNOR_ID(0x89, 0x89, 0x17), SZ_8M,
+		  SNOR_ALIAS(&qb25f640s33t_alias),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_64K),
+		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
+		  SNOR_SPI_MAX_SPEED_MHZ(104),
+	),
+};
+
+const struct spi_nor_vendor vendor_intel = {
+	.mfr_id = SNOR_VENDOR_INTEL,
+	.id = "intel",
+	.name = "Intel",
+	.parts = intel_parts,
+	.nparts = ARRAY_SIZE(intel_parts),
+};

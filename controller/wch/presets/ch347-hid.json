@@ -1,0 +1,13 @@
+{
+	"driver": "ch347-hid",
+	"if_type": [ "spi", "i2c" ],
+	"config": {
+		"match": [
+			{
+			}
+		],
+		"spi": {
+			"chip-select": 0
+		}
+	}
+}

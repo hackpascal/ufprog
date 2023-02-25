@@ -1,0 +1,301 @@
+{
+	"erase-groups": {
+		"default-3b-copy": [
+			{
+				"opcode": "20",
+				"size": "4K"
+			},
+			{
+				"opcode": "52",
+				"size": "32K"
+			},
+			{
+				"opcode": "d8",
+				"size": "64K"
+			}
+		],
+		"default-4b-copy": [
+			{
+				"opcode": "21",
+				"size": "4K"
+			},
+			{
+				"opcode": "dc",
+				"size": "64K"
+			}
+		]
+	},
+	"io-opcodes": {
+		"default-read-3b-copy": {
+			"1-1-1": {
+				"opcode": "0b",
+				"dummy-cycles": 8
+			},
+			"1-1-2": {
+				"opcode": "3b",
+				"dummy-cycles": 8
+			},
+			"1-2-2": {
+				"opcode": "bb",
+				"dummy-cycles": 4
+			},
+			"2-2-2": {
+				"opcode": "bb",
+				"dummy-cycles": 8
+			},
+			"1-1-4": {
+				"opcode": "6b",
+				"dummy-cycles": 8
+			},
+			"1-4-4": {
+				"opcode": "eb",
+				"dummy-cycles": 6
+			},
+			"4-4-4": {
+				"opcode": "eb",
+				"dummy-cycles": 8
+			}
+		},
+		"default-read-4b-copy": {
+			"1-1-1": {
+				"opcode": "0c",
+				"dummy-cycles": 8
+			},
+			"1-1-2": {
+				"opcode": "3c",
+				"dummy-cycles": 8
+			},
+			"1-2-2": {
+				"opcode": "bc",
+				"dummy-cycles": 4
+			},
+			"2-2-2": {
+				"opcode": "bc",
+				"dummy-cycles": 8
+			},
+			"1-1-4": {
+				"opcode": "6c",
+				"dummy-cycles": 8
+			},
+			"1-4-4": {
+				"opcode": "ec",
+				"dummy-cycles": 6
+			},
+			"4-4-4": {
+				"opcode": "ec",
+				"dummy-cycles": 8
+			}
+		},
+		"default-pp-3b-copy": {
+			"1-1-1": {
+				"opcode": "02"
+			},
+			"1-1-4": {
+				"opcode": "32"
+			},
+			"4-4-4": {
+				"opcode": "02"
+			}
+		},
+		"default-pp-4b-copy": {
+			"1-1-1": {
+				"opcode": "12"
+			},
+			"1-1-4": {
+				"opcode": "34"
+			},
+			"4-4-4": {
+				"opcode": "12"
+			}
+		}
+	},
+	"vendors": {
+		"winbond": {
+			"mfr-id": "ef",
+			"name": "Winbond",
+			"parts": {
+				"W25Q128BV-copy": {
+					"alias": [ "W25Q128-copy" ],
+					"id": [ "ef", "40", "18" ],
+					"flags": [
+						"no-sfdp",
+						"4k-sector",
+						"32k-sector",
+						"64k-block",
+						"unique-id",
+						"non-volatile-sr",
+						"volatile-sr-wren-50h"
+					],
+					"qe-type": "sr2-bit1-wr-sr1",
+					"soft-reset-flags": [ "66h-99h" ],
+					"max-speed-spi-mhz": 104,
+					"size": "16M",
+					"read-io-caps": [ "1-1-1", "1-1-2", "1-2-2", "1-1-4", "1-4-4" ],
+					"pp-io-caps": [ "1-1-1", "1-1-4" ],
+					"erase-info-3b": "default-3b-copy",
+					"read-opcodes-3b": "default-read-3b-copy",
+					"pp-opcodes-3b": "default-pp-3b-copy",
+					"wp": "3bp-tb-sec-cmp-ratio",
+					"otp": {
+						"start-index": 1,
+						"size": "256",
+						"count": 3
+					}
+				},
+				"W25Q128FV-copy": {
+					"id": [ "ef", "40", "18" ],
+					"flags": [
+						"no-sfdp",
+						"4k-sector",
+						"32k-sector",
+						"64k-block",
+						"unique-id",
+						"non-volatile-sr",
+						"volatile-sr-wren-50h"
+					],
+					"qe-type": "sr2-bit1",
+					"qpi-en-type": "qer-38h",
+					"qpi-dis-type": "ffh",
+					"soft-reset-flags": [ "66h-99h" ],
+					"max-speed-spi-mhz": 104,
+					"size": "16M",
+					"read-io-caps": [ "1-1-1", "1-1-2", "1-2-2", "1-1-4", "1-4-4", "4-4-4" ],
+					"pp-io-caps": [ "1-1-1", "1-1-4", "4-4-4" ],
+					"erase-info-3b": "default-3b",
+					"read-opcodes-3b": "default-read-3b",
+					"pp-opcodes-3b": "default-pp-3b",
+					"wp": "3bp-tb-sec-cmp-ratio",
+					"otp": {
+						"start-index": 1,
+						"size": "256",
+						"count": 3
+					}
+				},
+				"W25Q128JV-copy": {
+					"id": [ "ef", "40", "18" ],
+					"flags": [
+						"no-sfdp",
+						"4k-sector",
+						"32k-sector",
+						"64k-block",
+						"unique-id",
+						"non-volatile-sr",
+						"volatile-sr-wren-50h"
+					],
+					"qe-type": "sr2-bit1",
+					"soft-reset-flags": [ "66h-99h" ],
+					"max-speed-spi-mhz": 104,
+					"size": "16M",
+					"erase-info-3b": [
+						{
+							"opcode": "20",
+							"size": "4K"
+						},
+						{
+							"opcode": "52",
+							"size": "32K"
+						},
+						{
+							"opcode": "d8",
+							"size": "64K"
+						}
+					],
+					"read-opcodes-3b": {
+						"1-1-1": {
+							"opcode": "0b",
+							"dummy-cycles": 8
+						},
+						"1-1-2": {
+							"opcode": "3b",
+							"dummy-cycles": 8
+						},
+						"1-2-2": {
+							"opcode": "bb",
+							"dummy-cycles": 4
+						},
+						"1-1-4": {
+							"opcode": "6b",
+							"dummy-cycles": 8
+						},
+						"1-4-4": {
+							"opcode": "eb",
+							"dummy-cycles": 6
+						}
+					},
+					"pp-opcodes-3b": {
+						"1-1-1": {
+							"opcode": "02"
+						},
+						"1-1-4": {
+							"opcode": "32"
+						}
+					},
+					"wp": "3bp-tb-sec-cmp-ratio",
+					"otp": {
+						"start-index": 1,
+						"size": "256",
+						"count": 3
+					}
+				},
+				"W25Q256FV-copy": {
+					"id": [ "ef", "40", "19" ],
+					"flags": [
+						"no-sfdp",
+						"4k-sector",
+						"32k-sector",
+						"64k-block",
+						"unique-id",
+						"non-volatile-sr",
+						"volatile-sr-wren-50h"
+					],
+					"qe-type": "sr2-bit1",
+					"qpi-en-type": "qer-38h",
+					"qpi-dis-type": "ffh",
+					"soft-reset-flags": [ "66h-99h" ],
+					"4b-flags": [ "b7h-e9h" ],
+					"max-speed-spi-mhz": 104,
+					"size": "32M",
+					"read-io-caps": [ "1-1-1", "1-1-2", "1-2-2", "1-1-4", "1-4-4", "4-4-4" ],
+					"pp-io-caps": [ "1-1-1", "1-1-4", "4-4-4" ],
+					"wp": "4bp-tb-cmp",
+					"otp": {
+						"start-index": 1,
+						"size": "256",
+						"count": 3
+					}
+				},
+				"W25Q256JV-copy": {
+					"id": [ "ef", "40", "19" ],
+					"flags": [
+						"no-sfdp",
+						"4k-sector",
+						"32k-sector",
+						"64k-block",
+						"unique-id",
+						"non-volatile-sr",
+						"volatile-sr-wren-50h"
+					],
+					"qe-type": "sr2-bit1",
+					"soft-reset-flags": [ "66h-99h" ],
+					"4b-flags": [ "b7h-e9h", "opcode" ],
+					"max-speed-spi-mhz": 104,
+					"size": "32M",
+					"read-io-caps": [ "1-1-1", "1-1-2", "1-2-2", "1-1-4", "1-4-4" ],
+					"pp-io-caps": [ "1-1-1", "1-1-4" ],
+					"erase-info-3b": "default-3b",
+					"erase-info-4b": "default-4b",
+					"read-opcodes-3b": "default-read-3b",
+					"read-opcodes-4b": "default-read-4b",
+					"pp-opcodes-3b": "default-pp-3b",
+					"pp-opcodes-4b": "default-pp-4b",
+					"wp": "4bp-tb-cmp",
+					"otp": {
+						"start-index": 1,
+						"size": "256",
+						"count": 3
+					}
+				}
+			}
+		}
+	}
+}

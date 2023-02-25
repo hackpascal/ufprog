@@ -1,0 +1,43 @@
+LIBRARY ufprog-spi
+
+EXPORTS
+	ufprog_spi_attach_device
+	ufprog_spi_open_device
+	ufprog_spi_get_device
+	ufprog_spi_close_device
+
+	ufprog_spi_if_caps
+	ufprog_spi_max_read_granularity
+
+	ufprog_spi_bus_lock
+	ufprog_spi_bus_unlock
+
+	ufprog_spi_set_cs_pol
+	ufprog_spi_set_mode
+
+	ufprog_spi_set_speed
+	ufprog_spi_set_speed_closest
+	ufprog_spi_get_speed
+	ufprog_spi_get_speed_range
+	ufprog_spi_get_speed_list
+	ufprog_spi_get_speed_limit
+
+	ufprog_spi_set_wp
+	ufprog_spi_set_hold
+	ufprog_spi_set_busy_ind
+
+	ufprog_spi_power_control
+
+	ufprog_spi_generic_xfer
+
+	ufprog_spi_mem_adjust_op_size
+	ufprog_spi_mem_supports_op
+	ufprog_spi_mem_exec_op
+	ufprog_spi_mem_poll_status
+
+	ufprog_spi_supports_drive_4io_ones
+	ufprog_spi_drive_4io_ones
+
+	ufprog_spi_mem_io_bus_width_info
+	ufprog_spi_mem_io_name
+	ufprog_spi_mem_io_name_to_type

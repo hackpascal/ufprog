@@ -1,0 +1,173 @@
+LIBRARY ufprog-common
+
+EXPORTS
+	os_init
+	os_prog_name
+
+	set_os_default_log_print
+
+	os_fprintf
+	os_vfprintf
+	os_getline_alloc
+
+	os_register_ctrlc_handler
+
+	os_create_mutex
+	os_free_mutex
+	os_mutex_lock
+	os_mutex_unlock
+
+	os_get_timer_us
+	os_udelay
+
+	os_load_module
+	os_unload_module
+	os_find_module_symbol
+	os_find_module_symbols
+
+	os_is_valid_filename
+	os_enum_file
+	os_open_file
+	os_close_file
+	os_get_file_size
+	os_set_file_pointer
+	os_set_end_of_file
+	os_read_file
+	os_write_file
+
+	os_open_file_mapping
+	os_close_file_mapping
+	os_set_file_mapping_offset
+	os_get_file_mapping_granularity
+	os_get_file_max_mapping_size
+	os_get_file_mapping_memory
+	os_get_file_mapping_offset
+	os_get_file_mapping_size
+
+	os_read_text_file
+
+	set_log_print_cb
+	set_log_print_level
+	log_print
+	log_printf
+
+	uses_portable_dirs
+	set_root_dir
+	get_root_dir
+	add_dir
+	get_dir
+	dir_enum
+	path_concat
+
+	json_from_str
+	json_from_file
+	json_to_str
+	json_to_file
+	json_free
+	json_read_str
+	json_read_bool
+	json_read_int64
+	json_read_uint64
+	json_read_int32
+	json_read_hex64
+	json_read_obj
+	json_read_array
+	json_obj_len
+	json_array_len
+	json_array_read_str
+	json_array_read_bool
+	json_array_read_int64
+	json_array_read_uint64
+	json_array_read_int32
+	json_array_read_hex64
+	json_array_read_obj
+	json_array_read_array
+	json_node_exists
+	json_is_str
+	json_is_bool
+	json_is_int
+	json_is_array
+	json_is_obj
+	json_node_del
+	json_create_obj
+	json_create_array
+	json_put_obj
+	json_add_str
+	json_add_bool
+	json_add_int
+	json_add_uint
+	json_add_hex
+	json_add_obj
+	json_set_str
+	json_set_bool
+	json_set_int
+	json_set_uint
+	json_set_hex
+	json_array_add_str
+	json_array_add_bool
+	json_array_add_int
+	json_array_add_uint
+	json_array_add_hex
+	json_array_add_obj
+	json_array_set_str
+	json_array_set_bool
+	json_array_set_int
+	json_array_set_uint
+	json_array_set_hex
+	json_obj_foreach
+	json_array_foreach
+	json_open_config
+	json_save_config
+
+	lookup_table_create
+	lookup_table_destroy
+	lookup_table_insert
+	lookup_table_insert_ptr
+	lookup_table_delete
+	lookup_table_delete_ptr
+	lookup_table_find
+	lookup_table_length
+	lookup_table_enum
+
+	crc32_reflected_cal
+	crc32_reflected_init
+	crc32_normal_cal
+	crc32_normal_init
+	crc32_no_comp
+	crc32_be_no_comp
+
+	generic_ffs
+	generic_fls
+	generic_hweight32
+	generic_hweight16
+	generic_hweight8
+
+	dispatch_subcmd
+	cmdarg_parse
+
+	hexdump
+
+	progress_init
+	progress_show
+	progress_done
+
+	read_file_contents
+	write_file_contents
+
+	bin_to_hex_str
+	bufdiff
+
+	utf8_to_wcs
+	wcs_to_utf8
+	get_system_error_va
+	get_system_error
+	get_system_error_utf8
+	log_sys_error_utf8
+
+	os_main
+
+	strcasestr
+	strlcat
+	strlcpy
+	vasprintf
+	asprintf

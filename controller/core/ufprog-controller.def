@@ -1,0 +1,37 @@
+LIBRARY ufprog-controller
+
+EXPORTS
+	ufprog_load_driver
+	ufprog_unload_driver
+
+	ufprog_driver_device_count
+	ufprog_driver_name
+	ufprog_driver_module
+	ufprog_driver_version
+	ufprog_driver_desc
+	ufprog_driver_supported_if
+	ufprog_driver_find_symbol
+	ufprog_driver_find_module_symbols
+
+	ufprog_open_device
+	ufprog_open_device_by_name
+	ufprog_close_device
+
+	ufprog_device_name
+	ufprog_device_if_type
+	ufprog_device_get_driver
+	ufprog_device_get_interface_device
+
+	ufprog_lock_device
+	ufprog_unlock_device
+
+	ufprog_reset_device
+	ufprog_cancel_transfer
+	ufprog_set_disconnect_cb
+
+	ufprog_global_libusb_context
+
+	libusb_port_path_to_str
+	libusb_open_matched
+	libusb_read_config
+	libusb_open_by_config

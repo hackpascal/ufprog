@@ -1,0 +1,15 @@
+{
+	"driver": "mpsse-libusb",
+	"if_type": [ "spi", "i2c" ],
+	"config": {
+		"match": [
+			{
+				"vid": "0403",
+				"pid": "6011",
+				"interface": 0
+			}
+		],
+		"spi": {
+		}
+	}
+}

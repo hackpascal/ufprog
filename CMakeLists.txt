@@ -1,0 +1,60 @@
+cmake_minimum_required(VERSION 3.13)
+
+set(UFPROG_VERSION_MAJOR 1)
+set(UFPROG_VERSION_MINOR 0)
+set(UFPROG_VERSION_PATCH 0)
+set(UFPROG_VERSION ${UFPROG_VERSION_MAJOR}.${UFPROG_VERSION_MINOR}.${UFPROG_VERSION_PATCH})
+
+project(ufprog LANGUAGES C VERSION ${UFPROG_VERSION})
+
+if(MSVC)
+	add_compile_options(
+		/Wall /WX /wd4100 /wd4061 /wd4127 /wd4200 /wd4201 /wd4213 /wd4255 /wd4668 /wd4710 /wd4820 /wd5045 /Zi /utf-8
+	)
+	add_link_options(/INCREMENTAL)
+else()
+	add_compile_options(-ffunction-sections -fdata-sections -Wall -Werror -g3 -fexec-charset=UTF-8)
+	add_link_options(-Wl,--gc-sections)
+	if(MINGW)
+		add_link_options(-municode)
+	endif()
+endif()
+
+OPTION(USE_VCPKG "Use vcpkg for package configuration" OFF)
+
+if(USE_VCPKG)
+	find_package(libusb CONFIG REQUIRED)
+	set(LIBUSB_INC ${LIBUSB_INCLUDE_DIRS}/..)
+	set(LIBUSB_LIB ${LIBUSB_LIBRARIES})
+else()
+	find_package(PkgConfig)
+
+	pkg_check_modules(libusb-1.0 REQUIRED libusb-1.0)
+	set(LIBUSB_INC ${libusb-1.0_INCLUDEDIR})
+	set(LIBUSB_LIB ${libusb-1.0_LIBRARIES})
+endif()
+
+OPTION(BUILD_PORTABLE "Build portable version" ON)
+
+if(WIN32 OR MINGW OR BUILD_PORTABLE)
+	set(EXE_DIR .)
+	set(LIB_DIR .)
+	set(AR_DIR lib)
+	set(DATA_DIR .)
+	set(CONTROLLER_DRIVER_DIR controller)
+	set(DEVICE_DIR device)
+else()
+	set(EXE_DIR bin)
+	set(LIB_DIR lib)
+	set(AR_DIR lib)
+	set(DATA_DIR lib/ufprog)
+	set(CONTROLLER_DRIVER_DIR ${DATA_DIR}/controller)
+	set(DEVICE_DIR ${DATA_DIR}/device)
+endif()
+
+add_subdirectory(common)
+add_subdirectory(controller)
+add_subdirectory(interface)
+add_subdirectory(flash)
+add_subdirectory(program)
+add_subdirectory(static)

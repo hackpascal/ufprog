@@ -1,0 +1,20 @@
+{
+	"driver": "ft4222h-d2xx",
+	"if_type": [ "spi", "i2c" ],
+	"config": {
+		"match": [
+			{
+				"type": "description",
+				"value": "FT4222 A"
+			}
+		],
+		"spi": {
+			"drive-strength": {
+				"clk": 8,
+				"io": 8,
+				"cs": 8
+			},
+			"chip-select": 0
+		}
+	}
+}

@@ -1,0 +1,16 @@
+LIBRARY ch341-libusb
+
+EXPORTS
+	ufprog_driver_version
+	ufprog_driver_desc
+	ufprog_driver_supported_if
+	ufprog_device_open
+	ufprog_device_free
+	ufprog_device_lock
+	ufprog_device_unlock
+
+	ufprog_spi_if_version
+	ufprog_spi_if_caps
+	ufprog_spi_max_read_granularity
+	ufprog_spi_set_cs_pol
+	ufprog_spi_generic_xfer
