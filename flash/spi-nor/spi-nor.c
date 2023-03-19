@@ -2006,6 +2006,27 @@ out:
 	return ret;
 }
 
+ufprog_status spi_nor_reprobe_part(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp,
+				   const struct spi_nor_vendor *vendor, const char *part)
+{
+	struct spi_nor_vendor_part vp;
+
+	if (!spi_nor_find_vendor_part_by_name(part, &vp)) {
+		logm_err("Failed to find part %s\n", part);
+		return UFP_FAIL;
+	}
+
+	spi_nor_prepare_blank_part(bp, vp.part);
+
+	if (!vendor)
+		vendor = vp.vendor;
+
+	if (!spi_nor_probe_sfdp(snor, vendor, bp))
+		logm_errdbg("Failed to reprobe %s with SFDP\n", part);
+
+	return UFP_OK;
+}
+
 ufprog_bool UFPROG_API ufprog_spi_nor_valid(struct spi_nor *snor)
 {
 	if (!snor)

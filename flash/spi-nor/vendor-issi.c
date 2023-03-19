@@ -866,25 +866,6 @@ static const struct spi_nor_flash_part_fixup is25lx512_fixups = {
 	.pre_param_setup = is25lx512_fixup_model,
 };
 
-static ufprog_status issi_reprobe_part_sfdp(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp, const char *part)
-{
-	struct spi_nor_vendor_part vp;
-
-	if (!spi_nor_find_vendor_part_by_name(part, &vp)) {
-		logm_err("Failed to find part %s\n", part);
-		return UFP_FAIL;
-	}
-
-	spi_nor_prepare_blank_part(bp, vp.part);
-
-	if (!spi_nor_probe_sfdp(snor, &vendor_issi_pmc, bp)) {
-		logm_err("Failed to reprobe %s with SFDP\n", part);
-		return UFP_FAIL;
-	}
-
-	return UFP_OK;
-}
-
 static ufprog_status pm25lq512b_erase_op_fixup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t i;
@@ -907,7 +888,7 @@ static ufprog_status is25cd512_fixup_model(struct spi_nor *snor, struct spi_nor_
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
-	STATUS_CHECK_RET(issi_reprobe_part_sfdp(snor, bp, "PM25LQ512B"));
+	STATUS_CHECK_RET(spi_nor_reprobe_part(snor, bp, NULL, "PM25LQ512B"));
 
 	return pm25lq512b_erase_op_fixup(snor, bp);
 }
@@ -946,7 +927,7 @@ static ufprog_status is25cd010_fixup_model(struct spi_nor *snor, struct spi_nor_
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
-	return issi_reprobe_part_sfdp(snor, bp, "PM25LQ010B");
+	return spi_nor_reprobe_part(snor, bp, NULL, "PM25LQ010B");
 }
 
 static const struct spi_nor_flash_part_fixup is25cd010_fixups = {
@@ -979,7 +960,7 @@ static ufprog_status is25lx040_fixup_model(struct spi_nor *snor, struct spi_nor_
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
-	return issi_reprobe_part_sfdp(snor, bp, "PM25LQ040B");
+	return spi_nor_reprobe_part(snor, bp, NULL, "PM25LQ040B");
 }
 
 static const struct spi_nor_flash_part_fixup is25lx040_fixups = {
