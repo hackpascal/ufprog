@@ -38,6 +38,9 @@ struct spi_nor_reg_access {
 	uint8_t ndummy_write;
 	uint8_t ndata;
 	uint32_t addr;
+
+	ufprog_status (*pre_acc)(struct spi_nor *snor, const struct spi_nor_reg_access *access);
+	ufprog_status (*post_acc)(struct spi_nor *snor, const struct spi_nor_reg_access *access);
 };
 
 #define SNOR_REG_ACC_NORMAL(_read_opcode, _write_opcode)						\

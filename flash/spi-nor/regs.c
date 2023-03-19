@@ -167,38 +167,51 @@ static ufprog_status spi_nor_read_reg_acc_one(struct spi_nor *snor, const struct
 ufprog_status spi_nor_read_reg_acc(struct spi_nor *snor, const struct spi_nor_reg_access *access, uint32_t *retval)
 {
 	uint32_t val, data;
+	ufprog_status ret;
+
+	if (access->pre_acc)
+		STATUS_CHECK_RET(access->pre_acc(snor, access));
 
 	switch (access->type) {
 	case SNOR_REG_NORMAL:
-		return spi_nor_read_reg_acc_one(snor, access, access->read_opcode, access->ndata, retval);
+		ret = spi_nor_read_reg_acc_one(snor, access, access->read_opcode, access->ndata, retval);
+		break;
 
 	case SNOR_REG_SRCR:
-		STATUS_CHECK_RET(spi_nor_read_reg_acc_one(snor, access, access->read_opcode, 1, &data));
+		STATUS_CHECK_GOTO_RET(spi_nor_read_reg_acc_one(snor, access, access->read_opcode, 1, &data), ret, out);
 		val = data & 0xff;
 
-		STATUS_CHECK_RET(spi_nor_read_reg_acc_one(snor, access, access->read_opcode2, 1, &data));
+		STATUS_CHECK_GOTO_RET(spi_nor_read_reg_acc_one(snor, access, access->read_opcode2, 1, &data), ret, out);
 		val |= (data & 0xff) << 8;
 
 		*retval = val;
-		return UFP_OK;
+		ret = UFP_OK;
+		break;
 
 	case SNOR_REG_DUAL:
-		STATUS_CHECK_RET(spi_nor_read_reg_acc_one(snor, access, access->read_opcode, 1, &data));
+		STATUS_CHECK_GOTO_RET(spi_nor_read_reg_acc_one(snor, access, access->read_opcode, 1, &data), ret, out);
 		val = data & 0xff;
 
-		STATUS_CHECK_RET(spi_nor_read_reg_acc_one(snor, access, access->read_opcode2, 1, &data));
+		STATUS_CHECK_GOTO_RET(spi_nor_read_reg_acc_one(snor, access, access->read_opcode2, 1, &data), ret, out);
 		if (access->flags & SNOR_REGACC_F_LITTLE_ENDIAN)
 			val |= (data & 0xff) << 8;
 		else
 			val = (val << 8) | (data & 0xff);
 
 		*retval = val;
-		return UFP_OK;
+		ret = UFP_OK;
+		break;
 
 	default:
 		logm_err("Invalid register access type %u\n", access->type);
-		return UFP_INVALID_PARAMETER;
+		ret = UFP_INVALID_PARAMETER;
 	}
+
+out:
+	if (access->post_acc)
+		STATUS_CHECK_RET(access->post_acc(snor, access));
+
+	return ret;
 }
 
 ufprog_status UFPROG_API ufprog_spi_nor_read_reg(struct spi_nor *snor, const struct spi_nor_reg_access *access,
@@ -285,7 +298,11 @@ ufprog_status spi_nor_write_reg_acc(struct spi_nor *snor, const struct spi_nor_r
 				    bool volatile_write)
 {
 	uint32_t val1, val2;
+	ufprog_status ret;
 	uint8_t opcode;
+
+	if (access->pre_acc)
+		STATUS_CHECK_RET(access->pre_acc(snor, access));
 
 	switch (access->type) {
 	case SNOR_REG_SRCR:
@@ -295,7 +312,8 @@ ufprog_status spi_nor_write_reg_acc(struct spi_nor *snor, const struct spi_nor_r
 		else
 			opcode = access->write_opcode;
 
-		return spi_nor_write_reg_acc_one(snor, access, opcode, access->ndata, val, volatile_write);
+		ret = spi_nor_write_reg_acc_one(snor, access, opcode, access->ndata, val, volatile_write);
+		break;
 
 	case SNOR_REG_DUAL:
 		if (access->flags & SNOR_REGACC_F_LITTLE_ENDIAN) {
@@ -306,16 +324,23 @@ ufprog_status spi_nor_write_reg_acc(struct spi_nor *snor, const struct spi_nor_r
 			val2 = val & 0xff;
 		}
 
-		STATUS_CHECK_RET(spi_nor_write_reg_acc_one(snor, access, access->write_opcode, 1, val1,
-							   volatile_write));
-		STATUS_CHECK_RET(spi_nor_write_reg_acc_one(snor, access, access->write_opcode2, 1, val2,
-							   volatile_write));
-		return UFP_OK;
+		STATUS_CHECK_GOTO_RET(spi_nor_write_reg_acc_one(snor, access, access->write_opcode, 1, val1,
+								volatile_write), ret, out);
+		STATUS_CHECK_GOTO_RET(spi_nor_write_reg_acc_one(snor, access, access->write_opcode2, 1, val2,
+								volatile_write), ret, out);
+		ret = UFP_OK;
+		break;
 
 	default:
 		logm_err("Invalid register access type %u\n", access->type);
-		return UFP_INVALID_PARAMETER;
+		ret = UFP_INVALID_PARAMETER;
 	}
+
+out:
+	if (access->post_acc)
+		STATUS_CHECK_RET(access->post_acc(snor, access));
+
+	return ret;
 }
 
 ufprog_status UFPROG_API ufprog_spi_nor_write_reg(struct spi_nor *snor, const struct spi_nor_reg_access *access,
