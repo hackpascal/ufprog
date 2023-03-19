@@ -98,6 +98,7 @@ extern const struct spi_nor_reg_access sr3_acc;
 extern const struct spi_nor_reg_access srcr_acc;
 extern const struct spi_nor_reg_access ear_acc;
 extern const struct spi_nor_reg_access br_acc;
+extern const struct spi_nor_reg_access scur_acc;
 
 extern const struct snor_reg_info w25q_no_lb_regs;
 extern const struct snor_reg_info w25q_regs;

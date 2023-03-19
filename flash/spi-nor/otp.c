@@ -14,6 +14,8 @@
 #define SECR_CR_OTP_LB_SHIFT				2
 #define SECR_DFL_PAGE_SIZE				0x100
 
+#define SCUR_LDSO					BIT(1)
+
 uint32_t default_secr_otp_addr(struct spi_nor *snor, uint32_t index, uint32_t addr)
 {
 	return (index << 12) | addr;
@@ -246,6 +248,183 @@ const struct spi_nor_flash_part_otp_ops secr_otp_ops = {
 	.erase = secr_otp_erase,
 	.lock = secr_otp_lock,
 	.locked = secr_otp_locked,
+};
+
+ufprog_status scur_otp_read_raw(struct spi_nor *snor, uint64_t addr, size_t len, void *data)
+{
+	struct ufprog_spi_mem_op op = SPI_MEM_OP(
+		SPI_MEM_OP_CMD(snor->state.read_opcode, spi_mem_io_info_cmd_bw(snor->state.read_io_info)),
+		SPI_MEM_OP_ADDR(snor->state.naddr, addr, spi_mem_io_info_addr_bw(snor->state.read_io_info)),
+		SPI_MEM_OP_DUMMY(snor->state.read_ndummy, spi_mem_io_info_addr_bw(snor->state.read_io_info)),
+		SPI_MEM_OP_DATA_IN(len, data, spi_mem_io_info_data_bw(snor->state.read_io_info))
+	);
+
+	while (len) {
+		STATUS_CHECK_RET(spi_nor_setup_addr(snor, &op.addr.val));
+		STATUS_CHECK_RET(ufprog_spi_mem_adjust_op_size(snor->spi, &op));
+		STATUS_CHECK_RET(ufprog_spi_mem_exec_op(snor->spi, &op));
+
+		op.data.buf.rx = (void *)((uintptr_t)op.data.buf.rx + op.data.len);
+
+		addr += op.data.len;
+		op.addr.val = addr;
+
+		len -= op.data.len;
+		op.data.len = len;
+	}
+
+	return UFP_OK;
+}
+
+static ufprog_status scur_otp_pp(struct spi_nor *snor, uint64_t addr, size_t len, const void *data, size_t *retlen)
+{
+	size_t proglen;
+
+	struct ufprog_spi_mem_op op = SPI_MEM_OP(
+		SPI_MEM_OP_CMD(snor->state.pp_opcode, spi_mem_io_info_cmd_bw(snor->state.pp_io_info)),
+		SPI_MEM_OP_ADDR(snor->state.naddr, addr, spi_mem_io_info_addr_bw(snor->state.pp_io_info)),
+		SPI_MEM_OP_NO_DUMMY,
+		SPI_MEM_OP_DATA_OUT(0, data, spi_mem_io_info_data_bw(snor->state.pp_io_info))
+	);
+
+	proglen = snor->param.page_size - (addr & (snor->param.page_size - 1));
+	if (proglen > len)
+		proglen = len;
+
+	len = proglen;
+	op.data.len = proglen;
+
+	while (proglen) {
+		STATUS_CHECK_RET(spi_nor_setup_addr(snor, &op.addr.val));
+
+		STATUS_CHECK_RET(spi_nor_write_enable(snor));
+
+		STATUS_CHECK_RET(ufprog_spi_mem_adjust_op_size(snor->spi, &op));
+		STATUS_CHECK_RET(ufprog_spi_mem_exec_op(snor->spi, &op));
+
+		STATUS_CHECK_RET(spi_nor_wait_busy(snor, snor->param.max_pp_time_ms));
+
+		op.data.buf.tx = (const void *)((uintptr_t)op.data.buf.tx + op.data.len);
+
+		addr += op.data.len;
+		op.addr.val = addr;
+
+		proglen -= op.data.len;
+		op.data.len = proglen;
+	}
+
+	if (retlen)
+		*retlen = len;
+
+	return UFP_OK;
+}
+
+ufprog_status scur_otp_write_raw(struct spi_nor *snor, uint64_t addr, size_t len, const void *data)
+{
+	const uint8_t *p = data;
+	size_t retlen;
+
+	while (len) {
+		STATUS_CHECK_RET(scur_otp_pp(snor, addr, len, p, &retlen));
+
+		addr += retlen;
+		p += retlen;
+		len -= retlen;
+	}
+
+	return UFP_OK;
+}
+
+ufprog_status scur_otp_read_cust(struct spi_nor *snor, uint32_t addr, uint32_t len, void *data, bool no_exso)
+{
+	ufprog_status ret;
+
+	STATUS_CHECK_RET(spi_nor_set_low_speed(snor));
+	STATUS_CHECK_RET(spi_nor_set_bus_width(snor, spi_mem_io_info_cmd_bw(snor->state.read_io_info)));
+	STATUS_CHECK_RET(spi_nor_issue_single_opcode(snor, SNOR_CMD_ENSO));
+
+	ret = scur_otp_read_raw(snor, addr, len, data);
+
+	if (no_exso)
+		STATUS_CHECK_RET(spi_nor_write_disable(snor));
+	else
+		STATUS_CHECK_RET(spi_nor_issue_single_opcode(snor, SNOR_CMD_EXSO));
+
+	return ret;
+}
+
+ufprog_status scur_otp_read(struct spi_nor *snor, uint32_t index, uint32_t addr, uint32_t len, void *data)
+{
+	return scur_otp_read_cust(snor, snor->ext_param.otp->start_index + addr, len, data, false);
+}
+
+ufprog_status scur_otp_write_cust(struct spi_nor *snor, uint32_t addr, uint32_t len, const void *data, bool no_exso)
+{
+	ufprog_status ret;
+
+	STATUS_CHECK_RET(spi_nor_set_low_speed(snor));
+	STATUS_CHECK_RET(spi_nor_set_bus_width(snor, spi_mem_io_info_cmd_bw(snor->state.pp_io_info)));
+	STATUS_CHECK_RET(spi_nor_issue_single_opcode(snor, SNOR_CMD_ENSO));
+
+	ret = scur_otp_write_raw(snor, addr, len, data);
+
+	if (no_exso)
+		STATUS_CHECK_RET(spi_nor_write_disable(snor));
+	else
+		STATUS_CHECK_RET(spi_nor_issue_single_opcode(snor, SNOR_CMD_EXSO));
+
+	return ret;
+}
+
+ufprog_status scur_otp_write(struct spi_nor *snor, uint32_t index, uint32_t addr, uint32_t len, const void *data)
+{
+	return scur_otp_write_cust(snor, snor->ext_param.otp->start_index + addr, len, data, false);
+}
+
+ufprog_status scur_otp_lock_cust(struct spi_nor *snor, bool no_exso)
+{
+	ufprog_status ret = UFP_OK;
+	uint32_t reg;
+
+	if (no_exso) {
+		STATUS_CHECK_RET(spi_nor_issue_single_opcode(snor, SNOR_CMD_ENSO));
+		ret = spi_nor_write_sr(snor, 0, false);
+		STATUS_CHECK_RET(spi_nor_write_disable(snor));
+	} else {
+		STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &scur_acc, 0, SCUR_LDSO, false));
+		STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, &scur_acc, &reg));
+
+		if (!(reg & SCUR_LDSO))
+			return UFP_FAIL;
+	}
+
+	return ret;
+}
+
+ufprog_status scur_otp_lock(struct spi_nor *snor, uint32_t index)
+{
+	return scur_otp_lock_cust(snor, false);
+}
+
+ufprog_status scur_otp_locked(struct spi_nor *snor, uint32_t index, ufprog_bool *retlocked)
+{
+	uint32_t reg;
+
+	STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, &scur_acc, &reg));
+
+	if (reg & SCUR_LDSO)
+		*retlocked = true;
+	else
+		*retlocked = false;
+
+	return UFP_OK;
+}
+
+const struct spi_nor_flash_part_otp_ops scur_otp_ops = {
+	.read = scur_otp_read,
+	.write = scur_otp_write,
+	.lock = scur_otp_lock,
+	.locked = scur_otp_locked,
 };
 
 ufprog_status UFPROG_API ufprog_spi_nor_otp_read(struct spi_nor *snor, uint32_t index, uint32_t addr, uint32_t len,

@@ -130,4 +130,12 @@
 #define SNOR_CMD_IRRD				0x4b
 #define SNOR_CMD_PMC_SECTOR_ERASE		0xd7
 
+/* ESMT specific */
+#define SNOR_CMD_ENSO				0xb1
+#define SNOR_CMD_EXSO				0xc1
+#define SNOR_CMD_READ_SCUR			0x2b
+#define SNOR_CMD_WRITE_SCUR			0x2f
+#define SNOR_CMD_RES				0xab
+#define SNOR_CMD_PAGE_PROG_QUAD_IO		0x38
+
 #endif /* _UFPROG_SPI_NOR_OPCODE_H_ */

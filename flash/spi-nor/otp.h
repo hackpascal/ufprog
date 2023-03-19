@@ -34,4 +34,17 @@ ufprog_status secr_otp_locked(struct spi_nor *snor, uint32_t index, ufprog_bool 
 
 extern const struct spi_nor_flash_part_otp_ops secr_otp_ops;
 
+ufprog_status scur_otp_read_raw(struct spi_nor *snor, uint64_t addr, size_t len, void *data);
+ufprog_status scur_otp_write_raw(struct spi_nor *snor, uint64_t addr, size_t len, const void *data);
+
+ufprog_status scur_otp_read_cust(struct spi_nor *snor, uint32_t addr, uint32_t len, void *data, bool no_exso);
+ufprog_status scur_otp_read(struct spi_nor *snor, uint32_t index, uint32_t addr, uint32_t len, void *data);
+ufprog_status scur_otp_write_cust(struct spi_nor *snor, uint32_t addr, uint32_t len, const void *data, bool no_exso);
+ufprog_status scur_otp_write(struct spi_nor *snor, uint32_t index, uint32_t addr, uint32_t len, const void *data);
+ufprog_status scur_otp_lock_cust(struct spi_nor *snor, bool no_exso);
+ufprog_status scur_otp_lock(struct spi_nor *snor, uint32_t index);
+ufprog_status scur_otp_locked(struct spi_nor *snor, uint32_t index, ufprog_bool *retlocked);
+
+extern const struct spi_nor_flash_part_otp_ops scur_otp_ops;
+
 #endif /* _UFPROG_SPI_NOR_OTP_H_ */
