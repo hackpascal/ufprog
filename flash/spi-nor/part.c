@@ -33,6 +33,7 @@ const struct spi_nor_io_opcode default_read_opcodes_4b[__SPI_MEM_IO_MAX] = {
 
 const struct spi_nor_io_opcode default_pp_opcodes_3b[__SPI_MEM_IO_MAX] = {
 	SNOR_IO_OPCODE(SPI_MEM_IO_1_1_1, SNOR_CMD_PAGE_PROG, 0, 0),
+	SNOR_IO_OPCODE(SPI_MEM_IO_1_1_2, SNOR_CMD_PAGE_PROG_DUAL_IN, 0, 0),
 	SNOR_IO_OPCODE(SPI_MEM_IO_1_1_4, SNOR_CMD_PAGE_PROG_QUAD_IN, 0, 0),
 	SNOR_IO_OPCODE(SPI_MEM_IO_4_4_4, SNOR_CMD_PAGE_PROG, 0, 0),
 };
