@@ -251,8 +251,6 @@ const struct spi_nor_wp_info wpr_3bp_tb_sec_cmp = SNOR_WP_BP(&srcr_acc,
 	SNOR_WP_SP_CMP_UP(BP_2_0_TB_SEC_CMP, SR_CMP | SR_SEC | SR_TB | SR_BP2 | SR_BP1         , 3),	/* Upper T - 32KB */
 );
 
-const size_t wpr_3bp_tb_sec_cmp_size = sizeof(wpr_3bp_tb_sec_cmp);
-
 const struct spi_nor_wp_info wpr_3bp_tb_sec_cmp_ratio = SNOR_WP_BP(&srcr_acc,
 	SNOR_WP_BP_UP(BP_2_0_TB_SEC_CMP, 0                                                     , -1),	/* None */
 	SNOR_WP_BP_UP(BP_2_0_TB_SEC_CMP,                       SR_TB                           , -1),	/* None */
