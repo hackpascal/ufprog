@@ -39,7 +39,9 @@ Pull requests are welcome.
 * GigaDevice
 * ISSI
 * Intel
-* TBD: Macronix/XMC/Micron/Spansion/ESMT/EON/...
+* ESMT
+* EON
+* TBD: Macronix/XMC/Micron/Spansion/...
 
 ## Build Prerequisites
 * libusb
