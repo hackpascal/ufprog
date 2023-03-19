@@ -16,6 +16,7 @@
 #define SNOR_EXT_VENDOR_INCREMENT			10
 
 static const struct spi_nor_vendor *vendors[] = {
+	&vendor_eon,
 	&vendor_esmt,
 	&vendor_gigadevice,
 	&vendor_intel,

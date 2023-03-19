@@ -12,6 +12,7 @@
 #include "part.h"
 #include "ext_id.h"
 
+#define SNOR_VENDOR_EON				0x1c
 #define SNOR_VENDOR_ESMT			0x8c
 #define SNOR_VENDOR_GIGADEVICE			0xc8
 #define SNOR_VENDOR_INTEL			0x98
@@ -46,6 +47,7 @@ struct spi_nor_vendor_part {
 	const struct spi_nor_flash_part *part;
 };
 
+extern const struct spi_nor_vendor vendor_eon;
 extern const struct spi_nor_vendor vendor_esmt;
 extern const struct spi_nor_vendor vendor_gigadevice;
 extern const struct spi_nor_vendor vendor_intel;
