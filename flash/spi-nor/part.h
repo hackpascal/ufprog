@@ -34,6 +34,7 @@ struct spi_nor_flash_part_blank;
 #define SNOR_F_SFDP_4B_MODE			BIT(12)
 #define SNOR_F_GLOBAL_UNLOCK			BIT(13)
 #define SNOR_F_AAI_WRITE			BIT(14)
+#define SNOR_F_NO_OP				BIT(15)
 
 #define SNOR_FLAGS(_f)				.flags = (_f)
 #define SNOR_VENDOR_FLAGS(_f)			.vendor_flags = (_f)

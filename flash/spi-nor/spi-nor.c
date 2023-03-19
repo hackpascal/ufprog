@@ -1868,6 +1868,11 @@ ufprog_status UFPROG_API ufprog_spi_nor_part_init(struct spi_nor *snor, const ch
 		return UFP_NOT_EXIST;
 	}
 
+	if (vpreq.part->flags & SNOR_F_NO_OP) {
+		logm_err("This part can not be used\n");
+		return UFP_FLASH_PART_NOT_SPECIFIED;
+	}
+
 	ufprog_spi_nor_bus_lock(snor);
 
 	/* Check if ID matches */
@@ -1943,6 +1948,12 @@ ufprog_status UFPROG_API ufprog_spi_nor_probe_init(struct spi_nor *snor)
 	ufprog_spi_nor_bus_lock(snor);
 
 	spi_nor_probe_jedec_id(snor, &vp);
+
+	if (vp.part && (vp.part->flags & SNOR_F_NO_OP)) {
+		logm_err("This part does not support auto probing. Please manually select a matched part\n");
+		return UFP_FLASH_PART_NOT_SPECIFIED;
+	}
+
 	spi_nor_prepare_blank_part(&bp, vp.part);
 
 	/* Read SFDP. This is mandatory if JEDEC ID probing failed. */
