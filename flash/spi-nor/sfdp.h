@@ -41,6 +41,8 @@ static inline uint32_t sfdp_dw(const uint32_t *dw, uint32_t idx)
 	return le32toh(dw[idx - 1]);
 }
 
+ufprog_status spi_nor_read_sfdp(struct spi_nor *snor, uint8_t buswidth, uint32_t addr, uint32_t len, void *data);
+
 bool spi_nor_probe_sfdp(struct spi_nor *snor, const struct spi_nor_vendor *vendor, struct spi_nor_flash_part_blank *bp);
 bool spi_nor_parse_sfdp_smpt(struct spi_nor *snor);
 bool spi_nor_locate_sfdp_vendor(struct spi_nor *snor, uint8_t mfr_id, bool match_jedec_msb);

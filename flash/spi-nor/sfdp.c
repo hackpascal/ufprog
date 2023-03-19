@@ -16,7 +16,7 @@
 static const uint32_t sector_erase_time_units_ms[] = { 1, 16, 128, 1000 };
 static const uint32_t page_program_units_us[] = { 8, 64 };
 
-static ufprog_status spi_nor_read_sfdp(struct spi_nor *snor, uint8_t buswidth, uint32_t addr, uint32_t len, void *data)
+ufprog_status spi_nor_read_sfdp(struct spi_nor *snor, uint8_t buswidth, uint32_t addr, uint32_t len, void *data)
 {
 	struct ufprog_spi_mem_op op = SNOR_READ_SFDP_OP(buswidth, addr, 3, len, data);
 
