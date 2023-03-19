@@ -27,6 +27,8 @@ struct spi_nor_opcodes {
 static ufprog_status spi_nor_chip_setup(struct spi_nor *snor);
 static ufprog_status spi_nor_page_program(struct spi_nor *snor, uint64_t addr, size_t len, const void *data,
 					  size_t *retlen);
+static ufprog_status spi_nor_aai_write(struct spi_nor *snor, uint64_t addr, size_t len, const void *data,
+				       size_t *retlen);
 
 ufprog_status UFPROG_API ufprog_spi_nor_load_ext_id_file(void)
 {
@@ -1558,8 +1560,12 @@ static ufprog_status spi_nor_setup_param_final(struct spi_nor *snor, const struc
 	snor->param.flags = part->flags;
 	snor->param.vendor_flags = part->vendor_flags;
 
-	if (!snor->ext_param.write_page)
-		snor->ext_param.write_page = spi_nor_page_program;
+	if (!snor->ext_param.write_page) {
+		if (snor->param.flags & SNOR_F_AAI_WRITE)
+			snor->ext_param.write_page = spi_nor_aai_write;
+		else
+			snor->ext_param.write_page = spi_nor_page_program;
+	}
 
 	if (!spi_nor_parse_sfdp_smpt(snor))
 		return UFP_FAIL;
@@ -2247,6 +2253,103 @@ static ufprog_status spi_nor_page_program(struct spi_nor *snor, uint64_t addr, s
 		*retlen = len;
 
 	return UFP_OK;
+}
+
+static ufprog_status spi_nor_byte_program(struct spi_nor *snor, uint64_t addr, const void *data)
+{
+	struct ufprog_spi_mem_op op = SPI_MEM_OP(
+		SPI_MEM_OP_CMD(SNOR_CMD_PAGE_PROG, 1),
+		SPI_MEM_OP_ADDR(snor->state.naddr, addr, 1),
+		SPI_MEM_OP_NO_DUMMY,
+		SPI_MEM_OP_DATA_OUT(1, data, 1)
+	);
+
+	STATUS_CHECK_RET(ufprog_spi_mem_exec_op(snor->spi, &op));
+	STATUS_CHECK_RET(spi_nor_wait_busy(snor, SNOR_PP_TIMEOUT_MS));
+
+	return UFP_OK;
+}
+
+static ufprog_status spi_nor_word_program(struct spi_nor *snor, uint64_t addr, const void *data, bool first)
+{
+	size_t len = 2;
+
+	struct ufprog_spi_mem_op op = SPI_MEM_OP(
+		SPI_MEM_OP_CMD(SNOR_CMD_AAI_WP, 1),
+		SPI_MEM_OP_NO_ADDR,
+		SPI_MEM_OP_NO_DUMMY,
+		SPI_MEM_OP_DATA_OUT(2, data, 1)
+	);
+
+	if (first) {
+		op.addr.buswidth = 1;
+		op.addr.len = snor->state.naddr;
+		op.addr.val = addr;
+	}
+
+	while (len) {
+		STATUS_CHECK_RET(ufprog_spi_mem_adjust_op_size(snor->spi, &op));
+		STATUS_CHECK_RET(ufprog_spi_mem_exec_op(snor->spi, &op));
+		STATUS_CHECK_RET(spi_nor_wait_busy(snor, SNOR_PP_TIMEOUT_MS));
+
+		op.data.buf.tx = (const void *)((uintptr_t)op.data.buf.tx + op.data.len);
+
+		addr += op.data.len;
+		op.addr.val = addr;
+
+		len -= op.data.len;
+		op.data.len = len;
+	}
+
+	return UFP_OK;
+}
+
+static ufprog_status spi_nor_aai_write(struct spi_nor *snor, uint64_t addr, size_t len, const void *data,
+				       size_t *retlen)
+{
+	ufprog_status ret = UFP_OK;
+	size_t rlen = len;
+	bool first = true;
+
+	STATUS_CHECK_RET(spi_nor_set_high_speed(snor));
+
+	if (addr % 2) {
+		STATUS_CHECK_GOTO_RET(spi_nor_write_enable(snor), ret, out);
+		STATUS_CHECK_GOTO_RET(spi_nor_byte_program(snor, addr, data), ret, out);
+
+		len--;
+		addr++;
+		data = (const void *)((uintptr_t)data + 1);
+	}
+
+	if (len >= 2) {
+		STATUS_CHECK_GOTO_RET(spi_nor_write_enable(snor), ret, out);
+
+		while (len >= 2) {
+			STATUS_CHECK_GOTO_RET(spi_nor_word_program(snor, addr, data, first), ret, out);
+
+			len -= 2;
+			addr += 2;
+			data = (const void *)((uintptr_t)data + 2);
+			first = false;
+		}
+
+		STATUS_CHECK_GOTO_RET(spi_nor_write_disable(snor), ret, out);
+		STATUS_CHECK_GOTO_RET(spi_nor_wait_busy(snor, SNOR_PP_TIMEOUT_MS), ret, out);
+	}
+
+	if (len) {
+		STATUS_CHECK_GOTO_RET(spi_nor_write_enable(snor), ret, out);
+		STATUS_CHECK_GOTO_RET(spi_nor_byte_program(snor, addr, data), ret, out);
+	}
+
+	if (retlen)
+		*retlen = rlen;
+
+out:
+	STATUS_CHECK_RET(spi_nor_set_low_speed(snor));
+
+	return ret;
 }
 
 ufprog_status UFPROG_API ufprog_spi_nor_write_page_no_check(struct spi_nor *snor, uint64_t addr, size_t len,

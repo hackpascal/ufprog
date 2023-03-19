@@ -20,12 +20,10 @@
 #define SST_SR_SEC_LOCKED			BIT(5)
 
 /* SST vendor flags */
-#define SST_F_AAI_WRITE				BIT(0)
-#define SST_F_PWRON_BLK_LOCKS			BIT(1)
+#define SST_F_PWRON_BLK_LOCKS			BIT(0)
 
 static struct spi_nor_part_flag_enum_info sst_vendor_flag_info[] = {
-	{ 0, "aai-write" },
-	{ 1, "power-on-block-locks" },
+	{ 0, "power-on-block-locks" },
 };
 
 static const struct spi_nor_reg_access sst_qpi_read_sr_acc = {
@@ -94,8 +92,8 @@ static const struct spi_nor_io_opcode sst25vf064c_pp_opcodes[__SPI_MEM_IO_MAX] =
 
 static const struct spi_nor_flash_part sst_parts[] = {
 	SNOR_PART("SST25VF512", SNOR_ID_NONE, SZ_64K,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE_WREN_50H),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE_WREN_50H |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_READ_OPCODES(sst25vf512_read_opcodes),
@@ -103,66 +101,64 @@ static const struct spi_nor_flash_part sst_parts[] = {
 	),
 
 	SNOR_PART("SST25VF512A", SNOR_ID_NONE, SZ_64K,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE_WREN_50H),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE_WREN_50H |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(33),
 	),
 
 	SNOR_PART("SST25WF512", SNOR_ID(0xbf, 0x25, 0x01), SZ_64K,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(40),
 	),
 
 	SNOR_PART("SST25VF010A", SNOR_ID_NONE, SZ_128K,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE_WREN_50H),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE_WREN_50H |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(33),
 	),
 
 	SNOR_PART("SST25WF010", SNOR_ID(0xbf, 0x25, 0x02), SZ_128K,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(40),
 	),
 
 	SNOR_PART("SST25LF020A", SNOR_ID_NONE, SZ_256K,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE_WREN_50H),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SR_VOLATILE_WREN_50H |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(33),
 	),
 
 	SNOR_PART("SST25PF020B", SNOR_ID(0xbf, 0x25, 0x8c), SZ_256K,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
-			     SNOR_F_SR_VOLATILE),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 	),
 
 	SNOR_PART("SST25VF020B", SNOR_ID(0xbf, 0x25, 0x8c), SZ_256K,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
-			     SNOR_F_SR_VOLATILE),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(80),
 	),
 
 	SNOR_PART("SST25WF020", SNOR_ID(0xbf, 0x25, 0x03), SZ_256K,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(40),
@@ -189,17 +185,16 @@ static const struct spi_nor_flash_part sst_parts[] = {
 	),
 
 	SNOR_PART("SST25VF040B", SNOR_ID(0xbf, 0x25, 0x8d), SZ_512K,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
-			     SNOR_F_SR_VOLATILE),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 	),
 
 	SNOR_PART("SST25WF040", SNOR_ID(0xbf, 0x25, 0x04), SZ_512K,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(40),
@@ -226,17 +221,16 @@ static const struct spi_nor_flash_part sst_parts[] = {
 	),
 
 	SNOR_PART("SST25VF080B", SNOR_ID(0xbf, 0x25, 0x84), SZ_1M,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
-			     SNOR_F_SR_VOLATILE),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 	),
 
 	SNOR_PART("SST25WF080", SNOR_ID(0xbf, 0x25, 0x05), SZ_1M,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(75),
@@ -263,9 +257,8 @@ static const struct spi_nor_flash_part sst_parts[] = {
 	),
 
 	SNOR_PART("SST25VF016B", SNOR_ID(0xbf, 0x25, 0x41), SZ_2M,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
-			     SNOR_F_SR_VOLATILE),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
@@ -296,9 +289,8 @@ static const struct spi_nor_flash_part sst_parts[] = {
 	),
 
 	SNOR_PART("SST25VF032B", SNOR_ID(0xbf, 0x25, 0x4a), SZ_4M,
-		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
-			     SNOR_F_SR_VOLATILE),
-		  SNOR_VENDOR_FLAGS(SST_F_AAI_WRITE),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SR_VOLATILE |
+			     SNOR_F_AAI_WRITE),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(66),
@@ -354,102 +346,6 @@ static const struct spi_nor_flash_part sst_parts[] = {
 	),
 };
 
-static ufprog_status sst_byte_program(struct spi_nor *snor, uint64_t addr, const void *data)
-{
-	struct ufprog_spi_mem_op op = SPI_MEM_OP(
-		SPI_MEM_OP_CMD(SNOR_CMD_PAGE_PROG, 1),
-		SPI_MEM_OP_ADDR(snor->state.naddr, addr, 1),
-		SPI_MEM_OP_NO_DUMMY,
-		SPI_MEM_OP_DATA_OUT(1, data, 1)
-	);
-
-	STATUS_CHECK_RET(ufprog_spi_mem_exec_op(snor->spi, &op));
-	STATUS_CHECK_RET(spi_nor_wait_busy(snor, SNOR_PP_TIMEOUT_MS));
-
-	return UFP_OK;
-}
-
-static ufprog_status sst_word_program(struct spi_nor *snor, uint64_t addr, const void *data, bool first)
-{
-	size_t len = 2;
-
-	struct ufprog_spi_mem_op op = SPI_MEM_OP(
-		SPI_MEM_OP_CMD(SNOR_CMD_AAI_WP, 1),
-		SPI_MEM_OP_NO_ADDR,
-		SPI_MEM_OP_NO_DUMMY,
-		SPI_MEM_OP_DATA_OUT(2, data, 1)
-	);
-
-	if (first) {
-		op.addr.buswidth = 1;
-		op.addr.len = snor->state.naddr;
-		op.addr.val = addr;
-	}
-
-	while (len) {
-		STATUS_CHECK_RET(ufprog_spi_mem_adjust_op_size(snor->spi, &op));
-		STATUS_CHECK_RET(ufprog_spi_mem_exec_op(snor->spi, &op));
-		STATUS_CHECK_RET(spi_nor_wait_busy(snor, SNOR_PP_TIMEOUT_MS));
-
-		op.data.buf.tx = (const void *)((uintptr_t)op.data.buf.tx + op.data.len);
-
-		addr += op.data.len;
-		op.addr.val = addr;
-
-		len -= op.data.len;
-		op.data.len = len;
-	}
-
-	return UFP_OK;
-}
-
-static ufprog_status sst_write(struct spi_nor *snor, uint64_t addr, size_t len, const void *data, size_t *retlen)
-{
-	ufprog_status ret = UFP_OK;
-	size_t rlen = len;
-	bool first = true;
-
-	STATUS_CHECK_RET(spi_nor_set_high_speed(snor));
-
-	if (addr % 2) {
-		STATUS_CHECK_GOTO_RET(spi_nor_write_enable(snor), ret, out);
-		STATUS_CHECK_GOTO_RET(sst_byte_program(snor, addr, data), ret, out);
-
-		len--;
-		addr++;
-		data = (const void *)((uintptr_t)data + 1);
-	}
-
-	if (len >= 2) {
-		STATUS_CHECK_GOTO_RET(spi_nor_write_enable(snor), ret, out);
-
-		while (len >= 2) {
-			STATUS_CHECK_GOTO_RET(sst_word_program(snor, addr, data, first), ret, out);
-
-			len -= 2;
-			addr += 2;
-			data = (const void *)((uintptr_t)data + 2);
-			first = false;
-		}
-
-		STATUS_CHECK_GOTO_RET(spi_nor_write_disable(snor), ret, out);
-		STATUS_CHECK_GOTO_RET(spi_nor_wait_busy(snor, SNOR_PP_TIMEOUT_MS), ret, out);
-	}
-
-	if (len) {
-		STATUS_CHECK_GOTO_RET(spi_nor_write_enable(snor), ret, out);
-		STATUS_CHECK_GOTO_RET(sst_byte_program(snor, addr, data), ret, out);
-	}
-
-	if (retlen)
-		*retlen = rlen;
-
-out:
-	STATUS_CHECK_RET(spi_nor_set_low_speed(snor));
-
-	return ret;
-}
-
 static ufprog_status sst_part_fixup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
 {
 	spi_nor_blank_part_fill_default_opcodes(bp);
@@ -474,11 +370,6 @@ static ufprog_status sst_part_fixup(struct spi_nor *snor, struct spi_nor_flash_p
 
 static ufprog_status sst_post_param_setup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
 {
-	if (bp->p.vendor_flags & SST_F_AAI_WRITE) {
-		snor->ext_param.write_page = sst_write;
-		logm_dbg("SST AAI Word-Program will be used\n");
-	}
-
 	if (snor->state.cmd_buswidth_curr == 4)
 		snor->state.reg.sr = &sst_qpi_read_sr_acc;
 

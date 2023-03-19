@@ -58,6 +58,7 @@ static const struct spi_nor_part_flag_enum_info part_flags[] = {
 	{ 11, "full-qpi-opcodes" },
 	{ 12, "sfdp-4b-mode" },
 	{ 13, "global-block-unlock" },
+	{ 14, "aai-word-program" },
 };
 
 static const struct spi_nor_part_flag_enum_info part_qe_types[] = {
