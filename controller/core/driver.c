@@ -164,7 +164,7 @@ ufprog_status UFPROG_API ufprog_load_driver(const char *name, struct ufprog_driv
 
 	if (lookup_table_create(&drv->devices, 0)) {
 		log_err("No memory for device management for driver\n");
-		goto cleanup_module;
+		goto cleanup_module_remove;
 	}
 
 	log_info("Loaded interface driver %s %u.%u\n", drv->desc,
@@ -173,10 +173,10 @@ ufprog_status UFPROG_API ufprog_load_driver(const char *name, struct ufprog_driv
 	*outdrv = drv;
 	return UFP_OK;
 
-cleanup_module:
-	if (drv->devices)
-		lookup_table_destroy(drv->devices);
+cleanup_module_remove:
+	lookup_table_delete(loaded_drivers, name);
 
+cleanup_module:
 	if (drv->cleanup)
 		drv->cleanup();
 
