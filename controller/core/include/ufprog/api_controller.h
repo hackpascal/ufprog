@@ -40,10 +40,6 @@ typedef ufprog_status (UFPROG_API *api_drv_init)(void);
 typedef ufprog_status (UFPROG_API *api_drv_cleanup)(void);
 
 #define API_NAME_DRV_VERSION			"ufprog_driver_version"
-#define MAKE_VERSION(_major, _minor)		(((uint32_t)(_major) & 0xffff) << 16) | \
-						 ((uint32_t)(_minor) & 0xffff)
-#define GET_MAJOR_VERSION(_ver)			(((_ver) >> 16) & 0xffff)
-#define GET_MINOR_VERSION(_ver)			((_ver) & 0xffff)
 typedef uint32_t (UFPROG_API *api_drv_version)(void);
 
 #define API_NAME_DRV_DESC			"ufprog_driver_desc"

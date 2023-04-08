@@ -32,6 +32,12 @@
 #define UFPROG_API
 #endif
 
+/* Version helper */
+#define MAKE_VERSION(_major, _minor)		(((uint32_t)(_major) & 0xffff) << 16) | \
+						 ((uint32_t)(_minor) & 0xffff)
+#define GET_MAJOR_VERSION(_ver)			(((_ver) >> 16) & 0xffff)
+#define GET_MINOR_VERSION(_ver)			((_ver) & 0xffff)
+
 /* Generic directory names */
 #define UFPROG_APPDATA_NAME			"ufprog"
 #define UFPROG_DEVICE_DIR_NAME			"device"
