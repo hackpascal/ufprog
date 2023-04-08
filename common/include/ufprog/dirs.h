@@ -20,6 +20,7 @@ enum dir_category {
 	DIR_CONFIG,
 	DIR_DEVICE,
 	DIR_DRIVER,
+	DIR_PLUGIN,
 
 	__MAX_DIR_CATEGORY
 };

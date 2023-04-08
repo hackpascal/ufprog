@@ -171,3 +171,15 @@ EXPORTS
 	strlcpy
 	vasprintf
 	asprintf
+
+	plugin_mgmt_create
+	plugin_mgmt_destroy
+	plugin_mgmt_name
+	plugin_dir_name
+	plugin_struct_size
+	plugin_mgmt_loaded_count
+	plugin_config_load
+	plugin_load
+	plugin_unload
+	plugin_find_symbol
+	plugin_find_module_symbols

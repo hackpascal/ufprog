@@ -34,6 +34,7 @@ set(ufprog_common_src
 	hexdump.c
 	progbar.c
 	buffdiff.c
+	internal/plugin-common.c
 )
 
 add_library(ufprog_common SHARED ${ufprog_common_src} ufprog-common.def)
