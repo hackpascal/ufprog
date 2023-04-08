@@ -66,7 +66,7 @@ ufprog_status UFPROG_API ufprog_open_device(struct ufprog_driver *drv, uint32_t 
 
 	ret = drv->open_device(if_type, config, thread_safe, &dev->ifdev);
 	if (ret) {
-		log_err("Failed to open interface device using driver '%s'\n", drv->name);
+		log_err("Failed to open interface device using driver '%s'\n", drv->plugin.name);
 		free(dev);
 		return ret;
 	}
@@ -78,7 +78,7 @@ ufprog_status UFPROG_API ufprog_open_device(struct ufprog_driver *drv, uint32_t 
 		return ret;
 	}
 
-	log_info("Opened interface device using driver '%s'\n", dev->driver->name);
+	log_info("Opened interface device using driver '%s'\n", dev->driver->plugin.name);
 
 	*outdev = dev;
 	return UFP_OK;
@@ -251,7 +251,7 @@ ufprog_status UFPROG_API ufprog_open_device_by_name(const char *name, uint32_t i
 		return UFP_NOT_EXIST;
 	}
 
-	log_info("Opened interface device '%s' using driver '%s'\n", name, dev->driver->name);
+	log_info("Opened interface device '%s' using driver '%s'\n", name, dev->driver->plugin.name);
 
 	*outdev = dev;
 	return UFP_OK;

@@ -22,7 +22,7 @@ struct ch34x_handle {
 	struct libusb_device_handle *handle;
 };
 
-const char *UFPROG_API ufprog_driver_desc(void)
+const char *UFPROG_API ufprog_plugin_desc(void)
 {
 	return "WCH CH341 (libusb)";
 }

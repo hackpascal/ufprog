@@ -1,10 +1,10 @@
 LIBRARY ch347-dll
 
 EXPORTS
-	ufprog_driver_init
-	ufprog_driver_cleanup
-	ufprog_driver_version
-	ufprog_driver_desc
+	ufprog_plugin_init
+	ufprog_plugin_cleanup
+	ufprog_plugin_api_version
+	ufprog_plugin_desc
 	ufprog_driver_supported_if
 	ufprog_device_open
 	ufprog_device_free

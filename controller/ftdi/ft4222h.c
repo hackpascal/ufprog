@@ -9,8 +9,8 @@
 #include <ufprog/log.h>
 #include "ft4222h.h"
 
-#define FT4222H_DRV_VER_MAJOR			1
-#define FT4222H_DRV_VER_MINOR			0
+#define FT4222H_DRV_API_VER_MAJOR		1
+#define FT4222H_DRV_API_VER_MINOR		0
 
 const uint32_t ft4222_sys_clks[] = {
 	[SYS_CLK_60] = 60000000,
@@ -134,9 +134,9 @@ out:
 	return ret;
 }
 
-uint32_t UFPROG_API ufprog_driver_version(void)
+uint32_t UFPROG_API ufprog_plugin_api_version(void)
 {
-	return MAKE_VERSION(FT4222H_DRV_VER_MAJOR, FT4222H_DRV_VER_MINOR);
+	return MAKE_VERSION(FT4222H_DRV_API_VER_MAJOR, FT4222H_DRV_API_VER_MINOR);
 }
 
 uint32_t UFPROG_API ufprog_driver_supported_if(void)

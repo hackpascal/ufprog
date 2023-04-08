@@ -9,11 +9,14 @@
 #ifndef _UFPROG_API_CONTROLLER_H_
 #define _UFPROG_API_CONTROLLER_H_
 
-#include <stdint.h>
 #include <ufprog/bits.h>
 #include <ufprog/config.h>
+#include <ufprog/api_plugin.h>
 
 EXTERN_C_BEGIN
+
+#define CONTROLLER_DRIVER_API_VERSION_MAJOR	1
+#define CONTROLLER_DRIVER_API_VERSION_MINOR	0
 
 struct ufprog_if_dev;
 
@@ -32,18 +35,6 @@ enum ufprog_drv_if_type {
 #define IFM_SDIO				BIT(IF_SDIO)
 
 #define IF_TYPE_BIT(_t)				(BIT(_t) & (BIT(__MAX_IF_TYPE) - 1))
-
-#define API_NAME_DRV_INIT			"ufprog_driver_init"
-typedef ufprog_status (UFPROG_API *api_drv_init)(void);
-
-#define API_NAME_DRV_CLEANUP			"ufprog_driver_cleanup"
-typedef ufprog_status (UFPROG_API *api_drv_cleanup)(void);
-
-#define API_NAME_DRV_VERSION			"ufprog_driver_version"
-typedef uint32_t (UFPROG_API *api_drv_version)(void);
-
-#define API_NAME_DRV_DESC			"ufprog_driver_desc"
-typedef const char *(UFPROG_API *api_drv_desc)(void);
 
 #define API_NAME_DRV_SUPPORTED_IF		"ufprog_driver_supported_if"
 typedef uint32_t (UFPROG_API *api_drv_supported_if)(void);

@@ -15,6 +15,7 @@ set_target_properties(ufprog_controller PROPERTIES OUTPUT_NAME "ufprog-controlle
 
 include_directories(${LIBUSB_INC})
 include_directories(${ufprog_common_SOURCE_DIR}/include)
+include_directories(${ufprog_common_SOURCE_DIR}/internal)
 include_directories(${ufprog_controller_SOURCE_DIR}/include)
 
 if(WIN32 OR MINGW OR BUILD_PORTABLE)

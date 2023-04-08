@@ -9,8 +9,8 @@
 #include <ufprog/log.h>
 #include "ch347.h"
 
-#define CH347_DRV_VER_MAJOR			1
-#define CH347_DRV_VER_MINOR			0
+#define CH347_DRV_API_VER_MAJOR			1
+#define CH347_DRV_API_VER_MINOR			0
 
 ufprog_status ch347_init(struct ufprog_if_dev *wchdev, bool thread_safe)
 {
@@ -24,9 +24,9 @@ ufprog_status ch347_init(struct ufprog_if_dev *wchdev, bool thread_safe)
 	return UFP_OK;
 }
 
-uint32_t UFPROG_API ufprog_driver_version(void)
+uint32_t UFPROG_API ufprog_plugin_api_version(void)
 {
-	return MAKE_VERSION(CH347_DRV_VER_MAJOR, CH347_DRV_VER_MINOR);
+	return MAKE_VERSION(CH347_DRV_API_VER_MAJOR, CH347_DRV_API_VER_MINOR);
 }
 
 uint32_t UFPROG_API ufprog_driver_supported_if(void)

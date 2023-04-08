@@ -32,7 +32,7 @@ struct ch34x_handle {
 	uint8_t report[CH347_HID_REPORT_SIZE + 1];
 };
 
-ufprog_status UFPROG_API ufprog_driver_init(void)
+ufprog_status UFPROG_API ufprog_plugin_init(void)
 {
 	int ret;
 
@@ -45,14 +45,14 @@ ufprog_status UFPROG_API ufprog_driver_init(void)
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_driver_cleanup(void)
+ufprog_status UFPROG_API ufprog_plugin_cleanup(void)
 {
 	hid_exit();
 
 	return UFP_OK;
 }
 
-const char *UFPROG_API ufprog_driver_desc(void)
+const char *UFPROG_API ufprog_plugin_desc(void)
 {
 	return "WCH CH347 (HID)";
 }

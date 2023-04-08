@@ -13,36 +13,34 @@
 #include <ufprog/driver.h>
 #include "controller.h"
 
-static struct ufprog_lookup_table *loaded_drivers;
+static ufprog_status controller_driver_api_init(struct plugin *plugin, const char *module_path);
+static ufprog_status controller_driver_post_init(struct plugin *plugin);
+
+static struct plugin_mgmt *controller_drivers;
 
 int driver_lookup_table_init(void)
 {
-	if (lookup_table_create(&loaded_drivers, 0))
+	if (plugin_mgmt_create("controller", CONTROLLER_DRIVER_DIR_NAME, sizeof(struct ufprog_driver),
+			       CONTROLLER_DRIVER_API_VERSION_MAJOR, controller_driver_api_init,
+			       controller_driver_post_init, &controller_drivers))
 		return -1;
 
 	return 0;
 }
 
-static bool ufprog_driver_check(struct ufprog_driver *drv)
+static ufprog_status controller_driver_api_init(struct plugin *plugin, const char *module_path)
 {
-	api_drv_version fn_driver_version;
-	api_drv_desc fn_driver_desc;
+	struct ufprog_driver *drv = (struct ufprog_driver *)plugin;
 	api_drv_supported_if fn_supported_if;
-	api_device_open fn_open_device;
-	api_device_free fn_free_device;
 	ufprog_bool ret;
 
 	struct symbol_find_entry basic_symbols[] = {
-		FIND_MODULE(API_NAME_DRV_VERSION, fn_driver_version),
-		FIND_MODULE(API_NAME_DRV_DESC, fn_driver_desc),
 		FIND_MODULE(API_NAME_DRV_SUPPORTED_IF, fn_supported_if),
-		FIND_MODULE(API_NAME_DEVICE_OPEN, fn_open_device),
-		FIND_MODULE(API_NAME_DEVICE_FREE, fn_free_device),
+		FIND_MODULE(API_NAME_DEVICE_OPEN, drv->open_device),
+		FIND_MODULE(API_NAME_DEVICE_FREE, drv->free_device),
 	};
 
 	struct symbol_find_entry optional_symbols[] = {
-		FIND_MODULE(API_NAME_DRV_INIT, drv->init),
-		FIND_MODULE(API_NAME_DRV_CLEANUP, drv->cleanup),
 		FIND_MODULE(API_NAME_DEVICE_LOCK, drv->lock_device),
 		FIND_MODULE(API_NAME_DEVICE_UNLOCK, drv->unlock_device),
 		FIND_MODULE(API_NAME_DEVICE_RESET, drv->reset_device),
@@ -50,143 +48,42 @@ static bool ufprog_driver_check(struct ufprog_driver *drv)
 		FIND_MODULE(API_NAME_SET_DEVICE_DISCONNECT_CB, drv->set_disconnect_cb),
 	};
 
-	ret = os_find_module_symbols(drv->module, basic_symbols, ARRAY_SIZE(basic_symbols), true);
-	if (ret)
-		return false;
+	ret = plugin_find_module_symbols(plugin, basic_symbols, ARRAY_SIZE(basic_symbols), true);
+	if (!ret)
+		return UFP_FAIL;
 
 	drv->supported_if = fn_supported_if();
 	if (!drv->supported_if)
-		return false;
+		return UFP_FAIL;
 
-	drv->version = fn_driver_version();
-	drv->desc = fn_driver_desc();
-
-	drv->open_device = fn_open_device;
-	drv->free_device = fn_free_device;
-
-	os_find_module_symbols(drv->module, optional_symbols, ARRAY_SIZE(optional_symbols), false);
+	plugin_find_module_symbols(plugin, optional_symbols, ARRAY_SIZE(optional_symbols), false);
 
 	if ((!!drv->lock_device) ^ (!!drv->unlock_device))
-		return false;
+		return UFP_FAIL;
 
-	return true;
+	return UFP_OK;
 }
 
-static int UFPROG_API dir_enum_drivers(void *priv, uint32_t index, const char *dir)
+static ufprog_status controller_driver_post_init(struct plugin *plugin)
 {
-	struct ufprog_driver *drv = priv;
-	char *module_path;
+	struct ufprog_driver *drv = (struct ufprog_driver *)plugin;
 	ufprog_status ret;
-	int eret = 0;
-	size_t len;
 
-	module_path = path_concat(false, strlen(MODULE_SUFFIX), dir, CONTROLLER_DRIVER_DIR_NAME, drv->name, NULL);
-	if (!module_path)
-		return 0;
-
-	len = strlen(module_path);
-	memcpy(module_path + len, MODULE_SUFFIX, strlen(MODULE_SUFFIX) + 1);
-
-	log_dbg("Trying loading interface driver '%s'\n", module_path);
-
-	ret = os_load_module(module_path, &drv->module);
+	ret = lookup_table_create(&drv->devices, 0);
 	if (ret) {
-		if (ret == UFP_FILE_NOT_EXIST)
-			log_dbg("'%s' does not exist\n", module_path);
-
-		free(module_path);
-		return 0;
+		log_err("No memory for device management for controller driver '%s'\n", plugin->name);
+		return ret;
 	}
 
-	if (ufprog_driver_check(drv)) {
-		log_notice("'%s' loaded as interface driver\n", module_path);
-		eret = 1;
-	} else {
-		log_err("'%s' is not a valid ufprog interface driver\n", module_path);
-		os_unload_module(drv->module);
-		drv->module = NULL;
-	}
-
-	free(module_path);
-	return eret;
+	return UFP_OK;
 }
 
 ufprog_status UFPROG_API ufprog_load_driver(const char *name, struct ufprog_driver **outdrv)
 {
-	struct ufprog_driver *drv;
-	ufprog_status ret;
-
 	if (!name || !outdrv)
 		return UFP_INVALID_PARAMETER;
 
-	if (lookup_table_find(loaded_drivers, name, (void **)&drv)) {
-		*outdrv = drv;
-		return UFP_OK;
-	}
-
-	*outdrv = NULL;
-
-	drv = calloc(1, sizeof(*drv));
-	if (!drv) {
-		log_err("No memory for loading interface driver\n");
-		return UFP_NOMEM;
-	}
-
-	drv->name = os_strdup(name);
-	if (!drv->name) {
-		log_err("No memory for loading interface driver\n");
-		free(drv);
-		return UFP_NOMEM;
-	}
-
-	dir_enum(DIR_PLUGIN, dir_enum_drivers, drv);
-
-	if (!drv->module) {
-		log_err("No interface driver module named '%s' could be loaded\n", name);
-		free(drv->name);
-		free(drv);
-		return UFP_NOT_EXIST;
-	}
-
-	if (drv->init) {
-		ret = drv->init();
-		if (ret) {
-			log_err("Interface driver '%s' initialization failed\n", name);
-			ret = UFP_MODULE_INIT_FAIL;
-			goto cleanup;
-		}
-	}
-
-	ret = lookup_table_insert(loaded_drivers, name, drv);
-	if (ret) {
-		log_err("No memory for maintain interface driver\n");
-		goto cleanup_module;
-	}
-
-	if (lookup_table_create(&drv->devices, 0)) {
-		log_err("No memory for device management for driver\n");
-		goto cleanup_module_remove;
-	}
-
-	log_info("Loaded interface driver %s %u.%u\n", drv->desc,
-		 GET_MAJOR_VERSION(drv->version), GET_MINOR_VERSION(drv->version));
-
-	*outdrv = drv;
-	return UFP_OK;
-
-cleanup_module_remove:
-	lookup_table_delete(loaded_drivers, name);
-
-cleanup_module:
-	if (drv->cleanup)
-		drv->cleanup();
-
-cleanup:
-	os_unload_module(drv->module);
-	free(drv->name);
-	free(drv);
-
-	return ret;
+	return plugin_load(controller_drivers, name, (struct plugin **)outdrv);
 }
 
 uint32_t UFPROG_API ufprog_driver_device_count(struct ufprog_driver *drv)
@@ -199,7 +96,6 @@ uint32_t UFPROG_API ufprog_driver_device_count(struct ufprog_driver *drv)
 
 ufprog_status UFPROG_API ufprog_unload_driver(struct ufprog_driver *drv)
 {
-	ufprog_status ret;
 	uint32_t n;
 
 	if (!drv)
@@ -208,25 +104,14 @@ ufprog_status UFPROG_API ufprog_unload_driver(struct ufprog_driver *drv)
 	n = ufprog_driver_device_count(drv);
 	if (n) {
 		if (n > 1)
-			log_err("There are still devices opened with driver '%s'\n", drv->name);
+			log_err("There are still devices opened with driver '%s'\n", drv->plugin.name);
 		else
-			log_err("There is still a device opened with driver '%s'\n", drv->name);
+			log_err("There is still a device opened with driver '%s'\n", drv->plugin.name);
 
 		return UFP_MODULE_IN_USE;
 	}
 
-	lookup_table_delete(loaded_drivers, drv->name);
-
-	if (drv->cleanup) {
-		ret = drv->cleanup();
-		if (ret)
-			log_warn("Interface driver '%s' cleanup failed\n", drv->name);
-	}
-
-	os_unload_module(drv->module);
-	free(drv->name);
-
-	return UFP_OK;
+	return plugin_unload(controller_drivers, (struct plugin *)drv);
 }
 
 const char *UFPROG_API ufprog_driver_name(struct ufprog_driver *drv)
@@ -234,7 +119,7 @@ const char *UFPROG_API ufprog_driver_name(struct ufprog_driver *drv)
 	if (!drv)
 		return NULL;
 
-	return drv->name;
+	return drv->plugin.name;
 }
 
 module_handle UFPROG_API ufprog_driver_module(struct ufprog_driver *drv)
@@ -242,7 +127,7 @@ module_handle UFPROG_API ufprog_driver_module(struct ufprog_driver *drv)
 	if (!drv)
 		return NULL;
 
-	return drv->module;
+	return drv->plugin.module;
 }
 
 uint32_t UFPROG_API ufprog_driver_version(struct ufprog_driver *drv)
@@ -250,7 +135,7 @@ uint32_t UFPROG_API ufprog_driver_version(struct ufprog_driver *drv)
 	if (!drv)
 		return 0;
 
-	return drv->version;
+	return drv->plugin.version;
 }
 
 const char *UFPROG_API ufprog_driver_desc(struct ufprog_driver *drv)
@@ -258,7 +143,7 @@ const char *UFPROG_API ufprog_driver_desc(struct ufprog_driver *drv)
 	if (!drv)
 		return NULL;
 
-	return drv->desc;
+	return drv->plugin.desc;
 }
 
 uint32_t UFPROG_API ufprog_driver_supported_if(struct ufprog_driver *drv)
@@ -274,7 +159,7 @@ void *UFPROG_API ufprog_driver_find_symbol(struct ufprog_driver *drv, const char
 	if (!drv || !name)
 		return NULL;
 
-	return os_find_module_symbol(drv->module, name);
+	return plugin_find_symbol(&drv->plugin, name);
 }
 
 ufprog_bool UFPROG_API ufprog_driver_find_module_symbols(struct ufprog_driver *drv, struct symbol_find_entry *list,
@@ -289,7 +174,7 @@ ufprog_bool UFPROG_API ufprog_driver_find_module_symbols(struct ufprog_driver *d
 	if (!list)
 		return false;
 
-	return os_find_module_symbols(drv->module, list, count, full) == UFP_OK;
+	return plugin_find_module_symbols(&drv->plugin, list, count, full);
 }
 
 ufprog_status ufprog_driver_add_device(struct ufprog_driver *drv, const struct ufprog_if_dev *ifdev)

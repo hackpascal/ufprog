@@ -11,17 +11,12 @@
 
 #include <ufprog/api_controller.h>
 #include <ufprog/osdef.h>
+#include <plugin-common.h>
 
 struct ufprog_driver {
-	module_handle module;
-	char *name;
+	struct plugin plugin;
 
-	uint32_t version;
-	const char *desc;
 	uint32_t supported_if;
-
-	api_drv_init init;
-	api_drv_cleanup cleanup;
 
 	api_device_open open_device;
 	api_device_free free_device;

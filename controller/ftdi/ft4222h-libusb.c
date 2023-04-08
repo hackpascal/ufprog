@@ -15,7 +15,7 @@
 /* The value should be >= max read size of both single and multi I/O */
 #define FT4222_MAX_READ_SIZE			0x10000
 
-const char *UFPROG_API ufprog_driver_desc(void)
+const char *UFPROG_API ufprog_plugin_desc(void)
 {
 	return "FTDI FT4222H (libusb)";
 }

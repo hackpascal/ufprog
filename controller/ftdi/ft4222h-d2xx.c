@@ -12,7 +12,7 @@
 #include "ft4222h.h"
 #include "d2xx.h"
 
-ufprog_status UFPROG_API ufprog_driver_init(void)
+ufprog_status UFPROG_API ufprog_plugin_init(void)
 {
 	if (d2xx_init())
 		return UFP_FAIL;
@@ -20,14 +20,14 @@ ufprog_status UFPROG_API ufprog_driver_init(void)
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_driver_cleanup(void)
+ufprog_status UFPROG_API ufprog_plugin_cleanup(void)
 {
 	d2xx_deinit();
 
 	return UFP_OK;
 }
 
-const char *UFPROG_API ufprog_driver_desc(void)
+const char *UFPROG_API ufprog_plugin_desc(void)
 {
 	return "FTDI FT4222H (D2XX)";
 }

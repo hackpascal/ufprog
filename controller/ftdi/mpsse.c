@@ -10,8 +10,8 @@
 #include <ufprog/log.h>
 #include "mpsse.h"
 
-#define MPSSE_DRV_VER_MAJOR			1
-#define MPSSE_DRV_VER_MINOR			0
+#define MPSSE_DRV_API_VER_MAJOR			1
+#define MPSSE_DRV_API_VER_MINOR			0
 
 static const char *mpsse_chip_models[] = {
 	[FT232H] = "FT232H",
@@ -387,9 +387,9 @@ ufprog_status mpsse_cleanup(struct ufprog_if_dev *ftdev)
 	return UFP_OK;
 }
 
-uint32_t UFPROG_API ufprog_driver_version(void)
+uint32_t UFPROG_API ufprog_plugin_api_version(void)
 {
-	return MAKE_VERSION(MPSSE_DRV_VER_MAJOR, MPSSE_DRV_VER_MINOR);
+	return MAKE_VERSION(MPSSE_DRV_API_VER_MAJOR, MPSSE_DRV_API_VER_MINOR);
 }
 
 uint32_t UFPROG_API ufprog_driver_supported_if(void)

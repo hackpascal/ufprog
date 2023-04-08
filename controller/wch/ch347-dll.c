@@ -27,7 +27,7 @@ static const char *chip_modes[] = {
 	"UART1+JTAG+I2C VCP",
 };
 
-ufprog_status UFPROG_API ufprog_driver_init(void)
+ufprog_status UFPROG_API ufprog_plugin_init(void)
 {
 	if (ch347_dll_init())
 		return UFP_FAIL;
@@ -35,14 +35,14 @@ ufprog_status UFPROG_API ufprog_driver_init(void)
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_driver_cleanup(void)
+ufprog_status UFPROG_API ufprog_plugin_cleanup(void)
 {
 	ch34x_dll_deinit();
 
 	return UFP_OK;
 }
 
-const char *UFPROG_API ufprog_driver_desc(void)
+const char *UFPROG_API ufprog_plugin_desc(void)
 {
 	return "WCH CH347 (DLL)";
 }

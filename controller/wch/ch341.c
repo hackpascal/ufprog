@@ -9,8 +9,8 @@
 #include <ufprog/log.h>
 #include "ch341.h"
 
-#define CH341_DRV_VER_MAJOR			1
-#define CH341_DRV_VER_MINOR			0
+#define CH341_DRV_API_VER_MAJOR			1
+#define CH341_DRV_API_VER_MINOR			0
 
 static const uint8_t bitswap_table[256] = {
 	0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0,
@@ -67,9 +67,9 @@ ufprog_status ch341_init(struct ufprog_if_dev *wchdev, bool thread_safe)
 	return UFP_OK;
 }
 
-uint32_t UFPROG_API ufprog_driver_version(void)
+uint32_t UFPROG_API ufprog_plugin_api_version(void)
 {
-	return MAKE_VERSION(CH341_DRV_VER_MAJOR, CH341_DRV_VER_MINOR);
+	return MAKE_VERSION(CH341_DRV_API_VER_MAJOR, CH341_DRV_API_VER_MINOR);
 }
 
 uint32_t UFPROG_API ufprog_driver_supported_if(void)
