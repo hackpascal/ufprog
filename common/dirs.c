@@ -23,7 +23,7 @@ static const char *dir_cat_names[] = {
 	[DIR_DATA_ROOT] = "Data",
 	[DIR_CONFIG] = "Config",
 	[DIR_DEVICE] = "Device",
-	[DIR_DRIVER] = "Driver",
+	[DIR_PLUGIN] = "Plugin",
 };
 
 static struct dir_list dirs[__MAX_DIR_CATEGORY];

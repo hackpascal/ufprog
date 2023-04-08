@@ -13,6 +13,8 @@
 
 EXTERN_C_BEGIN
 
+#define CONTROLLER_DRIVER_DIR_NAME		"controller"
+
 struct ufprog_driver;
 
 ufprog_status UFPROG_API ufprog_load_driver(const char *name, struct ufprog_driver **outdrv);

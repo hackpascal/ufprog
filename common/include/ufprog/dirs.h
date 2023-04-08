@@ -19,7 +19,6 @@ enum dir_category {
 	DIR_DATA_ROOT,
 	DIR_CONFIG,
 	DIR_DEVICE,
-	DIR_DRIVER,
 	DIR_PLUGIN,
 
 	__MAX_DIR_CATEGORY

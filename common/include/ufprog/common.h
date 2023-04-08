@@ -41,7 +41,7 @@
 /* Generic directory names */
 #define UFPROG_APPDATA_NAME			"ufprog"
 #define UFPROG_DEVICE_DIR_NAME			"device"
-#define UFPROG_INTERFACE_DIR_NAME		"controller"
+#define UFPROG_PLUGIN_DIR_NAME			"plugin"
 #define UFPROG_CONFIG_SUFFIX			".json"
 
 /* Compiler-independent types */

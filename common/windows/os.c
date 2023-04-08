@@ -106,14 +106,14 @@ static ufprog_bool os_register_app_dirs(void)
 	if (ret)
 		goto cleanup;
 
-	/* Register program's controller directory */
-	new_path = path_concat(true, 0, appdata_base, "", UFPROG_APPDATA_NAME, UFPROG_INTERFACE_DIR_NAME, NULL);
+	/* Register program's plugin directory */
+	new_path = path_concat(true, 0, appdata_base, "", UFPROG_APPDATA_NAME, UFPROG_PLUGIN_DIR_NAME, NULL);
 	if (!new_path) {
-		log_err("Failed to generate program's controller directory\n");
+		log_err("Failed to generate program's plugin directory\n");
 		goto cleanup;
 	}
 
-	ret = add_dir(DIR_DRIVER, new_path);
+	ret = add_dir(DIR_PLUGIN, new_path);
 	free(new_path);
 
 	if (ret)
@@ -241,14 +241,14 @@ static ufprog_bool os_register_default_dirs(void)
 	if (ret)
 		return false;
 
-	/* Register program's drivers directory */
-	utf8_str = path_concat(true, 0, get_root_dir(), UFPROG_INTERFACE_DIR_NAME, NULL);
+	/* Register program's plugin directory */
+	utf8_str = path_concat(true, 0, get_root_dir(), UFPROG_PLUGIN_DIR_NAME, NULL);
 	if (!utf8_str) {
-		log_err("Failed to generate program's controller directory\n");
+		log_err("Failed to generate program's plugin directory\n");
 		return false;
 	}
 
-	ret = add_dir(DIR_DRIVER, utf8_str);
+	ret = add_dir(DIR_PLUGIN, utf8_str);
 	free(utf8_str);
 
 	if (ret)

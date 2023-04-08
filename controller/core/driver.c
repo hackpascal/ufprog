@@ -10,6 +10,7 @@
 #include <ufprog/dirs.h>
 #include <ufprog/log.h>
 #include <ufprog/lookup_table.h>
+#include <ufprog/driver.h>
 #include "controller.h"
 
 static struct ufprog_lookup_table *loaded_drivers;
@@ -79,7 +80,7 @@ static int UFPROG_API dir_enum_drivers(void *priv, uint32_t index, const char *d
 	int eret = 0;
 	size_t len;
 
-	module_path = path_concat(false, strlen(MODULE_SUFFIX), dir, drv->name, NULL);
+	module_path = path_concat(false, strlen(MODULE_SUFFIX), dir, CONTROLLER_DRIVER_DIR_NAME, drv->name, NULL);
 	if (!module_path)
 		return 0;
 
@@ -138,7 +139,7 @@ ufprog_status UFPROG_API ufprog_load_driver(const char *name, struct ufprog_driv
 		return UFP_NOMEM;
 	}
 
-	dir_enum(DIR_DRIVER, dir_enum_drivers, drv);
+	dir_enum(DIR_PLUGIN, dir_enum_drivers, drv);
 
 	if (!drv->module) {
 		log_err("No interface driver module named '%s' could be loaded\n", name);
