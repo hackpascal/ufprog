@@ -20,7 +20,7 @@
 #define CH341_SPI_OUT_PINS			(CH341_IO0_CS0 | CH341_IO1_CS1 | CH341_IO2_CS2 | \
 						 CH341_IO3_SCK | CH341_IO4_DOUT2 | CH341_IO5_MOSI)
 
-static ufprog_status ch341_spi_set_cs(struct ufprog_if_dev *wchdev, bool activate)
+static ufprog_status ch341_spi_set_cs(struct ufprog_interface *wchdev, bool activate)
 {
 	uint8_t packet[4], val = CH341_SPI_OUT_PINS & ~CH341_IO3_SCK;
 
@@ -40,7 +40,7 @@ static ufprog_status ch341_spi_set_cs(struct ufprog_if_dev *wchdev, bool activat
 	return ch341_write(wchdev->handle, packet, sizeof(packet), NULL);
 }
 
-static ufprog_status ch341_spi_fdx_xfer(struct ufprog_if_dev *wchdev, const void *tx, void *rx, size_t len)
+static ufprog_status ch341_spi_fdx_xfer(struct ufprog_interface *wchdev, const void *tx, void *rx, size_t len)
 {
 	uint8_t iobuf[CH341_PACKET_LEN];
 	const uint8_t *ptx = tx;
@@ -74,7 +74,7 @@ static ufprog_status ch341_spi_fdx_xfer(struct ufprog_if_dev *wchdev, const void
 	return UFP_OK;
 }
 
-ufprog_status ch341_spi_init(struct ufprog_if_dev *wchdev, struct json_object *config)
+ufprog_status ch341_spi_init(struct ufprog_interface *wchdev, struct json_object *config)
 {
 	if (!json_read_uint32(config, "chip-select", &wchdev->spi_cs, 0)) {
 		if (wchdev->spi_cs >= CH341_SPI_MAX_CS) {
@@ -105,7 +105,7 @@ size_t UFPROG_API ufprog_spi_max_read_granularity(void)
 
 ufprog_status UFPROG_API ufprog_spi_set_cs_pol(void *dev, ufprog_bool positive)
 {
-	struct ufprog_if_dev *wchdev = dev;
+	struct ufprog_interface *wchdev = dev;
 
 	if (!dev)
 		return UFP_INVALID_PARAMETER;
@@ -115,7 +115,7 @@ ufprog_status UFPROG_API ufprog_spi_set_cs_pol(void *dev, ufprog_bool positive)
 	return UFP_OK;
 }
 
-static ufprog_status ch341_spi_generic_xfer_one(struct ufprog_if_dev *wchdev, const struct ufprog_spi_transfer *xfer)
+static ufprog_status ch341_spi_generic_xfer_one(struct ufprog_interface *wchdev, const struct ufprog_spi_transfer *xfer)
 {
  	if (xfer->buswidth > 1 || xfer->dtr) {
 		logm_err("SPI: Only single I/O single rate is supported\n");
@@ -128,8 +128,8 @@ static ufprog_status ch341_spi_generic_xfer_one(struct ufprog_if_dev *wchdev, co
 	return ch341_spi_fdx_xfer(wchdev, xfer->buf.tx, NULL, xfer->len);
 }
 
-ufprog_status UFPROG_API ufprog_spi_generic_xfer(struct ufprog_if_dev *wchdev, const struct ufprog_spi_transfer *xfers,
-						 uint32_t count)
+ufprog_status UFPROG_API ufprog_spi_generic_xfer(struct ufprog_interface *wchdev,
+						 const struct ufprog_spi_transfer *xfers, uint32_t count)
 {
 	uint8_t wrbuf[CH341_PACKET_LEN - 1];
 	bool require_spi_start = true;

@@ -13,7 +13,7 @@
 #include <ufprog/osdef.h>
 #include <plugin-common.h>
 
-struct ufprog_driver {
+struct ufprog_controller_driver {
 	struct plugin plugin;
 
 	uint32_t supported_if;
@@ -31,14 +31,15 @@ struct ufprog_driver {
 	struct ufprog_lookup_table *devices;
 };
 
-struct ufprog_device {
+struct ufprog_controller_device {
 	uint32_t if_type;
 	char *name;
-	struct ufprog_driver *driver;
-	struct ufprog_if_dev *ifdev;
+	struct ufprog_controller_driver *driver;
+	struct ufprog_interface *ifdev;
 };
 
-ufprog_status ufprog_driver_add_device(struct ufprog_driver *drv, const struct ufprog_if_dev *ifdev);
-ufprog_status ufprog_driver_remove_device(struct ufprog_driver *drv, const struct ufprog_if_dev *ifdev);
+ufprog_status ufprog_controller_add_device(struct ufprog_controller_driver *drv, const struct ufprog_interface *ifdev);
+ufprog_status ufprog_controller_remove_device(struct ufprog_controller_driver *drv,
+					      const struct ufprog_interface *ifdev);
 
 #endif /* _UFPROG_CONTROLLER_H_ */

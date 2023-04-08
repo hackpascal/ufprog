@@ -19,7 +19,7 @@ const uint32_t ft4222_sys_clks[] = {
 	[SYS_CLK_80] = 80000000
 };
 
-ufprog_status ft4222_init(struct ufprog_if_dev *ftdev, bool thread_safe)
+ufprog_status ft4222_init(struct ufprog_interface *ftdev, bool thread_safe)
 {
 	ufprog_status ret;
 
@@ -68,7 +68,7 @@ ufprog_status ft4222_init(struct ufprog_if_dev *ftdev, bool thread_safe)
 	return UFP_OK;
 }
 
-ufprog_status ft4222_get_clock(struct ufprog_if_dev *ftdev, enum ft4222_clock *clk)
+ufprog_status ft4222_get_clock(struct ufprog_interface *ftdev, enum ft4222_clock *clk)
 {
 	ufprog_status ret = UFP_OK;
 	uint8_t val;
@@ -92,7 +92,7 @@ out:
 	return ret;
 }
 
-ufprog_status ft4222_set_clock(struct ufprog_if_dev *ftdev, enum ft4222_clock clk)
+ufprog_status ft4222_set_clock(struct ufprog_interface *ftdev, enum ft4222_clock clk)
 {
 	ufprog_status ret = UFP_OK;
 	uint8_t val = clk;
@@ -113,7 +113,7 @@ out:
 	return ret;
 }
 
-ufprog_status ft4222_set_function(struct ufprog_if_dev *ftdev, enum ft4222_function func)
+ufprog_status ft4222_set_function(struct ufprog_interface *ftdev, enum ft4222_function func)
 {
 	ufprog_status ret = UFP_OK;
 	uint8_t val = func;
@@ -139,13 +139,13 @@ uint32_t UFPROG_API ufprog_plugin_api_version(void)
 	return MAKE_VERSION(FT4222H_DRV_API_VER_MAJOR, FT4222H_DRV_API_VER_MINOR);
 }
 
-uint32_t UFPROG_API ufprog_driver_supported_if(void)
+uint32_t UFPROG_API ufprog_controller_supported_if(void)
 {
 	/* TODO: add I2C support */
 	return IFM_SPI;
 }
 
-ufprog_status UFPROG_API ufprog_device_lock(struct ufprog_if_dev *ftdev)
+ufprog_status UFPROG_API ufprog_device_lock(struct ufprog_interface *ftdev)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;
@@ -156,7 +156,7 @@ ufprog_status UFPROG_API ufprog_device_lock(struct ufprog_if_dev *ftdev)
 	return os_mutex_lock(ftdev->lock) ? UFP_OK : UFP_LOCK_FAIL;
 }
 
-ufprog_status UFPROG_API ufprog_device_unlock(struct ufprog_if_dev *ftdev)
+ufprog_status UFPROG_API ufprog_device_unlock(struct ufprog_interface *ftdev)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;

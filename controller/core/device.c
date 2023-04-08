@@ -15,7 +15,7 @@
 #include "controller.h"
 
 struct device_open_data {
-	struct ufprog_device *dev;
+	struct ufprog_controller_device *dev;
 	ufprog_bool thread_safe;
 };
 
@@ -38,10 +38,11 @@ static int if_type_str_to_value(const char *name)
 	return -1;
 }
 
-ufprog_status UFPROG_API ufprog_open_device(struct ufprog_driver *drv, uint32_t if_type, struct json_object *config,
-					    ufprog_bool thread_safe, struct ufprog_device **outdev)
+ufprog_status UFPROG_API ufprog_controller_open_device(struct ufprog_controller_driver *drv, uint32_t if_type,
+						       struct json_object *config, ufprog_bool thread_safe,
+						       struct ufprog_controller_device **outdev)
 {
-	struct ufprog_device *dev;
+	struct ufprog_controller_device *dev;
 	ufprog_status ret;
 
 	if (!drv || !outdev)
@@ -71,7 +72,7 @@ ufprog_status UFPROG_API ufprog_open_device(struct ufprog_driver *drv, uint32_t 
 		return ret;
 	}
 
-	ret = ufprog_driver_add_device(drv, dev->ifdev);
+	ret = ufprog_controller_add_device(drv, dev->ifdev);
 	if (ret) {
 		drv->free_device(dev->ifdev);
 		free(dev);
@@ -175,7 +176,7 @@ valid_if_type:
 		goto cleanup;
 	}
 
-	STATUS_CHECK_GOTO(ufprog_load_driver(driver_name, &data->dev->driver), cleanup);
+	STATUS_CHECK_GOTO(ufprog_load_controller_driver(driver_name, &data->dev->driver), cleanup);
 
 	if (!(data->dev->driver->supported_if & IF_TYPE_BIT(data->dev->if_type))) {
 		log_err("Loaded interface driver does not support '%s'\n", if_type_str[data->dev->if_type]);
@@ -199,7 +200,7 @@ valid_if_type:
 
 cleanup:
 	if (data->dev->driver) {
-		ufprog_unload_driver(data->dev->driver);
+		ufprog_unload_controller_driver(data->dev->driver);
 		data->dev->driver = NULL;
 	}
 
@@ -208,11 +209,12 @@ cleanup:
 	return 0;
 }
 
-ufprog_status UFPROG_API ufprog_open_device_by_name(const char *name, uint32_t if_type, ufprog_bool thread_safe,
-						    struct ufprog_device **outdev)
+ufprog_status UFPROG_API ufprog_controller_open_device_by_name(const char *name, uint32_t if_type,
+							       ufprog_bool thread_safe,
+							       struct ufprog_controller_device **outdev)
 {
 	struct device_open_data data;
-	struct ufprog_device *dev;
+	struct ufprog_controller_device *dev;
 
 	if (!name || !outdev)
 		return UFP_INVALID_PARAMETER;
@@ -257,7 +259,7 @@ ufprog_status UFPROG_API ufprog_open_device_by_name(const char *name, uint32_t i
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_close_device(struct ufprog_device *dev)
+ufprog_status UFPROG_API ufprog_controller_close_device(struct ufprog_controller_device *dev)
 {
 	ufprog_status ret;
 
@@ -267,7 +269,7 @@ ufprog_status UFPROG_API ufprog_close_device(struct ufprog_device *dev)
 	if (!dev->driver || !dev->ifdev)
 		return UFP_INVALID_PARAMETER;
 
-	ufprog_driver_remove_device(dev->driver, dev->ifdev);
+	ufprog_controller_remove_device(dev->driver, dev->ifdev);
 
 	ret = dev->driver->free_device(dev->ifdev);
 	if (!ret) {
@@ -278,7 +280,7 @@ ufprog_status UFPROG_API ufprog_close_device(struct ufprog_device *dev)
 	return ret;
 }
 
-const char *UFPROG_API ufprog_device_name(struct ufprog_device *dev)
+const char *UFPROG_API ufprog_controller_device_name(struct ufprog_controller_device *dev)
 {
 	if (!dev)
 		return NULL;
@@ -286,7 +288,7 @@ const char *UFPROG_API ufprog_device_name(struct ufprog_device *dev)
 	return dev->name;
 }
 
-uint32_t UFPROG_API ufprog_device_if_type(struct ufprog_device *dev)
+uint32_t UFPROG_API ufprog_controller_device_if_type(struct ufprog_controller_device *dev)
 {
 	if (!dev)
 		return __MAX_IF_TYPE;
@@ -294,7 +296,7 @@ uint32_t UFPROG_API ufprog_device_if_type(struct ufprog_device *dev)
 	return dev->if_type;
 }
 
-struct ufprog_driver *UFPROG_API ufprog_device_get_driver(struct ufprog_device *dev)
+struct ufprog_controller_driver *UFPROG_API ufprog_controller_device_get_driver(struct ufprog_controller_device *dev)
 {
 	if (!dev)
 		return NULL;
@@ -302,7 +304,7 @@ struct ufprog_driver *UFPROG_API ufprog_device_get_driver(struct ufprog_device *
 	return dev->driver;
 }
 
-struct ufprog_if_dev *UFPROG_API ufprog_device_get_interface_device(struct ufprog_device *dev)
+struct ufprog_interface *UFPROG_API ufprog_controller_device_get_interface(struct ufprog_controller_device *dev)
 {
 	if (!dev)
 		return NULL;
@@ -310,7 +312,7 @@ struct ufprog_if_dev *UFPROG_API ufprog_device_get_interface_device(struct ufpro
 	return dev->ifdev;
 }
 
-ufprog_status UFPROG_API ufprog_lock_device(struct ufprog_device *dev)
+ufprog_status UFPROG_API ufprog_controller_device_lock(struct ufprog_controller_device *dev)
 {
 	if (!dev)
 		return UFP_INVALID_PARAMETER;
@@ -321,7 +323,7 @@ ufprog_status UFPROG_API ufprog_lock_device(struct ufprog_device *dev)
 	return dev->driver->lock_device(dev->ifdev);
 }
 
-ufprog_status UFPROG_API ufprog_unlock_device(struct ufprog_device *dev)
+ufprog_status UFPROG_API ufprog_controller_device_unlock(struct ufprog_controller_device *dev)
 {
 	if (!dev)
 		return UFP_INVALID_PARAMETER;
@@ -332,7 +334,7 @@ ufprog_status UFPROG_API ufprog_unlock_device(struct ufprog_device *dev)
 	return dev->driver->unlock_device(dev->ifdev);
 }
 
-ufprog_status UFPROG_API ufprog_reset_device(struct ufprog_device *dev)
+ufprog_status UFPROG_API ufprog_controller_reset_device(struct ufprog_controller_device *dev)
 {
 	if (!dev)
 		return UFP_INVALID_PARAMETER;
@@ -343,7 +345,7 @@ ufprog_status UFPROG_API ufprog_reset_device(struct ufprog_device *dev)
 	return dev->driver->reset_device(dev->ifdev);
 }
 
-ufprog_status UFPROG_API ufprog_cancel_transfer(struct ufprog_device *dev)
+ufprog_status UFPROG_API ufprog_controller_cancel_device_transfer(struct ufprog_controller_device *dev)
 {
 	if (!dev)
 		return UFP_INVALID_PARAMETER;
@@ -354,7 +356,8 @@ ufprog_status UFPROG_API ufprog_cancel_transfer(struct ufprog_device *dev)
 	return dev->driver->cancel_transfer(dev->ifdev);
 }
 
-ufprog_status UFPROG_API ufprog_set_disconnect_cb(struct ufprog_device *dev, ufprog_dev_disconnect_cb cb, void *priv)
+ufprog_status UFPROG_API ufprog_controller_set_device_disconnect_cb(struct ufprog_controller_device *dev,
+								    ufprog_device_disconnect_cb cb, void *priv)
 {
 	if (!dev)
 		return UFP_INVALID_PARAMETER;

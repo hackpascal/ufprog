@@ -14,8 +14,8 @@
 #define UFPROG_SPI_XFER_BUFFER_LEN		0x10000
 
 struct ufprog_spi {
-	struct ufprog_device *dev;
-	struct ufprog_if_dev *ifdev;
+	struct ufprog_controller_device *dev;
+	struct ufprog_interface *ifdev;
 
 	uint32_t if_ver;
 	uint32_t caps;

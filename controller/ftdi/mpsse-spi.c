@@ -17,9 +17,9 @@
 #define MPSSE_SPI_IF_MAJOR			1
 #define MPSSE_SPI_IF_MINOR			0
 
-static ufprog_status mpsse_spi_stop(struct ufprog_if_dev *ftdev);
+static ufprog_status mpsse_spi_stop(struct ufprog_interface *ftdev);
 
-ufprog_status mpsse_spi_init(struct ufprog_if_dev *ftdev, struct json_object *config)
+ufprog_status mpsse_spi_init(struct ufprog_interface *ftdev, struct json_object *config)
 {
 	uint32_t gpio_mask = 0;
 
@@ -118,7 +118,7 @@ size_t UFPROG_API ufprog_spi_max_read_granularity(void)
 	return MPSSE_DATA_SHIFTING_MAX_LEN;
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_cs_pol(struct ufprog_if_dev *ftdev, ufprog_bool positive)
+ufprog_status UFPROG_API ufprog_spi_set_cs_pol(struct ufprog_interface *ftdev, ufprog_bool positive)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;
@@ -128,7 +128,7 @@ ufprog_status UFPROG_API ufprog_spi_set_cs_pol(struct ufprog_if_dev *ftdev, ufpr
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_mode(struct ufprog_if_dev *ftdev, uint32_t mode)
+ufprog_status UFPROG_API ufprog_spi_set_mode(struct ufprog_interface *ftdev, uint32_t mode)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;
@@ -138,7 +138,7 @@ ufprog_status UFPROG_API ufprog_spi_set_mode(struct ufprog_if_dev *ftdev, uint32
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_speed(struct ufprog_if_dev *ftdev, uint32_t hz, uint32_t *rethz)
+ufprog_status UFPROG_API ufprog_spi_set_speed(struct ufprog_interface *ftdev, uint32_t hz, uint32_t *rethz)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;
@@ -146,7 +146,7 @@ ufprog_status UFPROG_API ufprog_spi_set_speed(struct ufprog_if_dev *ftdev, uint3
 	return mpsse_set_clock(ftdev, hz, rethz);
 }
 
-uint32_t UFPROG_API ufprog_spi_get_speed(struct ufprog_if_dev *ftdev)
+uint32_t UFPROG_API ufprog_spi_get_speed(struct ufprog_interface *ftdev)
 {
 	uint32_t freq;
 
@@ -158,7 +158,7 @@ uint32_t UFPROG_API ufprog_spi_get_speed(struct ufprog_if_dev *ftdev)
 	return freq;
 }
 
-uint32_t UFPROG_API ufprog_spi_get_speed_range(struct ufprog_if_dev *ftdev, uint32_t *retlowhz, uint32_t *rethighhz)
+uint32_t UFPROG_API ufprog_spi_get_speed_range(struct ufprog_interface *ftdev, uint32_t *retlowhz, uint32_t *rethighhz)
 {
 	uint32_t baseclk_high, baseclk_low;
 
@@ -178,7 +178,7 @@ uint32_t UFPROG_API ufprog_spi_get_speed_range(struct ufprog_if_dev *ftdev, uint
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_wp(struct ufprog_if_dev *ftdev, ufprog_bool high)
+ufprog_status UFPROG_API ufprog_spi_set_wp(struct ufprog_interface *ftdev, ufprog_bool high)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;
@@ -189,7 +189,7 @@ ufprog_status UFPROG_API ufprog_spi_set_wp(struct ufprog_if_dev *ftdev, ufprog_b
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_hold(struct ufprog_if_dev *ftdev, ufprog_bool high)
+ufprog_status UFPROG_API ufprog_spi_set_hold(struct ufprog_interface *ftdev, ufprog_bool high)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;
@@ -200,7 +200,7 @@ ufprog_status UFPROG_API ufprog_spi_set_hold(struct ufprog_if_dev *ftdev, ufprog
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_busy_ind(struct ufprog_if_dev *ftdev, ufprog_bool active)
+ufprog_status UFPROG_API ufprog_spi_set_busy_ind(struct ufprog_interface *ftdev, ufprog_bool active)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;
@@ -212,7 +212,7 @@ ufprog_status UFPROG_API ufprog_spi_set_busy_ind(struct ufprog_if_dev *ftdev, uf
 	return UFP_OK;
 }
 
-static ufprog_status mpsse_spi_start(struct ufprog_if_dev *ftdev)
+static ufprog_status mpsse_spi_start(struct ufprog_interface *ftdev)
 {
 	uint16_t pins_val = 0;
 
@@ -244,7 +244,7 @@ static ufprog_status mpsse_spi_start(struct ufprog_if_dev *ftdev)
 	return UFP_OK;
 }
 
-static ufprog_status mpsse_spi_stop(struct ufprog_if_dev *ftdev)
+static ufprog_status mpsse_spi_stop(struct ufprog_interface *ftdev)
 {
 	uint16_t pins_val = 0;
 
@@ -265,7 +265,7 @@ static ufprog_status mpsse_spi_stop(struct ufprog_if_dev *ftdev)
 	return mpsse_set_gpio(ftdev, MPSSE_PIN(ftdev->spi.cs_pin), MPSSE_PIN(ftdev->spi.cs_pin), pins_val);
 }
 
-static ufprog_status mpsse_spi_read_once(struct ufprog_if_dev *ftdev, uint8_t *buf, uint32_t len)
+static ufprog_status mpsse_spi_read_once(struct ufprog_interface *ftdev, uint8_t *buf, uint32_t len)
 {
 	uint32_t rlen = len - 1;
 	uint8_t cmd[3];
@@ -283,7 +283,7 @@ static ufprog_status mpsse_spi_read_once(struct ufprog_if_dev *ftdev, uint8_t *b
 	return ftdi_read(ftdev->handle, buf, len);
 }
 
-static ufprog_status mpsse_spi_write_once(struct ufprog_if_dev *ftdev, const uint8_t *buf, uint32_t len)
+static ufprog_status mpsse_spi_write_once(struct ufprog_interface *ftdev, const uint8_t *buf, uint32_t len)
 {
 	uint8_t *cmd = ftdev->scratch_buffer;
 	uint32_t wlen = len - 1;
@@ -301,7 +301,7 @@ static ufprog_status mpsse_spi_write_once(struct ufprog_if_dev *ftdev, const uin
 	return ftdi_write(ftdev->handle, cmd, MPSSE_DATA_SHIFTING_CMD_LEN + len);
 }
 
-static ufprog_status mpsse_spi_read(struct ufprog_if_dev *ftdev, void *buf, size_t len)
+static ufprog_status mpsse_spi_read(struct ufprog_interface *ftdev, void *buf, size_t len)
 {
 	uint8_t *p = buf;
 	size_t chksz;
@@ -321,7 +321,7 @@ static ufprog_status mpsse_spi_read(struct ufprog_if_dev *ftdev, void *buf, size
 	return UFP_OK;
 }
 
-static ufprog_status mpsse_spi_write(struct ufprog_if_dev *ftdev, const void *buf, size_t len)
+static ufprog_status mpsse_spi_write(struct ufprog_interface *ftdev, const void *buf, size_t len)
 {
 	const uint8_t *p = buf;
 	size_t chksz;
@@ -341,7 +341,7 @@ static ufprog_status mpsse_spi_write(struct ufprog_if_dev *ftdev, const void *bu
 	return UFP_OK;
 }
 
-static ufprog_status mpsse_spi_generic_xfer_one(struct ufprog_if_dev *ftdev, const struct ufprog_spi_transfer *xfer)
+static ufprog_status mpsse_spi_generic_xfer_one(struct ufprog_interface *ftdev, const struct ufprog_spi_transfer *xfer)
 {
 	if (xfer->buswidth > 1 || xfer->dtr) {
 		logm_err("Only single I/O single rate is supported\n");
@@ -357,8 +357,8 @@ static ufprog_status mpsse_spi_generic_xfer_one(struct ufprog_if_dev *ftdev, con
 	return mpsse_spi_write(ftdev, xfer->buf.tx, xfer->len);
 }
 
-ufprog_status UFPROG_API ufprog_spi_generic_xfer(struct ufprog_if_dev *ftdev, const struct ufprog_spi_transfer *xfers,
-						 uint32_t count)
+ufprog_status UFPROG_API ufprog_spi_generic_xfer(struct ufprog_interface *ftdev,
+						 const struct ufprog_spi_transfer *xfers, uint32_t count)
 {
 	bool require_spi_start = true;
 	ufprog_status ret = UFP_OK;
@@ -393,7 +393,7 @@ out:
 	return ret;
 }
 
-ufprog_status UFPROG_API ufprog_spi_drive_4io_ones(struct ufprog_if_dev *ftdev, uint32_t clocks)
+ufprog_status UFPROG_API ufprog_spi_drive_4io_ones(struct ufprog_interface *ftdev, uint32_t clocks)
 {
 	uint16_t mask = MPSSE_PIN(GPIO_MOSI) | MPSSE_PIN(GPIO_MISO), clk_mask = 0;
 	ufprog_status ret = UFP_OK;

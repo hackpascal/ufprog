@@ -1,33 +1,33 @@
 LIBRARY ufprog-controller
 
 EXPORTS
-	ufprog_load_driver
-	ufprog_unload_driver
+	ufprog_load_controller_driver
+	ufprog_unload_controller_driver
 
-	ufprog_driver_device_count
-	ufprog_driver_name
-	ufprog_driver_module
-	ufprog_driver_version
-	ufprog_driver_desc
-	ufprog_driver_supported_if
-	ufprog_driver_find_symbol
-	ufprog_driver_find_module_symbols
+	ufprog_controller_device_count
+	ufprog_controller_name
+	ufprog_controller_module
+	ufprog_controller_version
+	ufprog_controller_desc
+	ufprog_controller_supported_if
+	ufprog_controller_find_symbol
+	ufprog_controller_find_symbols
 
-	ufprog_open_device
-	ufprog_open_device_by_name
-	ufprog_close_device
+	ufprog_controller_open_device
+	ufprog_controller_open_device_by_name
+	ufprog_controller_close_device
 
-	ufprog_device_name
-	ufprog_device_if_type
-	ufprog_device_get_driver
-	ufprog_device_get_interface_device
+	ufprog_controller_device_name
+	ufprog_controller_device_if_type
+	ufprog_controller_device_get_driver
+	ufprog_controller_device_get_interface
 
-	ufprog_lock_device
-	ufprog_unlock_device
+	ufprog_controller_device_lock
+	ufprog_controller_device_unlock
 
-	ufprog_reset_device
-	ufprog_cancel_transfer
-	ufprog_set_disconnect_cb
+	ufprog_controller_reset_device
+	ufprog_controller_cancel_device_transfer
+	ufprog_controller_set_device_disconnect_cb
 
 	ufprog_global_libusb_context
 

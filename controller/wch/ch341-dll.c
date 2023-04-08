@@ -79,10 +79,10 @@ success:
 }
 
 ufprog_status UFPROG_API ufprog_device_open(uint32_t if_type, struct json_object *config, ufprog_bool thread_safe,
-					    struct ufprog_if_dev **outifdev)
+					    struct ufprog_interface **outifdev)
 {
+	struct ufprog_interface *wchdev;
 	struct ch341_dll_open_info oi;
-	struct ufprog_if_dev *wchdev;
 	struct json_object *ifcfg;
 	ufprog_status ret;
 
@@ -164,7 +164,7 @@ cleanup:
 	return ret;
 }
 
-ufprog_status UFPROG_API ufprog_device_free(struct ufprog_if_dev *wchdev)
+ufprog_status UFPROG_API ufprog_device_free(struct ufprog_interface *wchdev)
 {
 	if (!wchdev)
 		return UFP_INVALID_PARAMETER;

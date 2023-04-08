@@ -201,63 +201,63 @@ typedef uint32_t (UFPROG_API *api_spi_if_caps)(void);
 typedef size_t (UFPROG_API *api_spi_max_read_granularity)(void);
 
 #define API_NAME_SPI_SET_CS_POL			"ufprog_spi_set_cs_pol"
-typedef ufprog_status (UFPROG_API *api_spi_set_cs_pol)(struct ufprog_if_dev *ifdev, ufprog_bool positive);
+typedef ufprog_status (UFPROG_API *api_spi_set_cs_pol)(struct ufprog_interface *ifdev, ufprog_bool positive);
 
 #define API_NAME_SPI_SET_MODE			"ufprog_spi_set_mode"
-typedef ufprog_status (UFPROG_API *api_spi_set_mode)(struct ufprog_if_dev *ifdev, uint32_t mode);
+typedef ufprog_status (UFPROG_API *api_spi_set_mode)(struct ufprog_interface *ifdev, uint32_t mode);
 
 #define API_NAME_SPI_SET_SPEED			"ufprog_spi_set_speed"
-typedef ufprog_status (UFPROG_API *api_spi_set_speed)(struct ufprog_if_dev *ifdev, uint32_t hz, uint32_t *rethz);
+typedef ufprog_status (UFPROG_API *api_spi_set_speed)(struct ufprog_interface *ifdev, uint32_t hz, uint32_t *rethz);
 
 #define API_NAME_SPI_GET_SPEED			"ufprog_spi_get_speed"
-typedef uint32_t (UFPROG_API *api_spi_get_speed)(struct ufprog_if_dev *ifdev);
+typedef uint32_t (UFPROG_API *api_spi_get_speed)(struct ufprog_interface *ifdev);
 
 #define API_NAME_SPI_GET_SPEED_RANGE		"ufprog_spi_get_speed_range"
-typedef ufprog_status (UFPROG_API *api_spi_get_speed_range)(struct ufprog_if_dev *ifdev, uint32_t *retlowhz,
+typedef ufprog_status (UFPROG_API *api_spi_get_speed_range)(struct ufprog_interface *ifdev, uint32_t *retlowhz,
 							    uint32_t *rethighhz);
 
 #define API_NAME_SPI_GET_SPEED_LIST		"ufprog_spi_get_speed_list"
-typedef uint32_t (UFPROG_API *api_spi_get_speed_list)(struct ufprog_if_dev *ifdev, uint32_t *retlist, int32_t count);
+typedef uint32_t (UFPROG_API *api_spi_get_speed_list)(struct ufprog_interface *ifdev, uint32_t *retlist, int32_t count);
 
 #define API_NAME_SPI_SET_WP			"ufprog_spi_set_wp"
-typedef ufprog_status (UFPROG_API *api_spi_set_wp)(struct ufprog_if_dev *ifdev, ufprog_bool high);
+typedef ufprog_status (UFPROG_API *api_spi_set_wp)(struct ufprog_interface *ifdev, ufprog_bool high);
 
 #define API_NAME_SPI_SET_HOLD			"ufprog_spi_set_hold"
-typedef ufprog_status (UFPROG_API *api_spi_set_hold)(struct ufprog_if_dev *ifdev, ufprog_bool high);
+typedef ufprog_status (UFPROG_API *api_spi_set_hold)(struct ufprog_interface *ifdev, ufprog_bool high);
 
 #define API_NAME_SPI_SET_BUSY_IND		"ufprog_spi_set_busy_ind"
-typedef ufprog_status (UFPROG_API *api_spi_set_busy_ind)(struct ufprog_if_dev *ifdev, ufprog_bool active);
+typedef ufprog_status (UFPROG_API *api_spi_set_busy_ind)(struct ufprog_interface *ifdev, ufprog_bool active);
 
 #define API_NAME_SPI_POWER_CONTROL		"ufprog_spi_power_control"
-typedef ufprog_status (UFPROG_API *api_spi_power_control)(struct ufprog_if_dev *ifdev, ufprog_bool on);
+typedef ufprog_status (UFPROG_API *api_spi_power_control)(struct ufprog_interface *ifdev, ufprog_bool on);
 
 #define API_NAME_SPI_GENERIC_XFER		"ufprog_spi_generic_xfer"
-typedef ufprog_status (UFPROG_API *api_spi_generic_xfer)(struct ufprog_if_dev *ifdev,
+typedef ufprog_status (UFPROG_API *api_spi_generic_xfer)(struct ufprog_interface *ifdev,
 							 const struct ufprog_spi_transfer *xfers, uint32_t count);
 
 #define API_NAME_SPI_GENERIC_XFER_MAX_SIZE	"ufprog_spi_generic_xfer_max_size"
 typedef size_t (UFPROG_API *api_spi_generic_xfer_max_size)(void);
 
 #define API_NAME_SPI_MEM_ADJUST_OP_SIZE		"ufprog_spi_mem_adjust_op_size"
-typedef ufprog_status (UFPROG_API *api_spi_mem_adjust_op_size)(struct ufprog_if_dev *ifdev,
+typedef ufprog_status (UFPROG_API *api_spi_mem_adjust_op_size)(struct ufprog_interface *ifdev,
 							       struct ufprog_spi_mem_op *op);
 
 #define API_NAME_SPI_MEM_SUPPORTS_OP		"ufprog_spi_mem_supports_op"
-typedef ufprog_bool (UFPROG_API *api_spi_mem_supports_op)(struct ufprog_if_dev *ifdev,
+typedef ufprog_bool (UFPROG_API *api_spi_mem_supports_op)(struct ufprog_interface *ifdev,
 							  const struct ufprog_spi_mem_op *op);
 
 #define API_NAME_SPI_MEM_EXEC_OP		"ufprog_spi_mem_exec_op"
-typedef ufprog_status (UFPROG_API *api_spi_mem_exec_op)(struct ufprog_if_dev *ifdev,
+typedef ufprog_status (UFPROG_API *api_spi_mem_exec_op)(struct ufprog_interface *ifdev,
 							const struct ufprog_spi_mem_op *op);
 
 #define API_NAME_SPI_MEM_POLL_STATUS		"ufprog_spi_mem_poll_status"
-typedef ufprog_status (UFPROG_API *api_spi_mem_poll_status)(struct ufprog_if_dev *ifdev,
+typedef ufprog_status (UFPROG_API *api_spi_mem_poll_status)(struct ufprog_interface *ifdev,
 							    const struct ufprog_spi_mem_op *op, uint16_t mask,
 							    uint16_t match, uint32_t initial_delay_us,
 							    uint32_t polling_rate_us, uint32_t timeout_ms);
 
 #define API_NAME_SPI_DRIVE_4IO_ONES		"ufprog_spi_drive_4io_ones"
-typedef ufprog_status (UFPROG_API *api_spi_drive_4io_ones)(struct ufprog_if_dev *ifdev, uint32_t clocks);
+typedef ufprog_status (UFPROG_API *api_spi_drive_4io_ones)(struct ufprog_interface *ifdev, uint32_t clocks);
 
 EXTERN_C_END
 

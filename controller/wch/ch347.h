@@ -105,7 +105,7 @@ struct ch347_spi_hw_config {
 	uint8_t Reserved[4];
 };
 
-struct ufprog_if_dev {
+struct ufprog_interface {
 	struct ch34x_handle *handle;
 
 	struct ch347_spi_hw_config spicfg;
@@ -117,11 +117,11 @@ struct ufprog_if_dev {
 	mutex_handle lock;
 };
 
-ufprog_status ch347_init(struct ufprog_if_dev *wchdev, bool thread_safe);
+ufprog_status ch347_init(struct ufprog_interface *wchdev, bool thread_safe);
 
 ufprog_status ch347_write(struct ch34x_handle *handle, const void *buf, size_t len, size_t *retlen);
 ufprog_status ch347_read(struct ch34x_handle *handle, void *buf, size_t len, size_t *retlen);
 
-ufprog_status ch347_spi_init(struct ufprog_if_dev *wchdev, struct json_object *config);
+ufprog_status ch347_spi_init(struct ufprog_interface *wchdev, struct json_object *config);
 
 #endif /* _UFPROG_CH347_H_ */

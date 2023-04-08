@@ -62,7 +62,7 @@ static const uint32_t ft4222_spi_clk_div[] = {
 	[CLK_DIV_512] = 512,
 };
 
-static ufprog_status ft4222_spi_end_generic_xfer(struct ufprog_if_dev *ftdev);
+static ufprog_status ft4222_spi_end_generic_xfer(struct ufprog_interface *ftdev);
 
 static enum ft4222_spi_drive_strength ft4222_num_to_drive_strength(uint32_t val)
 {
@@ -76,7 +76,7 @@ static enum ft4222_spi_drive_strength ft4222_num_to_drive_strength(uint32_t val)
 		return DS_16MA;
 }
 
-static ufprog_status ft4222_spi_set_io_mode(struct ufprog_if_dev *ftdev, enum ft4222_spi_mode mode)
+static ufprog_status ft4222_spi_set_io_mode(struct ufprog_interface *ftdev, enum ft4222_spi_mode mode)
 {
 	ufprog_status ret = UFP_OK;
 	uint8_t val = mode;
@@ -102,7 +102,7 @@ out:
 	return ret;
 }
 
-static ufprog_status ft4222_spi_set_cs_pol(struct ufprog_if_dev *ftdev, enum ft4222_spi_pol pol)
+static ufprog_status ft4222_spi_set_cs_pol(struct ufprog_interface *ftdev, enum ft4222_spi_pol pol)
 {
 	ufprog_status ret = UFP_OK;
 	uint8_t val = pol;
@@ -123,7 +123,7 @@ out:
 	return ret;
 }
 
-static ufprog_status ft4222_spi_set_clock_divider(struct ufprog_if_dev *ftdev, enum ft4222_spi_clkdiv clkdiv)
+static ufprog_status ft4222_spi_set_clock_divider(struct ufprog_interface *ftdev, enum ft4222_spi_clkdiv clkdiv)
 {
 	ufprog_status ret = UFP_OK;
 	uint8_t val = clkdiv;
@@ -144,7 +144,7 @@ out:
 	return ret;
 }
 
-static ufprog_status ft4222_spi_set_cpol(struct ufprog_if_dev *ftdev, enum ft4222_spi_cpol cpol)
+static ufprog_status ft4222_spi_set_cpol(struct ufprog_interface *ftdev, enum ft4222_spi_cpol cpol)
 {
 	ufprog_status ret = UFP_OK;
 	uint8_t val = cpol;
@@ -165,7 +165,7 @@ out:
 	return ret;
 }
 
-static ufprog_status ft4222_spi_set_cpha(struct ufprog_if_dev *ftdev, enum ft4222_spi_cpha cpha)
+static ufprog_status ft4222_spi_set_cpha(struct ufprog_interface *ftdev, enum ft4222_spi_cpha cpha)
 {
 	ufprog_status ret = UFP_OK;
 	uint8_t val = cpha;
@@ -186,7 +186,7 @@ out:
 	return ret;
 }
 
-static ufprog_status ft4222_spi_set_sso_map(struct ufprog_if_dev *ftdev, uint32_t sso_map)
+static ufprog_status ft4222_spi_set_sso_map(struct ufprog_interface *ftdev, uint32_t sso_map)
 {
 	ufprog_status ret;
 	uint8_t mask, val;
@@ -203,7 +203,7 @@ static ufprog_status ft4222_spi_set_sso_map(struct ufprog_if_dev *ftdev, uint32_
 	return UFP_OK;
 }
 
-static ufprog_status ft4222_spi_reset_transaction(struct ufprog_if_dev *ftdev, uint32_t index)
+static ufprog_status ft4222_spi_reset_transaction(struct ufprog_interface *ftdev, uint32_t index)
 {
 	ufprog_status ret;
 	uint8_t val = (uint8_t)index;
@@ -220,7 +220,7 @@ static ufprog_status ft4222_spi_reset_transaction(struct ufprog_if_dev *ftdev, u
 	return UFP_OK;
 }
 
-static ufprog_status ft4222_spi_set_driving_strength(struct ufprog_if_dev *ftdev, enum ft4222_spi_drive_strength clk,
+static ufprog_status ft4222_spi_set_driving_strength(struct ufprog_interface *ftdev, enum ft4222_spi_drive_strength clk,
 						     enum ft4222_spi_drive_strength io,
 						     enum ft4222_spi_drive_strength sso)
 {
@@ -238,7 +238,7 @@ static ufprog_status ft4222_spi_set_driving_strength(struct ufprog_if_dev *ftdev
 	return UFP_OK;
 }
 
-static ufprog_status ft4222_spi_master_set_clk(struct ufprog_if_dev *ftdev, uint32_t freq, uint32_t *out_freq)
+static ufprog_status ft4222_spi_master_set_clk(struct ufprog_interface *ftdev, uint32_t freq, uint32_t *out_freq)
 {
 	uint32_t i;
 
@@ -264,7 +264,7 @@ static ufprog_status ft4222_spi_master_set_clk(struct ufprog_if_dev *ftdev, uint
 	return UFP_UNSUPPORTED;
 }
 
-ufprog_status ft4222_spi_master_init(struct ufprog_if_dev *ftdev, struct json_object *config)
+ufprog_status ft4222_spi_master_init(struct ufprog_interface *ftdev, struct json_object *config)
 {
 	uint32_t ds_clk, ds_io, ds_cs;
 	struct json_object *dscfg;
@@ -345,7 +345,7 @@ ufprog_status ft4222_spi_master_init(struct ufprog_if_dev *ftdev, struct json_ob
 	return UFP_OK;
 }
 
-ufprog_status ft4222_spi_master_cleanup(struct ufprog_if_dev *ftdev)
+ufprog_status ft4222_spi_master_cleanup(struct ufprog_interface *ftdev)
 {
 	free(ftdev->scratch_buffer);
 
@@ -367,7 +367,7 @@ size_t UFPROG_API ufprog_spi_max_read_granularity(void)
 	return FT4222_SINGLEIO_XFER_MAX_LEN - 0xf /* Reserve room for opcode/addr/dummy in single mode */;
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_cs_pol(struct ufprog_if_dev *ftdev, ufprog_bool positive)
+ufprog_status UFPROG_API ufprog_spi_set_cs_pol(struct ufprog_interface *ftdev, ufprog_bool positive)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;
@@ -380,7 +380,7 @@ ufprog_status UFPROG_API ufprog_spi_set_cs_pol(struct ufprog_if_dev *ftdev, ufpr
 	return ft4222_spi_set_cs_pol(ftdev, positive ? CS_ACTIVE_POSTIVE : CS_ACTIVE_NEGTIVE);
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_mode(struct ufprog_if_dev *ftdev, uint32_t mode)
+ufprog_status UFPROG_API ufprog_spi_set_mode(struct ufprog_interface *ftdev, uint32_t mode)
 {
 	ufprog_status ret_cpol, ret_cpha;
 
@@ -403,7 +403,7 @@ ufprog_status UFPROG_API ufprog_spi_set_mode(struct ufprog_if_dev *ftdev, uint32
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_speed(struct ufprog_if_dev *ftdev, uint32_t hz, uint32_t *rethz)
+ufprog_status UFPROG_API ufprog_spi_set_speed(struct ufprog_interface *ftdev, uint32_t hz, uint32_t *rethz)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;
@@ -416,7 +416,7 @@ ufprog_status UFPROG_API ufprog_spi_set_speed(struct ufprog_if_dev *ftdev, uint3
 	return ft4222_spi_master_set_clk(ftdev, hz, rethz);
 }
 
-uint32_t UFPROG_API ufprog_spi_get_speed(struct ufprog_if_dev *ftdev)
+uint32_t UFPROG_API ufprog_spi_get_speed(struct ufprog_interface *ftdev)
 {
 	if (!ftdev)
 		return 0;
@@ -429,7 +429,7 @@ uint32_t UFPROG_API ufprog_spi_get_speed(struct ufprog_if_dev *ftdev)
 	return ft4222_sys_clks[ftdev->hwcaps.clk] / ft4222_spi_clk_div[ftdev->spim.clkdiv];
 }
 
-uint32_t UFPROG_API ufprog_spi_get_speed_list(struct ufprog_if_dev *ftdev, uint32_t *retlist, uint32_t count)
+uint32_t UFPROG_API ufprog_spi_get_speed_list(struct ufprog_interface *ftdev, uint32_t *retlist, uint32_t count)
 {
 	uint32_t i;
 
@@ -445,7 +445,7 @@ uint32_t UFPROG_API ufprog_spi_get_speed_list(struct ufprog_if_dev *ftdev, uint3
 	return ARRAY_SIZE(ft4222_spi_clks);
 }
 
-static ufprog_status ft4222_spi_end_generic_xfer(struct ufprog_if_dev *ftdev)
+static ufprog_status ft4222_spi_end_generic_xfer(struct ufprog_interface *ftdev)
 {
 	ufprog_status ret;
 
@@ -456,7 +456,7 @@ static ufprog_status ft4222_spi_end_generic_xfer(struct ufprog_if_dev *ftdev)
 	return ret;
 }
 
-static ufprog_status ft4222_spi_generic_xfer_one(struct ufprog_if_dev *ftdev, const struct ufprog_spi_transfer *xfer)
+static ufprog_status ft4222_spi_generic_xfer_one(struct ufprog_interface *ftdev, const struct ufprog_spi_transfer *xfer)
 {
 	const uint8_t *ptx;
 	uint16_t chksz;
@@ -513,8 +513,8 @@ static ufprog_status ft4222_spi_generic_xfer_one(struct ufprog_if_dev *ftdev, co
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_spi_generic_xfer(struct ufprog_if_dev *ftdev, const struct ufprog_spi_transfer *xfers,
-						 uint32_t count)
+ufprog_status UFPROG_API ufprog_spi_generic_xfer(struct ufprog_interface *ftdev,
+						 const struct ufprog_spi_transfer *xfers, uint32_t count)
 {
 	ufprog_status ret = UFP_OK;
 	uint32_t i;
@@ -545,7 +545,7 @@ out:
 	return ret;
 }
 
-ufprog_status UFPROG_API ufprog_spi_mem_adjust_op_size(struct ufprog_if_dev *ftdev, struct ufprog_spi_mem_op *op)
+ufprog_status UFPROG_API ufprog_spi_mem_adjust_op_size(struct ufprog_interface *ftdev, struct ufprog_spi_mem_op *op)
 {
 	uint32_t bw = 0;
 
@@ -602,7 +602,7 @@ ufprog_status UFPROG_API ufprog_spi_mem_adjust_op_size(struct ufprog_if_dev *ftd
 		curr_bw = op->_part.buswidth;					\
 	}
 
-ufprog_bool UFPROG_API ufprog_spi_mem_supports_op(struct ufprog_if_dev *ftdev, const struct ufprog_spi_mem_op *op)
+ufprog_bool UFPROG_API ufprog_spi_mem_supports_op(struct ufprog_interface *ftdev, const struct ufprog_spi_mem_op *op)
 {
 	size_t sio_wr_len = 0, mio_wr_len = 0, mio_rd_len = 0;
 	uint32_t curr_bw = 0;
@@ -653,7 +653,7 @@ ufprog_bool UFPROG_API ufprog_spi_mem_supports_op(struct ufprog_if_dev *ftdev, c
 	return false;
 }
 
-ufprog_status UFPROG_API ufprog_spi_mem_exec_op(struct ufprog_if_dev *ftdev, const struct ufprog_spi_mem_op *op)
+ufprog_status UFPROG_API ufprog_spi_mem_exec_op(struct ufprog_interface *ftdev, const struct ufprog_spi_mem_op *op)
 {
 	size_t len, chksz, sio_wr_len = 0, sio_rd_len = 0, mio_wr_len = 0, mio_rd_len = 0;
 	bool sio_write_once = false;
@@ -875,7 +875,7 @@ out:
 	return ret;
 }
 
-ufprog_status UFPROG_API ufprog_spi_drive_4io_ones(struct ufprog_if_dev *ftdev, uint32_t clocks)
+ufprog_status UFPROG_API ufprog_spi_drive_4io_ones(struct ufprog_interface *ftdev, uint32_t clocks)
 {
 	uint8_t buf[16], *pbuf;
 	ufprog_status ret;

@@ -19,7 +19,7 @@
 #define CH347_SPI_IF_MAJOR			1
 #define CH347_SPI_IF_MINOR			0
 
-static ufprog_status ch347_spi_write_packet(struct ufprog_if_dev *wchdev, uint8_t cmd, const void *buf, uint32_t len)
+static ufprog_status ch347_spi_write_packet(struct ufprog_interface *wchdev, uint8_t cmd, const void *buf, uint32_t len)
 {
 	if (len > CH347_MAX_XFER_LEN)
 		return UFP_INVALID_PARAMETER;
@@ -33,7 +33,7 @@ static ufprog_status ch347_spi_write_packet(struct ufprog_if_dev *wchdev, uint8_
 	return ch347_write(wchdev->handle, wchdev->iobuf, CH347_SPI_CMD_LEN + len, NULL);
 }
 
-static ufprog_status ch347_spi_read_packet(struct ufprog_if_dev *wchdev, uint8_t cmd, void *buf, uint32_t len,
+static ufprog_status ch347_spi_read_packet(struct ufprog_interface *wchdev, uint8_t cmd, void *buf, uint32_t len,
 					   uint32_t *retlen)
 {
 	uint32_t packet_len;
@@ -72,7 +72,7 @@ static ufprog_status ch347_spi_read_packet(struct ufprog_if_dev *wchdev, uint8_t
 	return UFP_OK;
 }
 
-static ufprog_status ch347_spi_get_config(struct ufprog_if_dev *wchdev)
+static ufprog_status ch347_spi_get_config(struct ufprog_interface *wchdev)
 {
 	struct ch347_spi_hw_config cfg;
 	uint8_t unknown_data = 0x01;
@@ -103,7 +103,7 @@ static ufprog_status ch347_spi_get_config(struct ufprog_if_dev *wchdev)
 	return UFP_OK;
 }
 
-static ufprog_status ch347_spi_set_config(struct ufprog_if_dev *wchdev)
+static ufprog_status ch347_spi_set_config(struct ufprog_interface *wchdev)
 {
 	struct ch347_spi_hw_config cfg;
 	uint8_t unknown_data;
@@ -127,7 +127,7 @@ static ufprog_status ch347_spi_set_config(struct ufprog_if_dev *wchdev)
 	return ch347_spi_read_packet(wchdev, CH347_CMD_SPI_INIT, &unknown_data, 1, NULL);
 }
 
-static ufprog_status ch347_spi_set_cs(struct ufprog_if_dev *wchdev, uint32_t cs, int val, uint16_t autodeactive_us)
+static ufprog_status ch347_spi_set_cs(struct ufprog_interface *wchdev, uint32_t cs, int val, uint16_t autodeactive_us)
 {
 	uint8_t buf[10] = { 0 };
 	uint8_t *entry = cs ? buf + 5 : buf;
@@ -142,7 +142,7 @@ static ufprog_status ch347_spi_set_cs(struct ufprog_if_dev *wchdev, uint32_t cs,
 	return ch347_spi_write_packet(wchdev, CH347_CMD_SPI_CONTROL, buf, sizeof(buf));
 }
 
-static ufprog_status ch347_spi_set_clk(struct ufprog_if_dev *wchdev, uint32_t freq, uint32_t *out_freq)
+static ufprog_status ch347_spi_set_clk(struct ufprog_interface *wchdev, uint32_t freq, uint32_t *out_freq)
 {
 	uint32_t prescaler;
 	uint32_t tmp_freq;
@@ -167,7 +167,7 @@ static ufprog_status ch347_spi_set_clk(struct ufprog_if_dev *wchdev, uint32_t fr
 	return ch347_spi_set_config(wchdev);
 }
 
-ufprog_status ch347_spi_init(struct ufprog_if_dev *wchdev, struct json_object *config)
+ufprog_status ch347_spi_init(struct ufprog_interface *wchdev, struct json_object *config)
 {
 	if (!json_read_uint32(config, "chip-select", &wchdev->spi_cs, 0)) {
 		if (wchdev->spi_cs >= CH347_SPI_MAX_CS) {
@@ -211,7 +211,7 @@ size_t UFPROG_API ufprog_spi_max_read_granularity(void)
 	return SIZE_MAX;
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_cs_pol(struct ufprog_if_dev *wchdev, ufprog_bool positive)
+ufprog_status UFPROG_API ufprog_spi_set_cs_pol(struct ufprog_interface *wchdev, ufprog_bool positive)
 {
 	ufprog_status ret;
 
@@ -239,7 +239,7 @@ ufprog_status UFPROG_API ufprog_spi_set_cs_pol(struct ufprog_if_dev *wchdev, ufp
 	return ret;
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_mode(struct ufprog_if_dev *wchdev, uint32_t mode)
+ufprog_status UFPROG_API ufprog_spi_set_mode(struct ufprog_interface *wchdev, uint32_t mode)
 {
 	ufprog_status ret;
 
@@ -258,7 +258,7 @@ ufprog_status UFPROG_API ufprog_spi_set_mode(struct ufprog_if_dev *wchdev, uint3
 	return ret;
 }
 
-ufprog_status UFPROG_API ufprog_spi_set_speed(struct ufprog_if_dev *wchdev, uint32_t hz, uint32_t *rethz)
+ufprog_status UFPROG_API ufprog_spi_set_speed(struct ufprog_interface *wchdev, uint32_t hz, uint32_t *rethz)
 {
 	ufprog_status ret;
 
@@ -272,7 +272,7 @@ ufprog_status UFPROG_API ufprog_spi_set_speed(struct ufprog_if_dev *wchdev, uint
 	return ret;
 }
 
-uint32_t UFPROG_API ufprog_spi_get_speed(struct ufprog_if_dev *wchdev)
+uint32_t UFPROG_API ufprog_spi_get_speed(struct ufprog_interface *wchdev)
 {
 	if (!wchdev)
 		return 0;
@@ -280,7 +280,7 @@ uint32_t UFPROG_API ufprog_spi_get_speed(struct ufprog_if_dev *wchdev)
 	return CH347_SPI_MAX_FREQ >> (wchdev->spicfg.SPI_BaudRatePrescaler / 8);
 }
 
-uint32_t UFPROG_API ufprog_spi_get_speed_list(struct ufprog_if_dev *wchdev, uint32_t *retlist, uint32_t count)
+uint32_t UFPROG_API ufprog_spi_get_speed_list(struct ufprog_interface *wchdev, uint32_t *retlist, uint32_t count)
 {
 	uint32_t i;
 
@@ -296,7 +296,7 @@ uint32_t UFPROG_API ufprog_spi_get_speed_list(struct ufprog_if_dev *wchdev, uint
 	return CH347_SPI_MAX_PRESCALER + 1;
 }
 
-static ufprog_status ch347_spi_single_read(struct ufprog_if_dev *wchdev, void *buf, uint32_t len)
+static ufprog_status ch347_spi_single_read(struct ufprog_interface *wchdev, void *buf, uint32_t len)
 {
 	uint32_t chksz, outlen = htole32(len);
 	uint8_t *pbuf = buf;
@@ -318,7 +318,7 @@ static ufprog_status ch347_spi_single_read(struct ufprog_if_dev *wchdev, void *b
 	return UFP_OK;
 }
 
-static ufprog_status ch347_spi_read(struct ufprog_if_dev *wchdev, void *buf, size_t len)
+static ufprog_status ch347_spi_read(struct ufprog_interface *wchdev, void *buf, size_t len)
 {
 	uint8_t *pbuf = buf;
 	uint32_t chksz;
@@ -338,7 +338,7 @@ static ufprog_status ch347_spi_read(struct ufprog_if_dev *wchdev, void *buf, siz
 	return UFP_OK;
 }
 
-static ufprog_status ch347_spi_single_write(struct ufprog_if_dev *wchdev, const void *buf, uint32_t len)
+static ufprog_status ch347_spi_single_write(struct ufprog_interface *wchdev, const void *buf, uint32_t len)
 {
 	const uint8_t *pbuf = buf;
 	uint8_t unknown_data;
@@ -360,7 +360,7 @@ static ufprog_status ch347_spi_single_write(struct ufprog_if_dev *wchdev, const 
 	return UFP_OK;
 }
 
-static ufprog_status ch347_spi_write(struct ufprog_if_dev *wchdev, const void *buf, size_t len)
+static ufprog_status ch347_spi_write(struct ufprog_interface *wchdev, const void *buf, size_t len)
 {
 	const uint8_t *pbuf = buf;
 	uint32_t chksz;
@@ -380,7 +380,7 @@ static ufprog_status ch347_spi_write(struct ufprog_if_dev *wchdev, const void *b
 	return UFP_OK;
 }
 
-static ufprog_status ch347_spi_generic_xfer_one(struct ufprog_if_dev *wchdev, const struct ufprog_spi_transfer *xfer)
+static ufprog_status ch347_spi_generic_xfer_one(struct ufprog_interface *wchdev, const struct ufprog_spi_transfer *xfer)
 {
 	if (xfer->buswidth > 1 || xfer->dtr) {
 		log_err("Only single I/O single rate is supported by CH347\n");
@@ -396,7 +396,7 @@ static ufprog_status ch347_spi_generic_xfer_one(struct ufprog_if_dev *wchdev, co
 	return ch347_spi_write(wchdev, xfer->buf.tx, xfer->len);
 }
 
-static ufprog_status ch347_spi_fdx_xfer(struct ufprog_if_dev *wchdev, void *buf, size_t len)
+static ufprog_status ch347_spi_fdx_xfer(struct ufprog_interface *wchdev, void *buf, size_t len)
 {
 	uint32_t chksz, rdlen, retlen;
 	uint8_t *pbuf = buf, *prbuf;
@@ -426,8 +426,8 @@ static ufprog_status ch347_spi_fdx_xfer(struct ufprog_if_dev *wchdev, void *buf,
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_spi_generic_xfer(struct ufprog_if_dev *wchdev, const struct ufprog_spi_transfer *xfers,
-						 uint32_t count)
+ufprog_status UFPROG_API ufprog_spi_generic_xfer(struct ufprog_interface *wchdev,
+						 const struct ufprog_spi_transfer *xfers, uint32_t count)
 {
 	bool require_spi_start = true;
 	ufprog_status ret = UFP_OK;

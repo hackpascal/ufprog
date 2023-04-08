@@ -83,7 +83,7 @@ struct mpsse_spi_info {
 	ufprog_bool busy_led_active_low;
 };
 
-struct ufprog_if_dev {
+struct ufprog_interface {
 	struct ft_handle *handle;
 	enum ftdi_mpsse_chip chip;
 
@@ -102,23 +102,23 @@ struct ufprog_if_dev {
 	mutex_handle lock;
 };
 
-ufprog_status mpsse_init(struct ufprog_if_dev *ftdev, bool thread_safe);
-ufprog_status mpsse_cleanup(struct ufprog_if_dev *ftdev);
+ufprog_status mpsse_init(struct ufprog_interface *ftdev, bool thread_safe);
+ufprog_status mpsse_cleanup(struct ufprog_interface *ftdev);
 
-ufprog_status mpsse_control_loopback(struct ufprog_if_dev *ftdev, bool enable);
-ufprog_status mpsse_control_adaptive_clock(struct ufprog_if_dev *ftdev, bool enable);
-ufprog_status mpsse_control_3phase_clock(struct ufprog_if_dev *ftdev, bool enable);
-ufprog_status mpsse_control_clock_d5(struct ufprog_if_dev *ftdev, bool enable);
+ufprog_status mpsse_control_loopback(struct ufprog_interface *ftdev, bool enable);
+ufprog_status mpsse_control_adaptive_clock(struct ufprog_interface *ftdev, bool enable);
+ufprog_status mpsse_control_3phase_clock(struct ufprog_interface *ftdev, bool enable);
+ufprog_status mpsse_control_clock_d5(struct ufprog_interface *ftdev, bool enable);
 
-ufprog_status mpsse_set_gpio(struct ufprog_if_dev *ftdev, uint16_t mask, uint16_t dir, uint16_t val);
-ufprog_status mpsse_set_gpio_input(struct ufprog_if_dev *ftdev, uint8_t gpio);
-ufprog_status mpsse_set_gpio_output(struct ufprog_if_dev *ftdev, uint8_t gpio, int value);
-ufprog_status mpsse_get_gpio(struct ufprog_if_dev *ftdev, uint16_t mask, uint16_t *val);
-ufprog_status mpsse_get_gpio_value(struct ufprog_if_dev *ftdev, uint8_t gpio, int *val);
+ufprog_status mpsse_set_gpio(struct ufprog_interface *ftdev, uint16_t mask, uint16_t dir, uint16_t val);
+ufprog_status mpsse_set_gpio_input(struct ufprog_interface *ftdev, uint8_t gpio);
+ufprog_status mpsse_set_gpio_output(struct ufprog_interface *ftdev, uint8_t gpio, int value);
+ufprog_status mpsse_get_gpio(struct ufprog_interface *ftdev, uint16_t mask, uint16_t *val);
+ufprog_status mpsse_get_gpio_value(struct ufprog_interface *ftdev, uint8_t gpio, int *val);
 
-ufprog_status mpsse_set_clock(struct ufprog_if_dev *ftdev, uint32_t freq, uint32_t *retfreq);
-ufprog_status mpsse_get_clock(struct ufprog_if_dev *ftdev, uint32_t *retfreq);
+ufprog_status mpsse_set_clock(struct ufprog_interface *ftdev, uint32_t freq, uint32_t *retfreq);
+ufprog_status mpsse_get_clock(struct ufprog_interface *ftdev, uint32_t *retfreq);
 
-ufprog_status mpsse_spi_init(struct ufprog_if_dev *ftdev, struct json_object *config);
+ufprog_status mpsse_spi_init(struct ufprog_interface *ftdev, struct json_object *config);
 
 #endif /* _UFPROG_MPSSE_H_ */

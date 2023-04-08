@@ -127,7 +127,7 @@ struct ft4222_spi_clk_info {
 	enum ft4222_spi_clkdiv div;
 };
 
-struct ufprog_if_dev {
+struct ufprog_interface {
 	struct ft_handle *handle;
 	struct ft4222_hwcaps hwcaps;
 	struct ft4222_hwver hwver;
@@ -141,12 +141,12 @@ struct ufprog_if_dev {
 
 extern const uint32_t ft4222_sys_clks[];
 
-ufprog_status ft4222_init(struct ufprog_if_dev *ftdev, bool thread_safe);
-ufprog_status ft4222_get_clock(struct ufprog_if_dev *ftdev, enum ft4222_clock *clk);
-ufprog_status ft4222_set_clock(struct ufprog_if_dev *ftdev, enum ft4222_clock clk);
-ufprog_status ft4222_set_function(struct ufprog_if_dev *ftdev, enum ft4222_function func);
+ufprog_status ft4222_init(struct ufprog_interface *ftdev, bool thread_safe);
+ufprog_status ft4222_get_clock(struct ufprog_interface *ftdev, enum ft4222_clock *clk);
+ufprog_status ft4222_set_clock(struct ufprog_interface *ftdev, enum ft4222_clock clk);
+ufprog_status ft4222_set_function(struct ufprog_interface *ftdev, enum ft4222_function func);
 
-ufprog_status ft4222_spi_master_init(struct ufprog_if_dev *ftdev, struct json_object *config);
-ufprog_status ft4222_spi_master_cleanup(struct ufprog_if_dev *ftdev);
+ufprog_status ft4222_spi_master_init(struct ufprog_interface *ftdev, struct json_object *config);
+ufprog_status ft4222_spi_master_cleanup(struct ufprog_interface *ftdev);
 
 #endif /* _UFPROG_FT4222H_H_ */

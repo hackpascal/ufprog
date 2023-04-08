@@ -81,8 +81,8 @@ static void ufprog_spi_get_optional_symbols(struct ufprog_spi *spi)
 		FIND_MODULE(API_NAME_SPI_SET_BUSY_IND, spi->set_busy_ind),
 	};
 
-	ufprog_driver_find_module_symbols(ufprog_device_get_driver(spi->dev), optional_symbols,
-					  ARRAY_SIZE(optional_symbols),false);
+	ufprog_controller_find_symbols(ufprog_controller_device_get_driver(spi->dev), optional_symbols,
+				       ARRAY_SIZE(optional_symbols), false);
 }
 
 static ufprog_status ufprog_spi_get_xfer_symbols(struct ufprog_spi *spi)
@@ -91,7 +91,7 @@ static ufprog_status ufprog_spi_get_xfer_symbols(struct ufprog_spi *spi)
 	api_spi_generic_xfer_max_size generic_xfer_max_size;
 	api_spi_if_version spi_if_ver;
 	api_spi_if_caps spi_if_caps;
-	struct ufprog_driver *drv;
+	struct ufprog_controller_driver *drv;
 	bool supports_spi_mem;
 
 	struct symbol_find_entry if_basic_symbols[] = {
@@ -113,10 +113,10 @@ static ufprog_status ufprog_spi_get_xfer_symbols(struct ufprog_spi *spi)
 		FIND_MODULE(API_NAME_SPI_MEM_EXEC_OP, spi->exec_op),
 	};
 
-	drv = ufprog_device_get_driver(spi->dev);
+	drv = ufprog_controller_device_get_driver(spi->dev);
 
 	/* Basic interface API */
-	if (!ufprog_driver_find_module_symbols(drv, if_basic_symbols, ARRAY_SIZE(if_basic_symbols), true)) {
+	if (!ufprog_controller_find_symbols(drv, if_basic_symbols, ARRAY_SIZE(if_basic_symbols), true)) {
 		logm_err("Interface driver is missing basic symbols\n");
 		return UFP_MODULE_MISSING_SYMBOL;
 	}
@@ -130,10 +130,10 @@ static ufprog_status ufprog_spi_get_xfer_symbols(struct ufprog_spi *spi)
 
 	spi->caps = spi_if_caps();
 
-	ufprog_driver_find_module_symbols(drv, optional_symbols, ARRAY_SIZE(optional_symbols), false);
+	ufprog_controller_find_symbols(drv, optional_symbols, ARRAY_SIZE(optional_symbols), false);
 
 	/* SPI-MEM interface API */
-	supports_spi_mem = ufprog_driver_find_module_symbols(drv, spi_mem_symbols, ARRAY_SIZE(spi_mem_symbols), true);
+	supports_spi_mem = ufprog_controller_find_symbols(drv, spi_mem_symbols, ARRAY_SIZE(spi_mem_symbols), true);
 
 	/* Generic SPI interface API */
 	if (spi->generic_xfer) {
@@ -156,7 +156,7 @@ static ufprog_status ufprog_spi_get_xfer_symbols(struct ufprog_spi *spi)
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_spi_attach_device(struct ufprog_device *dev, struct ufprog_spi **outspi)
+ufprog_status UFPROG_API ufprog_spi_attach_device(struct ufprog_controller_device *dev, struct ufprog_spi **outspi)
 {
 	struct ufprog_spi *spi;
 	ufprog_status ret;
@@ -169,7 +169,7 @@ ufprog_status UFPROG_API ufprog_spi_attach_device(struct ufprog_device *dev, str
 	if (!dev)
 		return UFP_INVALID_PARAMETER;
 
-	if (ufprog_device_if_type(dev) != IF_SPI)
+	if (ufprog_controller_device_if_type(dev) != IF_SPI)
 		return UFP_UNSUPPORTED;
 
 	spi = calloc(1, sizeof(*spi));
@@ -187,7 +187,7 @@ ufprog_status UFPROG_API ufprog_spi_attach_device(struct ufprog_device *dev, str
 
 	spi->xfer_buffer_len = UFPROG_SPI_XFER_BUFFER_LEN;
 	spi->dev = dev;
-	spi->ifdev = ufprog_device_get_interface_device(dev);
+	spi->ifdev = ufprog_controller_device_get_interface(dev);
 
 	ufprog_spi_get_optional_symbols(spi);
 
@@ -237,7 +237,7 @@ cleanup:
 
 ufprog_status UFPROG_API ufprog_spi_open_device(const char *name, ufprog_bool thread_safe, struct ufprog_spi **outspi)
 {
-	struct ufprog_device *dev;
+	struct ufprog_controller_device *dev;
 	ufprog_status ret;
 
 	if (!outspi)
@@ -248,18 +248,18 @@ ufprog_status UFPROG_API ufprog_spi_open_device(const char *name, ufprog_bool th
 	if (!name)
 		return UFP_INVALID_PARAMETER;
 
-	STATUS_CHECK_RET(ufprog_open_device_by_name(name, IF_SPI, thread_safe, &dev));
+	STATUS_CHECK_RET(ufprog_controller_open_device_by_name(name, IF_SPI, thread_safe, &dev));
 
 	ret = ufprog_spi_attach_device(dev, outspi);
 	if (ret) {
-		ufprog_close_device(dev);
+		ufprog_controller_close_device(dev);
 		return ret;
 	}
 
 	return UFP_OK;
 }
 
-struct ufprog_device *UFPROG_API ufprog_spi_get_device(struct ufprog_spi *spi)
+struct ufprog_controller_device *UFPROG_API ufprog_spi_get_device(struct ufprog_spi *spi)
 {
 	if (!spi)
 		return NULL;
@@ -273,7 +273,7 @@ ufprog_status UFPROG_API ufprog_spi_close_device(struct ufprog_spi *spi)
 		return UFP_INVALID_PARAMETER;
 
 	if (spi->dev) {
-		STATUS_CHECK_RET(ufprog_close_device(spi->dev));
+		STATUS_CHECK_RET(ufprog_controller_close_device(spi->dev));
 		spi->dev = NULL;
 	}
 
@@ -287,7 +287,7 @@ ufprog_status UFPROG_API ufprog_spi_bus_lock(struct ufprog_spi *spi)
 	if (!spi)
 		return UFP_INVALID_PARAMETER;
 
-	return ufprog_lock_device(spi->dev);
+	return ufprog_controller_device_lock(spi->dev);
 }
 
 ufprog_status UFPROG_API ufprog_spi_bus_unlock(struct ufprog_spi *spi)
@@ -295,7 +295,7 @@ ufprog_status UFPROG_API ufprog_spi_bus_unlock(struct ufprog_spi *spi)
 	if (!spi)
 		return UFP_INVALID_PARAMETER;
 
-	return ufprog_unlock_device(spi->dev);
+	return ufprog_controller_device_unlock(spi->dev);
 }
 
 uint32_t UFPROG_API ufprog_spi_if_caps(struct ufprog_spi *spi)

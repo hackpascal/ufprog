@@ -5,7 +5,7 @@ EXPORTS
 	ufprog_plugin_cleanup
 	ufprog_plugin_api_version
 	ufprog_plugin_desc
-	ufprog_driver_supported_if
+	ufprog_controller_supported_if
 	ufprog_device_open
 	ufprog_device_free
 	ufprog_device_lock

@@ -43,7 +43,7 @@ struct ch34x_handle;
 #define CH341_IO6_DIN2				0x40
 #define CH341_IO7_MISO				0x80
 
-struct ufprog_if_dev {
+struct ufprog_interface {
 	struct ch34x_handle *handle;
 
 	uint32_t spi_cs;
@@ -52,12 +52,12 @@ struct ufprog_if_dev {
 	mutex_handle lock;
 };
 
-ufprog_status ch341_init(struct ufprog_if_dev *wchdev, bool thread_safe);
+ufprog_status ch341_init(struct ufprog_interface *wchdev, bool thread_safe);
 
 ufprog_status ch341_write(struct ch34x_handle *handle, const void *buf, size_t len, size_t *retlen);
 ufprog_status ch341_read(struct ch34x_handle *handle, void *buf, size_t len, size_t *retlen);
 
-ufprog_status ch341_spi_init(struct ufprog_if_dev *wchdev, struct json_object *config);
+ufprog_status ch341_spi_init(struct ufprog_interface *wchdev, struct json_object *config);
 
 void ch341_bitswap(const uint8_t *buf, uint8_t *out, size_t len);
 

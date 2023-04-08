@@ -81,10 +81,10 @@ static int UFPROG_API ch347_libusb_try_match_open(void *priv, struct json_object
 }
 
 ufprog_status UFPROG_API ufprog_device_open(uint32_t if_type, struct json_object *config, ufprog_bool thread_safe,
-					    struct ufprog_if_dev **outifdev)
+					    struct ufprog_interface **outifdev)
 {
 	struct libusb_device_handle *dev_handle = NULL;
-	struct ufprog_if_dev *wchdev;
+	struct ufprog_interface *wchdev;
 	ufprog_status ret = UFP_OK;
 	struct json_object *ifcfg;
 	int err;
@@ -171,7 +171,7 @@ cleanup:
 	return ret;
 }
 
-ufprog_status UFPROG_API ufprog_device_free(struct ufprog_if_dev *wchdev)
+ufprog_status UFPROG_API ufprog_device_free(struct ufprog_interface *wchdev)
 {
 	if (!wchdev)
 		return UFP_INVALID_PARAMETER;

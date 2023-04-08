@@ -17,9 +17,9 @@ EXTERN_C_BEGIN
 
 struct ufprog_spi;
 
-ufprog_status UFPROG_API ufprog_spi_attach_device(struct ufprog_device *ifdev, struct ufprog_spi **outspi);
+ufprog_status UFPROG_API ufprog_spi_attach_device(struct ufprog_controller_device *ifdev, struct ufprog_spi **outspi);
 ufprog_status UFPROG_API ufprog_spi_open_device(const char *name, ufprog_bool thread_safe, struct ufprog_spi **outspi);
-struct ufprog_device *UFPROG_API ufprog_spi_get_device(struct ufprog_spi *spi);
+struct ufprog_controller_device *UFPROG_API ufprog_spi_get_device(struct ufprog_spi *spi);
 ufprog_status UFPROG_API ufprog_spi_close_device(struct ufprog_spi *spi);
 
 uint32_t UFPROG_API ufprog_spi_if_caps(struct ufprog_spi *spi);

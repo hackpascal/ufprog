@@ -20,7 +20,7 @@ static struct plugin_mgmt *controller_drivers;
 
 int driver_lookup_table_init(void)
 {
-	if (plugin_mgmt_create("controller", CONTROLLER_DRIVER_DIR_NAME, sizeof(struct ufprog_driver),
+	if (plugin_mgmt_create("controller", CONTROLLER_DRIVER_DIR_NAME, sizeof(struct ufprog_controller_driver),
 			       CONTROLLER_DRIVER_API_VERSION_MAJOR, controller_driver_api_init,
 			       controller_driver_post_init, &controller_drivers))
 		return -1;
@@ -30,12 +30,12 @@ int driver_lookup_table_init(void)
 
 static ufprog_status controller_driver_api_init(struct plugin *plugin, const char *module_path)
 {
-	struct ufprog_driver *drv = (struct ufprog_driver *)plugin;
-	api_drv_supported_if fn_supported_if;
+	struct ufprog_controller_driver *drv = (struct ufprog_controller_driver *)plugin;
+	api_controller_supported_if fn_supported_if;
 	ufprog_bool ret;
 
 	struct symbol_find_entry basic_symbols[] = {
-		FIND_MODULE(API_NAME_DRV_SUPPORTED_IF, fn_supported_if),
+		FIND_MODULE(API_NAME_CONTROLLER_SUPPORTED_IF, fn_supported_if),
 		FIND_MODULE(API_NAME_DEVICE_OPEN, drv->open_device),
 		FIND_MODULE(API_NAME_DEVICE_FREE, drv->free_device),
 	};
@@ -66,7 +66,7 @@ static ufprog_status controller_driver_api_init(struct plugin *plugin, const cha
 
 static ufprog_status controller_driver_post_init(struct plugin *plugin)
 {
-	struct ufprog_driver *drv = (struct ufprog_driver *)plugin;
+	struct ufprog_controller_driver *drv = (struct ufprog_controller_driver *)plugin;
 	ufprog_status ret;
 
 	ret = lookup_table_create(&drv->devices, 0);
@@ -78,7 +78,7 @@ static ufprog_status controller_driver_post_init(struct plugin *plugin)
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API ufprog_load_driver(const char *name, struct ufprog_driver **outdrv)
+ufprog_status UFPROG_API ufprog_load_controller_driver(const char *name, struct ufprog_controller_driver **outdrv)
 {
 	if (!name || !outdrv)
 		return UFP_INVALID_PARAMETER;
@@ -86,7 +86,7 @@ ufprog_status UFPROG_API ufprog_load_driver(const char *name, struct ufprog_driv
 	return plugin_load(controller_drivers, name, (struct plugin **)outdrv);
 }
 
-uint32_t UFPROG_API ufprog_driver_device_count(struct ufprog_driver *drv)
+uint32_t UFPROG_API ufprog_controller_device_count(struct ufprog_controller_driver *drv)
 {
 	if (!drv)
 		return 0;
@@ -94,14 +94,14 @@ uint32_t UFPROG_API ufprog_driver_device_count(struct ufprog_driver *drv)
 	return lookup_table_length(drv->devices);
 }
 
-ufprog_status UFPROG_API ufprog_unload_driver(struct ufprog_driver *drv)
+ufprog_status UFPROG_API ufprog_unload_controller_driver(struct ufprog_controller_driver *drv)
 {
 	uint32_t n;
 
 	if (!drv)
 		return UFP_INVALID_PARAMETER;
 
-	n = ufprog_driver_device_count(drv);
+	n = ufprog_controller_device_count(drv);
 	if (n) {
 		if (n > 1)
 			log_err("There are still devices opened with driver '%s'\n", drv->plugin.name);
@@ -114,7 +114,7 @@ ufprog_status UFPROG_API ufprog_unload_driver(struct ufprog_driver *drv)
 	return plugin_unload(controller_drivers, (struct plugin *)drv);
 }
 
-const char *UFPROG_API ufprog_driver_name(struct ufprog_driver *drv)
+const char *UFPROG_API ufprog_controller_name(struct ufprog_controller_driver *drv)
 {
 	if (!drv)
 		return NULL;
@@ -122,7 +122,7 @@ const char *UFPROG_API ufprog_driver_name(struct ufprog_driver *drv)
 	return drv->plugin.name;
 }
 
-module_handle UFPROG_API ufprog_driver_module(struct ufprog_driver *drv)
+module_handle UFPROG_API ufprog_controller_module(struct ufprog_controller_driver *drv)
 {
 	if (!drv)
 		return NULL;
@@ -130,7 +130,7 @@ module_handle UFPROG_API ufprog_driver_module(struct ufprog_driver *drv)
 	return drv->plugin.module;
 }
 
-uint32_t UFPROG_API ufprog_driver_version(struct ufprog_driver *drv)
+uint32_t UFPROG_API ufprog_controller_version(struct ufprog_controller_driver *drv)
 {
 	if (!drv)
 		return 0;
@@ -138,7 +138,7 @@ uint32_t UFPROG_API ufprog_driver_version(struct ufprog_driver *drv)
 	return drv->plugin.version;
 }
 
-const char *UFPROG_API ufprog_driver_desc(struct ufprog_driver *drv)
+const char *UFPROG_API ufprog_controller_desc(struct ufprog_controller_driver *drv)
 {
 	if (!drv)
 		return NULL;
@@ -146,7 +146,7 @@ const char *UFPROG_API ufprog_driver_desc(struct ufprog_driver *drv)
 	return drv->plugin.desc;
 }
 
-uint32_t UFPROG_API ufprog_driver_supported_if(struct ufprog_driver *drv)
+uint32_t UFPROG_API ufprog_controller_supported_if(struct ufprog_controller_driver *drv)
 {
 	if (!drv)
 		return 0;
@@ -154,7 +154,7 @@ uint32_t UFPROG_API ufprog_driver_supported_if(struct ufprog_driver *drv)
 	return drv->supported_if;
 }
 
-void *UFPROG_API ufprog_driver_find_symbol(struct ufprog_driver *drv, const char *name)
+void *UFPROG_API ufprog_controller_find_symbol(struct ufprog_controller_driver *drv, const char *name)
 {
 	if (!drv || !name)
 		return NULL;
@@ -162,8 +162,9 @@ void *UFPROG_API ufprog_driver_find_symbol(struct ufprog_driver *drv, const char
 	return plugin_find_symbol(&drv->plugin, name);
 }
 
-ufprog_bool UFPROG_API ufprog_driver_find_module_symbols(struct ufprog_driver *drv, struct symbol_find_entry *list,
-							 size_t count, ufprog_bool full)
+ufprog_bool UFPROG_API ufprog_controller_find_symbols(struct ufprog_controller_driver *drv,
+						      struct symbol_find_entry *list, size_t count,
+						      ufprog_bool full)
 {
 	if (!drv)
 		return false;
@@ -177,7 +178,7 @@ ufprog_bool UFPROG_API ufprog_driver_find_module_symbols(struct ufprog_driver *d
 	return plugin_find_module_symbols(&drv->plugin, list, count, full);
 }
 
-ufprog_status ufprog_driver_add_device(struct ufprog_driver *drv, const struct ufprog_if_dev *ifdev)
+ufprog_status ufprog_controller_add_device(struct ufprog_controller_driver *drv, const struct ufprog_interface *ifdev)
 {
 	ufprog_status ret;
 
@@ -188,7 +189,8 @@ ufprog_status ufprog_driver_add_device(struct ufprog_driver *drv, const struct u
 	return ret;
 }
 
-ufprog_status ufprog_driver_remove_device(struct ufprog_driver *drv, const struct ufprog_if_dev *ifdev)
+ufprog_status ufprog_controller_remove_device(struct ufprog_controller_driver *drv,
+					      const struct ufprog_interface *ifdev)
 {
 	return lookup_table_delete_ptr(drv->devices, ifdev);
 }

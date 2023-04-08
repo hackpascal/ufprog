@@ -20,7 +20,7 @@ static const char *mpsse_chip_models[] = {
 	[FT4232H] = "FT4232H",
 };
 
-ufprog_status mpsse_control_loopback(struct ufprog_if_dev *ftdev, bool enable)
+ufprog_status mpsse_control_loopback(struct ufprog_interface *ftdev, bool enable)
 {
 	uint8_t cmd;
 
@@ -32,7 +32,7 @@ ufprog_status mpsse_control_loopback(struct ufprog_if_dev *ftdev, bool enable)
 	return ftdi_write(ftdev->handle, &cmd, sizeof(cmd));
 }
 
-ufprog_status mpsse_control_adaptive_clock(struct ufprog_if_dev *ftdev, bool enable)
+ufprog_status mpsse_control_adaptive_clock(struct ufprog_interface *ftdev, bool enable)
 {
 	uint8_t cmd;
 
@@ -44,7 +44,7 @@ ufprog_status mpsse_control_adaptive_clock(struct ufprog_if_dev *ftdev, bool ena
 	return ftdi_write(ftdev->handle, &cmd, sizeof(cmd));
 }
 
-ufprog_status mpsse_control_3phase_clock(struct ufprog_if_dev *ftdev, bool enable)
+ufprog_status mpsse_control_3phase_clock(struct ufprog_interface *ftdev, bool enable)
 {
 	uint8_t cmd;
 
@@ -56,7 +56,7 @@ ufprog_status mpsse_control_3phase_clock(struct ufprog_if_dev *ftdev, bool enabl
 	return ftdi_write(ftdev->handle, &cmd, sizeof(cmd));
 }
 
-ufprog_status mpsse_control_clock_d5(struct ufprog_if_dev *ftdev, bool enable)
+ufprog_status mpsse_control_clock_d5(struct ufprog_interface *ftdev, bool enable)
 {
 	uint8_t cmd;
 
@@ -68,7 +68,7 @@ ufprog_status mpsse_control_clock_d5(struct ufprog_if_dev *ftdev, bool enable)
 	return ftdi_write(ftdev->handle, &cmd, sizeof(cmd));
 }
 
-ufprog_status mpsse_set_gpio(struct ufprog_if_dev *ftdev, uint16_t mask, uint16_t dir, uint16_t val)
+ufprog_status mpsse_set_gpio(struct ufprog_interface *ftdev, uint16_t mask, uint16_t dir, uint16_t val)
 {
 	ufprog_status retl = UFP_OK, reth = UFP_OK;
 	uint16_t new_dir, new_val;
@@ -114,7 +114,7 @@ ufprog_status mpsse_set_gpio(struct ufprog_if_dev *ftdev, uint16_t mask, uint16_
 	return UFP_OK;
 }
 
-ufprog_status mpsse_set_gpio_input(struct ufprog_if_dev *ftdev, uint8_t gpio)
+ufprog_status mpsse_set_gpio_input(struct ufprog_interface *ftdev, uint8_t gpio)
 {
 	if (gpio >= ftdev->max_gpios)
 		return UFP_UNSUPPORTED;
@@ -122,7 +122,7 @@ ufprog_status mpsse_set_gpio_input(struct ufprog_if_dev *ftdev, uint8_t gpio)
 	return mpsse_set_gpio(ftdev, 1 << gpio, 0, 0);
 }
 
-ufprog_status mpsse_set_gpio_output(struct ufprog_if_dev *ftdev, uint8_t gpio, int value)
+ufprog_status mpsse_set_gpio_output(struct ufprog_interface *ftdev, uint8_t gpio, int value)
 {
 	if (gpio >= ftdev->max_gpios)
 		return UFP_UNSUPPORTED;
@@ -130,7 +130,7 @@ ufprog_status mpsse_set_gpio_output(struct ufprog_if_dev *ftdev, uint8_t gpio, i
 	return mpsse_set_gpio(ftdev, 1 << gpio, 1 << gpio, (!!value) << gpio);
 }
 
-ufprog_status mpsse_get_gpio(struct ufprog_if_dev *ftdev, uint16_t mask, uint16_t *val)
+ufprog_status mpsse_get_gpio(struct ufprog_interface *ftdev, uint16_t mask, uint16_t *val)
 {
 	ufprog_status retl = UFP_OK, reth = UFP_OK;
 	uint8_t cmd, gpio_val;
@@ -179,7 +179,7 @@ ufprog_status mpsse_get_gpio(struct ufprog_if_dev *ftdev, uint16_t mask, uint16_
 	return UFP_OK;
 }
 
-ufprog_status mpsse_get_gpio_value(struct ufprog_if_dev *ftdev, uint8_t gpio, int *val)
+ufprog_status mpsse_get_gpio_value(struct ufprog_interface *ftdev, uint8_t gpio, int *val)
 {
 	uint16_t gpio_val;
 
@@ -211,7 +211,7 @@ static void mpsse_calc_clock(uint32_t baseclk, uint32_t freq, uint32_t *retfreq,
 	*out_div = (uint16_t)div;
 }
 
-ufprog_status mpsse_set_clock(struct ufprog_if_dev *ftdev, uint32_t freq, uint32_t *retfreq)
+ufprog_status mpsse_set_clock(struct ufprog_interface *ftdev, uint32_t freq, uint32_t *retfreq)
 {
 	uint32_t real_freq_d5, real_freq, diff, diff_d5;
 	uint16_t out_div_d5, out_div;
@@ -278,7 +278,7 @@ ufprog_status mpsse_set_clock(struct ufprog_if_dev *ftdev, uint32_t freq, uint32
 	return ret;
 }
 
-ufprog_status mpsse_get_clock(struct ufprog_if_dev *ftdev, uint32_t *retfreq)
+ufprog_status mpsse_get_clock(struct ufprog_interface *ftdev, uint32_t *retfreq)
 {
 	uint32_t baseclk;
 
@@ -295,7 +295,7 @@ ufprog_status mpsse_get_clock(struct ufprog_if_dev *ftdev, uint32_t *retfreq)
 	return UFP_OK;
 }
 
-ufprog_status mpsse_init(struct ufprog_if_dev *ftdev, bool thread_safe)
+ufprog_status mpsse_init(struct ufprog_interface *ftdev, bool thread_safe)
 {
 	ufprog_status ret;
 	uint8_t cmd[3];
@@ -371,7 +371,7 @@ ufprog_status mpsse_init(struct ufprog_if_dev *ftdev, bool thread_safe)
 	return UFP_OK;
 }
 
-ufprog_status mpsse_cleanup(struct ufprog_if_dev *ftdev)
+ufprog_status mpsse_cleanup(struct ufprog_interface *ftdev)
 {
 	/* Reset bitmode */
 	ftdi_set_bit_mode(ftdev->handle, 0, FTDI_BITMODE_RESET);
@@ -392,13 +392,13 @@ uint32_t UFPROG_API ufprog_plugin_api_version(void)
 	return MAKE_VERSION(MPSSE_DRV_API_VER_MAJOR, MPSSE_DRV_API_VER_MINOR);
 }
 
-uint32_t UFPROG_API ufprog_driver_supported_if(void)
+uint32_t UFPROG_API ufprog_controller_supported_if(void)
 {
 	/* TODO: add I2C support */
 	return IFM_SPI;
 }
 
-ufprog_status UFPROG_API ufprog_device_lock(struct ufprog_if_dev *ftdev)
+ufprog_status UFPROG_API ufprog_device_lock(struct ufprog_interface *ftdev)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;
@@ -409,7 +409,7 @@ ufprog_status UFPROG_API ufprog_device_lock(struct ufprog_if_dev *ftdev)
 	return os_mutex_lock(ftdev->lock) ? UFP_OK : UFP_LOCK_FAIL;
 }
 
-ufprog_status UFPROG_API ufprog_device_unlock(struct ufprog_if_dev *ftdev)
+ufprog_status UFPROG_API ufprog_device_unlock(struct ufprog_interface *ftdev)
 {
 	if (!ftdev)
 		return UFP_INVALID_PARAMETER;

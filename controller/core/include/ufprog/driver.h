@@ -15,21 +15,22 @@ EXTERN_C_BEGIN
 
 #define CONTROLLER_DRIVER_DIR_NAME		"controller"
 
-struct ufprog_driver;
+struct ufprog_controller_driver;
 
-ufprog_status UFPROG_API ufprog_load_driver(const char *name, struct ufprog_driver **outdrv);
-ufprog_status UFPROG_API ufprog_unload_driver(struct ufprog_driver *drv);
-uint32_t UFPROG_API ufprog_driver_device_count(struct ufprog_driver *drv);
+ufprog_status UFPROG_API ufprog_load_controller_driver(const char *name, struct ufprog_controller_driver **outdrv);
+ufprog_status UFPROG_API ufprog_unload_controller_driver(struct ufprog_controller_driver *drv);
+uint32_t UFPROG_API ufprog_controller_device_count(struct ufprog_controller_driver *drv);
 
-const char *UFPROG_API ufprog_driver_name(struct ufprog_driver *drv);
-module_handle UFPROG_API ufprog_driver_module(struct ufprog_driver *drv);
-uint32_t UFPROG_API ufprog_driver_version(struct ufprog_driver *drv);
-const char *UFPROG_API ufprog_driver_desc(struct ufprog_driver *drv);
-uint32_t UFPROG_API ufprog_driver_supported_if(struct ufprog_driver *drv);
+const char *UFPROG_API ufprog_controller_name(struct ufprog_controller_driver *drv);
+module_handle UFPROG_API ufprog_controller_module(struct ufprog_controller_driver *drv);
+uint32_t UFPROG_API ufprog_controller_version(struct ufprog_controller_driver *drv);
+const char *UFPROG_API ufprog_controller_desc(struct ufprog_controller_driver *drv);
+uint32_t UFPROG_API ufprog_controller_supported_if(struct ufprog_controller_driver *drv);
 
-void *UFPROG_API ufprog_driver_find_symbol(struct ufprog_driver *drv, const char *name);
-ufprog_bool UFPROG_API ufprog_driver_find_module_symbols(struct ufprog_driver *drv, struct symbol_find_entry *list,
-							 size_t count, ufprog_bool full);
+void *UFPROG_API ufprog_controller_find_symbol(struct ufprog_controller_driver *drv, const char *name);
+ufprog_bool UFPROG_API ufprog_controller_find_symbols(struct ufprog_controller_driver *drv,
+						      struct symbol_find_entry *list, size_t count,
+						      ufprog_bool full);
 
 EXTERN_C_END
 
