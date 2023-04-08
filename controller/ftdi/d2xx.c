@@ -249,12 +249,12 @@ ufprog_status ftdi_get_bit_mode(struct ft_handle *handle, uint8_t *pmode)
 
 ufprog_status ftdi_get_mpsse_chip(struct ft_handle *handle, enum ftdi_mpsse_chip *chip)
 {
-	char SerialNumber[4], Description[16], Dummy[68];
+	char SerialNumber[16], Description[64];
 	FT_DEVICE ftDevice;
 	FT_STATUS ftStatus;
 	DWORD dwID;
 
-	ftStatus = FT_GetDeviceInfo(handle->ftHandle, &ftDevice, &dwID, SerialNumber, Description, Dummy);
+	ftStatus = FT_GetDeviceInfo(handle->ftHandle, &ftDevice, &dwID, SerialNumber, Description, NULL);
 	if (ftStatus)
 		return d2xx_status_translate(ftStatus);
 
