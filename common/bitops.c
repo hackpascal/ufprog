@@ -15,10 +15,10 @@ uint32_t UFPROG_API generic_ffs(size_t word)
 		return 0;
 
 #if SIZE_MAX == UINT64_MAX
-		if ((word & 0xffffffff) == 0) {
-			num += 32;
-			word >>= 32;
-		}
+	if ((word & 0xffffffff) == 0) {
+		num += 32;
+		word >>= 32;
+	}
 #endif
 
 	if ((word & 0xffff) == 0) {
@@ -55,10 +55,10 @@ uint32_t UFPROG_API generic_fls(size_t word)
 	if (!word)
 		return 0;
 
-		if (!(word & 0xffffffff00000000ULL)) {
-			num -= 32;
-			word <<= 32;
-		}
+	if (!(word & 0xffffffff00000000ULL)) {
+		num -= 32;
+		word <<= 32;
+	}
 
 	if (!(word & 0xffff000000000000ULL)) {
 		num -= 16;
@@ -86,7 +86,7 @@ uint32_t UFPROG_API generic_fls(size_t word)
 	}
 
 	return num;
-	}
+}
 #else
 uint32_t UFPROG_API generic_fls(size_t word)
 {
@@ -146,4 +146,33 @@ uint32_t UFPROG_API generic_hweight8(uint8_t w)
 	uint32_t res = (w & 0x55) + ((w >> 1) & 0x55);
 	res = (res & 0x33) + ((res >> 2) & 0x33);
 	return (res & 0x0F) + ((res >> 4) & 0x0F);
+}
+
+void UFPROG_API bitwise_majority(const void *srcbufs[], uint32_t nsrcbufs, void *dstbuf, uint32_t bufsize)
+{
+	uint8_t *dst = dstbuf;
+	uint32_t i, j, k;
+
+	if (!srcbufs || !nsrcbufs || !dstbuf || !bufsize)
+		return;
+
+	for (i = 0; i < bufsize; i++) {
+		uint8_t val = 0;
+
+		for (j = 0; j < 8; j++) {
+			unsigned int cnt = 0;
+
+			for (k = 0; k < nsrcbufs; k++) {
+				const uint8_t *srcbuf = srcbufs[k];
+
+				if (srcbuf[i] & BIT(j))
+					cnt++;
+			}
+
+			if (cnt > nsrcbufs / 2)
+				val |= BIT(j);
+		}
+
+		dst[i] = val;
+	}
 }

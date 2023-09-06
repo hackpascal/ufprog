@@ -104,6 +104,8 @@ static inline ufprog_bool is_power_of_2(uint64_t n)
 	return (n != 0 && ((n & (n - 1)) == 0));
 }
 
+void UFPROG_API bitwise_majority(const void *srcbufs[], uint32_t nsrcbufs, void *dstbuf, uint32_t bufsize);
+
 EXTERN_C_END
 
 #endif /* _UFPROG_BITS_H_ */

@@ -143,6 +143,8 @@ EXPORTS
 	generic_hweight16
 	generic_hweight8
 
+	bitwise_majority
+
 	dispatch_subcmd
 	cmdarg_parse
 
