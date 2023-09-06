@@ -9,6 +9,7 @@
 #ifndef _UFPROG_COMMON_H_
 #define _UFPROG_COMMON_H_
 
+#include <stddef.h>
 #include <ufprog/status_code.h>
 
 #ifdef __cplusplus
@@ -46,5 +47,8 @@
 
 /* Compiler-independent types */
 typedef int ufprog_bool;
+
+/* Cast a member of a structure out to the containing structure (simplified for compiling on MSVC) */
+#define container_of(_ptr, _type, _member)	((_type *)((uintptr_t)(_ptr) - offsetof(_type, _member)))
 
 #endif /* _UFPROG_COMMON_H_ */
