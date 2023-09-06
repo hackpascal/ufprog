@@ -1,0 +1,7 @@
+{
+	"driver": "nmbm",
+	"config": {
+		"forced-create": true,
+		"writable": true
+	}
+}
