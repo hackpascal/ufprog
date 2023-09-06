@@ -9,6 +9,7 @@
 #ifndef _UFPROG_LOG_H_
 #define _UFPROG_LOG_H_
 
+#include <stdarg.h>
 #include <ufprog/common.h>
 #include <ufprog/osdef.h>
 
@@ -42,6 +43,7 @@ ufprog_status UFPROG_API set_log_print_cb(void *priv, log_print_t fn);
 log_level UFPROG_API set_log_print_level(log_level level);
 
 ufprog_status UFPROG_API log_print(log_level level, const char *module, const char *text);
+ufprog_status UFPROG_API log_vprintf(log_level level, const char *module, const char *fmt, va_list args);
 ufprog_status log_printf(log_level level, const char *module, const char *fmt, ...);
 
 typedef void (UFPROG_API *console_print_t)(void *priv, log_level level, const char *text);

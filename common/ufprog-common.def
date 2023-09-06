@@ -49,6 +49,7 @@ EXPORTS
 	set_log_print_cb
 	set_log_print_level
 	log_print
+	log_vprintf
 	log_printf
 
 	uses_portable_dirs

@@ -76,11 +76,11 @@ ufprog_status UFPROG_API log_print(log_level level, const char *module, const ch
 	return UFP_OK;
 }
 
-ufprog_status log_printf(log_level level, const char *module, const char *fmt, ...)
+ufprog_status UFPROG_API log_vprintf(log_level level, const char *module, const char *fmt, va_list args)
 {
 	ufprog_status ret = UFP_OK;
 	char *buf = NULL;
-	va_list args;
+	va_list args_cpy;
 	int len;
 
 	if (!fmt)
@@ -95,9 +95,8 @@ ufprog_status log_printf(log_level level, const char *module, const char *fmt, .
 	if (level < current_log_level)
 		return UFP_OK;
 
-	va_start(args, fmt);
+	va_copy(args_cpy, args);
 	len = vsnprintf(NULL, 0, fmt, args);
-	va_end(args);
 
 	if (len < 0) {
 		ret = UFP_FAIL;
@@ -110,9 +109,7 @@ ufprog_status log_printf(log_level level, const char *module, const char *fmt, .
 		goto out;
 	}
 
-	va_start(args, fmt);
-	len = vsnprintf(buf, len + 1, fmt, args);
-	va_end(args);
+	len = vsnprintf(buf, len + 1, fmt, args_cpy);
 	if (len < 0) {
 		ret = UFP_FAIL;
 		goto out;
@@ -123,6 +120,18 @@ ufprog_status log_printf(log_level level, const char *module, const char *fmt, .
 out:
 	if (buf)
 		free(buf);
+
+	return ret;
+}
+
+ufprog_status log_printf(log_level level, const char *module, const char *fmt, ...)
+{
+	ufprog_status ret;
+	va_list args;
+
+	va_start(args, fmt);
+	ret = log_vprintf(level, module, fmt, args);
+	va_end(args);
 
 	return ret;
 }
