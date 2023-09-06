@@ -143,7 +143,7 @@ extern const uint32_t ft4222_sys_clks[];
 
 ufprog_status ft4222_init(struct ufprog_interface *ftdev, bool thread_safe);
 ufprog_status ft4222_get_clock(struct ufprog_interface *ftdev, enum ft4222_clock *clk);
-ufprog_status ft4222_set_clock(struct ufprog_interface *ftdev, enum ft4222_clock clk);
+ufprog_status ft4222_set_clock(struct ufprog_interface *ftdev, enum ft4222_clock clk, bool force);
 ufprog_status ft4222_set_function(struct ufprog_interface *ftdev, enum ft4222_function func);
 
 ufprog_status ft4222_spi_master_init(struct ufprog_interface *ftdev, struct json_object *config);

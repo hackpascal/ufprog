@@ -92,10 +92,13 @@ out:
 	return ret;
 }
 
-ufprog_status ft4222_set_clock(struct ufprog_interface *ftdev, enum ft4222_clock clk)
+ufprog_status ft4222_set_clock(struct ufprog_interface *ftdev, enum ft4222_clock clk, bool force)
 {
 	ufprog_status ret = UFP_OK;
 	uint8_t val = clk;
+
+	if (ftdev->hwcaps.clk == clk && !force)
+		return ret;
 
 	os_mutex_lock(ftdev->lock);
 

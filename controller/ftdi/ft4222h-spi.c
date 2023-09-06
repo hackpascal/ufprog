@@ -76,14 +76,17 @@ static enum ft4222_spi_drive_strength ft4222_num_to_drive_strength(uint32_t val)
 		return DS_16MA;
 }
 
-static ufprog_status ft4222_spi_set_io_mode(struct ufprog_interface *ftdev, enum ft4222_spi_mode mode)
+static ufprog_status ft4222_spi_set_io_mode(struct ufprog_interface *ftdev, enum ft4222_spi_mode mode, bool force)
 {
 	ufprog_status ret = UFP_OK;
 	uint8_t val = mode;
 
+	if (ftdev->spim.mode == mode && !force)
+		return ret;
+
 	os_mutex_lock(ftdev->lock);
 
-	if (ftdev->spim.mode != mode) {
+	if (ftdev->spim.mode != mode || force) {
 		ret = ftdi_vendor_cmd_set(ftdev->handle, 0x42, &val, 1);
 		if (ret) {
 			logm_err("Failed to set SPI IO mode\n");
@@ -123,10 +126,14 @@ out:
 	return ret;
 }
 
-static ufprog_status ft4222_spi_set_clock_divider(struct ufprog_interface *ftdev, enum ft4222_spi_clkdiv clkdiv)
+static ufprog_status ft4222_spi_set_clock_divider(struct ufprog_interface *ftdev, enum ft4222_spi_clkdiv clkdiv,
+						  bool force)
 {
 	ufprog_status ret = UFP_OK;
 	uint8_t val = clkdiv;
+
+	if (ftdev->spim.clkdiv == clkdiv && !force)
+		return ret;
 
 	os_mutex_lock(ftdev->lock);
 
@@ -244,9 +251,12 @@ static ufprog_status ft4222_spi_master_set_clk(struct ufprog_interface *ftdev, u
 
 	for (i = 0; i < ARRAY_SIZE(ft4222_spi_clks); i++) {
 		if (freq >= ft4222_spi_clks[i].freq) {
+			if (ftdev->hwcaps.clk == ft4222_spi_clks[i].clk && ftdev->spim.clkdiv == ft4222_spi_clks[i].div)
+				return UFP_OK;
+
 			os_mutex_lock(ftdev->lock);
-			ft4222_set_clock(ftdev, ft4222_spi_clks[i].clk);
-			ft4222_spi_set_clock_divider(ftdev, ft4222_spi_clks[i].div);
+			ft4222_set_clock(ftdev, ft4222_spi_clks[i].clk, true);
+			ft4222_spi_set_clock_divider(ftdev, ft4222_spi_clks[i].div, true);
 			os_mutex_unlock(ftdev->lock);
 
 			if (out_freq)
@@ -293,10 +303,10 @@ ufprog_status ft4222_spi_master_init(struct ufprog_interface *ftdev, struct json
 
 	STATUS_CHECK_RET(ft4222_spi_reset_transaction(ftdev, 0));
 
-	STATUS_CHECK_RET(ft4222_set_clock(ftdev, SYS_CLK_24));
+	STATUS_CHECK_RET(ft4222_set_clock(ftdev, SYS_CLK_24, true));
 
-	STATUS_CHECK_RET(ft4222_spi_set_io_mode(ftdev, SPI_IO_SINGLE));
-	STATUS_CHECK_RET(ft4222_spi_set_clock_divider(ftdev, CLK_DIV_2));
+	STATUS_CHECK_RET(ft4222_spi_set_io_mode(ftdev, SPI_IO_SINGLE, true));
+	STATUS_CHECK_RET(ft4222_spi_set_clock_divider(ftdev, CLK_DIV_2, true));
 	STATUS_CHECK_RET(ft4222_spi_set_cpol(ftdev, CLK_IDLE_LOW));
 	STATUS_CHECK_RET(ft4222_spi_set_cpha(ftdev, CLK_LEADING));
 	STATUS_CHECK_RET(ft4222_spi_set_cs_pol(ftdev, CS_ACTIVE_NEGTIVE));
@@ -527,7 +537,7 @@ ufprog_status UFPROG_API ufprog_spi_generic_xfer(struct ufprog_interface *ftdev,
 		return UFP_UNSUPPORTED;
 	}
 
-	STATUS_CHECK_RET(ft4222_spi_set_io_mode(ftdev, SPI_IO_SINGLE));
+	STATUS_CHECK_RET(ft4222_spi_set_io_mode(ftdev, SPI_IO_SINGLE, false));
 
 	os_mutex_lock(ftdev->lock);
 
@@ -733,7 +743,7 @@ ufprog_status UFPROG_API ufprog_spi_mem_exec_op(struct ufprog_interface *ftdev, 
 
 	if (bw == 1) {
 		/* Do single I/O xfer */
-		STATUS_CHECK_GOTO_RET(ft4222_spi_set_io_mode(ftdev, SPI_IO_SINGLE), ret, out);
+		STATUS_CHECK_GOTO_RET(ft4222_spi_set_io_mode(ftdev, SPI_IO_SINGLE, false), ret, out);
 
 		/* Optimization for one-time write(-then-read) */
 		if (sio_write_once) {
@@ -815,7 +825,7 @@ ufprog_status UFPROG_API ufprog_spi_mem_exec_op(struct ufprog_interface *ftdev, 
 	}
 
 	/* Do multi I/O xfer */
-	STATUS_CHECK_GOTO_RET(ft4222_spi_set_io_mode(ftdev, bw == 4 ? SPI_IO_QUAD : SPI_IO_DUAL), ret, out);
+	STATUS_CHECK_GOTO_RET(ft4222_spi_set_io_mode(ftdev, bw == 4 ? SPI_IO_QUAD : SPI_IO_DUAL, false), ret, out);
 
 	ftdev->scratch_buffer[0] = (sio_wr_len & 0xF) | 0x80;
 	ftdev->scratch_buffer[1] = (mio_wr_len >> 8) & 0xff;
