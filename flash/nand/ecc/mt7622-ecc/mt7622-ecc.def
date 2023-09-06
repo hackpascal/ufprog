@@ -1,0 +1,17 @@
+LIBRARY mt7622
+
+EXPORTS
+	ufprog_plugin_init
+	ufprog_plugin_cleanup
+	ufprog_plugin_api_version
+	ufprog_plugin_desc
+
+	ufprog_ecc_create_instance
+	ufprog_ecc_free_instance
+	ufprog_ecc_chip_get_config
+	ufprog_ecc_chip_get_bbm_config
+	ufprog_ecc_chip_encode_page
+	ufprog_ecc_chip_decode_page
+	ufprog_ecc_chip_get_status
+	ufprog_ecc_chip_get_page_layout
+	ufprog_ecc_chip_convert_page_layout

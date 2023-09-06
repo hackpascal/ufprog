@@ -1,0 +1,6 @@
+{
+	"driver": "mt7622",
+	"config": {
+		"bad-block-marker-swap": true
+	}
+}
