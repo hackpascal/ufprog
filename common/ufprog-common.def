@@ -43,6 +43,7 @@ EXPORTS
 	os_get_file_mapping_memory
 	os_get_file_mapping_offset
 	os_get_file_mapping_size
+	os_get_file_mapping_file_handle
 
 	os_read_text_file
 

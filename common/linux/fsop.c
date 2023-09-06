@@ -654,3 +654,11 @@ size_t UFPROG_API os_get_file_mapping_size(file_mapping mapping)
 
 	return mapping->curr_mapping_size;
 }
+
+file_handle UFPROG_API os_get_file_mapping_file_handle(file_mapping mapping)
+{
+	if (!mapping)
+		return NULL;
+
+	return &mapping->file;
+}

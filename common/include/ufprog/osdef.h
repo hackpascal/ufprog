@@ -148,6 +148,7 @@ size_t UFPROG_API os_get_file_max_mapping_size(file_mapping mapping);
 void *UFPROG_API os_get_file_mapping_memory(file_mapping mapping);
 uint64_t UFPROG_API os_get_file_mapping_offset(file_mapping mapping);
 size_t UFPROG_API os_get_file_mapping_size(file_mapping mapping);
+file_handle UFPROG_API os_get_file_mapping_file_handle(file_mapping mapping);
 
 ufprog_status UFPROG_API os_read_text_file(const char *filename, char **outdata, size_t *retlen);
 
