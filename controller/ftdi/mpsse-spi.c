@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: LGPL-2.1-only */
 /*
-* Author: Weijie Gao <hackpascal@gmail.com>
-*
-* SPI master interface driver for FTDI MPSSE chips
-*/
+ * Author: Weijie Gao <hackpascal@gmail.com>
+ *
+ * SPI master interface driver for FTDI MPSSE chips
+ */
 
 #include <stdio.h>
 #include <stdint.h>

@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: LGPL-2.1-only */
 /*
-* Author: Weijie Gao <hackpascal@gmail.com>
-*
-* Interface driver for MPSSE (FT232H/FT2232/FT4232) using libusb library
-*/
+ * Author: Weijie Gao <hackpascal@gmail.com>
+ *
+ * Interface driver for MPSSE (FT232H/FT2232/FT4232) using libusb library
+ */
 
 #include <malloc.h>
 #include <ufprog/api_controller.h>

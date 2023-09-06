@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: LGPL-2.1-only */
 /*
-* Author: Weijie Gao <hackpascal@gmail.com>
-*
-* SPI interface internal definitions
-*/
+ * Author: Weijie Gao <hackpascal@gmail.com>
+ *
+ * SPI interface internal definitions
+ */
 #pragma once
 
 #ifndef _UFPROG_SPI_INTERNAL_H_
