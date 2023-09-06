@@ -1,0 +1,17 @@
+LIBRARY mt7621
+
+EXPORTS
+	ufprog_plugin_init
+	ufprog_plugin_cleanup
+	ufprog_plugin_api_version
+	ufprog_plugin_desc
+
+	ufprog_bbt_create_instance
+	ufprog_bbt_free_instance
+	ufprog_bbt_reprobe
+	ufprog_bbt_commit
+	ufprog_bbt_modify_config
+	ufprog_bbt_get_config
+	ufprog_bbt_get_state
+	ufprog_bbt_set_state
+	ufprog_bbt_is_reserved
