@@ -1,0 +1,341 @@
+{
+	"io-opcodes": {
+		"default-read-4d-copy": {
+			"1-1-1": {
+				"opcode": "0b",
+				"address-bytes": 2,
+				"dummy-cycles": 8
+			},
+			"1-1-2": {
+				"opcode": "3b",
+				"address-bytes": 2,
+				"dummy-cycles": 8
+			},
+			"1-2-2": {
+				"opcode": "bb",
+				"address-bytes": 2,
+				"dummy-cycles": 4
+			},
+			"1-1-4": {
+				"opcode": "6b",
+				"address-bytes": 2,
+				"dummy-cycles": 8
+			},
+			"1-4-4": {
+				"opcode": "eb",
+				"address-bytes": 2,
+				"dummy-cycles": 4
+			}
+		},
+		"default-read-q2d-copy": {
+			"1-1-1": {
+				"opcode": "0b",
+				"address-bytes": 2,
+				"dummy-cycles": 8
+			},
+			"1-1-2": {
+				"opcode": "3b",
+				"address-bytes": 2,
+				"dummy-cycles": 8
+			},
+			"1-2-2": {
+				"opcode": "bb",
+				"address-bytes": 2,
+				"dummy-cycles": 4
+			},
+			"1-1-4": {
+				"opcode": "6b",
+				"address-bytes": 2,
+				"dummy-cycles": 8
+			},
+			"1-4-4": {
+				"opcode": "eb",
+				"address-bytes": 2,
+				"dummy-cycles": 2
+			}
+		},
+		"default-pl-copy": {
+			"1-1-1": {
+				"opcode": "02",
+				"address-bytes": 2
+			},
+			"1-1-4": {
+				"opcode": "32",
+				"address-bytes": 2
+			}
+		}
+	},
+	"page-layouts": {
+		"w25n-ecc-1bit-copy": [
+			{
+				"type": "data",
+				"count": 2048
+			},
+			{
+				"type": "bad-block-marker",
+				"count": 2
+			},
+			{
+				"type": "oob-raw",
+				"count": 2
+			},
+			{
+				"type": "oob",
+				"count": 4
+			},
+			{
+				"type": "ecc-parity-code",
+				"count": 8
+			},
+			{
+				"type": "unused",
+				"count": 2
+			},
+			{
+				"type": "oob-raw",
+				"count": 2
+			},
+			{
+				"type": "oob",
+				"count": 4
+			},
+			{
+				"type": "ecc-parity-code",
+				"count": 8
+			},
+			{
+				"type": "unused",
+				"count": 2
+			},
+			{
+				"type": "oob-raw",
+				"count": 2
+			},
+			{
+				"type": "oob",
+				"count": 4
+			},
+			{
+				"type": "ecc-parity-code",
+				"count": 8
+			},
+			{
+				"type": "unused",
+				"count": 2
+			},
+			{
+				"type": "oob-raw",
+				"count": 2
+			},
+			{
+				"type": "oob",
+				"count": 4
+			},
+			{
+				"type": "ecc-parity-code",
+				"count": 8
+			}
+		]
+	},
+	"memory-organizations": {
+		"1g:2k+64-copy": {
+			"page-size": 2048,
+			"oob-size": 64,
+			"pages-per-block": 64,
+			"blocks-per-lun": 1024,
+			"luns-per-cs": 1,
+			"planes-per-lun": 1
+		}
+	},
+	"vendors": {
+		"winbond": {
+			"mfr-id": "ef",
+			"name": "Winbond",
+			"parts": {
+				"W25N01GV-copy": {
+					"id-type": "with-dummy-byte",
+					"id": [ "ef", "aa", "21" ],
+					"flags": [
+						"generic-uid"
+					],
+					"vendor-flags": [],
+					"number-of-programs": 4,
+					"qe-type": "cr-bit0",
+					"ecc-en-type": "cr-bit4",
+					"otp-ctrl-type": "cr-bit6",
+					"max-speed-spi-mhz": 104,
+					"memory-organization": "1g:2k+64-copy",
+					"ecc-requirement": {
+						"step-size": 512,
+						"strength-per-step": 1
+					},
+					"read-io-caps": [ "1-1-1", "1-1-2", "1-2-2", "1-1-4", "1-4-4" ],
+					"pl-io-caps": [ "1-1-1", "1-1-4" ],
+					"read-opcodes": "default-read-4d-copy",
+					"pl-opcodes": "default-pl-copy",
+					"page-layout": "w25n-ecc-1bit-copy",
+					"otp": {
+						"start-index": 2,
+						"count": 10
+					}
+				},
+				"W25M02GV-copy": {
+					"id-type": "with-dummy-byte",
+					"id": [ "ef", "ab", "21" ],
+					"flags": [
+						"generic-uid"
+					],
+					"vendor-flags": [],
+					"number-of-programs": 4,
+					"qe-type": "cr-bit0",
+					"ecc-en-type": "cr-bit4",
+					"otp-ctrl-type": "cr-bit6",
+					"max-speed-spi-mhz": 104,
+					"memory-organization": {
+						"page-size": 2048,
+						"oob-size": 64,
+						"pages-per-block": 64,
+						"blocks-per-lun": 1024,
+						"luns-per-cs": 2,
+						"planes-per-lun": 1
+					},
+					"ecc-requirement": {
+						"step-size": 512,
+						"strength-per-step": 1
+					},
+					"read-io-caps": [ "1-1-1", "1-1-2", "1-2-2", "1-1-4", "1-4-4" ],
+					"pl-io-caps": [ "1-1-1", "1-1-4" ],
+					"read-opcodes": "default-read-4d-copy",
+					"pl-opcodes": {
+						"1-1-1": {
+							"opcode": "02",
+							"address-bytes": 2
+						},
+						"1-1-4": {
+							"opcode": "32",
+							"address-bytes": 2
+						}
+					},
+					"page-layout": "w25n-ecc-1bit-copy",
+					"otp": {
+						"start-index": 2,
+						"count": 10
+					}
+				},
+				"W25N02KV-copy": {
+					"id-type": "with-dummy-byte",
+					"id": [ "ef", "aa", "22" ],
+					"flags": [
+						"generic-uid",
+						"extended-ecc-4-sectors-max-8-bits"
+					],
+					"vendor-flags": [],
+					"number-of-programs": 4,
+					"qe-type": "cr-bit0",
+					"ecc-en-type": "cr-bit4",
+					"otp-ctrl-type": "cr-bit6",
+					"max-speed-spi-mhz": 104,
+					"memory-organization": "2g:2k+128",
+					"ecc-requirement": {
+						"step-size": 512,
+						"strength-per-step": 8
+					},
+					"read-io-caps": [ "1-1-1", "1-1-2", "1-2-2", "1-1-4", "1-4-4" ],
+					"pl-io-caps": [ "1-1-1", "1-1-4" ],
+					"read-opcodes": "default-read-4d-copy",
+					"pl-opcodes": "default-pl-copy",
+					"page-layout": [
+						{
+							"type": "data",
+							"count": 2048
+						},
+						{
+							"type": "bad-block-marker",
+							"count": 2
+						},
+						{
+							"type": "oob-raw",
+							"count": 2
+						},
+						{
+							"type": "oob",
+							"count": 12
+						},
+						{
+							"type": "unused",
+							"count": 2
+						},
+						{
+							"type": "oob-raw",
+							"count": 2
+						},
+						{
+							"type": "oob",
+							"count": 12
+						},
+						{
+							"type": "unused",
+							"count": 2
+						},
+						{
+							"type": "oob-raw",
+							"count": 2
+						},
+						{
+							"type": "oob",
+							"count": 12
+						},
+						{
+							"type": "unused",
+							"count": 2
+						},
+						{
+							"type": "oob-raw",
+							"count": 2
+						},
+						{
+							"type": "oob",
+							"count": 12
+						},
+						{
+							"type": "ecc-parity-code",
+							"count": 13
+						},
+						{
+							"type": "unused",
+							"count": 3
+						},
+						{
+							"type": "ecc-parity-code",
+							"count": 13
+						},
+						{
+							"type": "unused",
+							"count":3
+						},
+						{
+							"type": "ecc-parity-code",
+							"count": 13
+						},
+						{
+							"type": "unused",
+							"count": 3
+						},
+						{
+							"type": "ecc-parity-code",
+							"count": 13
+						},
+						{
+							"type": "unused",
+							"count": 3
+						}
+					],
+					"otp": {
+						"start-index": 2,
+						"count": 10
+					}
+				}
+			}
+		}
+	}
+}
