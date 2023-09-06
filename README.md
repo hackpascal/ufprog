@@ -19,6 +19,16 @@ Pull requests are welcome.
 * Supports non-volatile register modification.
 * Supports write-protection modification.
 
+## Generic NAND Features
+* Supports ECC plugin to replace NAND's on-die ECC
+* Supports Bad Block Table (BBT) plugin
+* Supports simple Flash Translation Layer (FTL) plugin
+* Supports OTP regions.
+* Supports reading unique ID.
+
+## SPI-NAND Features
+* ONFI parameter page parsing for new flashes.
+
 ## Supported controllers
 * WCH CH341 (100KB/s read)
 * WCH CH347 (4.9MB/s read)
@@ -31,7 +41,8 @@ Pull requests are welcome.
 
 ## Supported flash types
 * SPI-NOR
-* TBD: SPI-NAND/Parallel NAND/24 EEPROM
+* SPI-NAND
+* TBD: Parallel NAND/24 EEPROM
 
 ## Supported SPI-NOR flashes
 * Winbond
@@ -42,6 +53,28 @@ Pull requests are welcome.
 * ESMT
 * EON
 * TBD: Macronix/XMC/Micron/Spansion/...
+
+## Supported SPI-NAND flashes
+* Alliance Memory
+* ATO Solution
+* CoreStorage
+* Dosilicon
+* ESMT
+* Etron
+* Fidelix
+* FORESEE
+* Fudan Microelectronics
+* GigaDevice
+* HeYangTek
+* ISSI
+* Macronix
+* Micron
+* MK Founder
+* Paragon
+* Toshiba/Kioxia
+* Winbond
+* XTX
+* Zetta
 
 ## Build Prerequisites
 * libusb
