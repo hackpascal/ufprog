@@ -1,0 +1,41 @@
+LIBRARY ufprog-spi-nand
+
+EXPORTS
+	ufprog_spi_nand_load_ext_id_file
+
+	ufprog_spi_nand_create
+	ufprog_spi_nand_destroy
+	ufprog_spi_nand_attach
+	ufprog_spi_nand_detach
+	ufprog_spi_nand_get_interface_device
+	ufprog_spi_nand_get_generic_nand_interface
+
+	ufprog_spi_nand_bus_lock
+	ufprog_spi_nand_bus_unlock
+
+	ufprog_spi_nand_get_allowed_io_caps
+	ufprog_spi_nand_set_allowed_io_caps
+
+	ufprog_spi_nand_get_config
+	ufprog_spi_nand_modify_config
+
+	ufprog_spi_nand_get_speed_limit
+	ufprog_spi_nand_set_speed_limit
+	ufprog_spi_nand_get_speed_low
+	ufprog_spi_nand_get_speed_high
+
+	ufprog_spi_nand_list_vendors
+	ufprog_spi_nand_list_parts
+	ufprog_spi_nand_probe
+	ufprog_spi_nand_free_list
+
+	ufprog_spi_nand_part_init
+	ufprog_spi_nand_probe_init
+
+	ufprog_spi_nand_valid
+	ufprog_spi_nand_flash_param_signature
+	ufprog_spi_nand_info
+
+	ufprog_spi_nand_supports_nor_read
+	ufprog_spi_nand_enable_nor_read
+	ufprog_spi_nand_nor_read_enabled
