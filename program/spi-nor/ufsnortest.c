@@ -22,7 +22,7 @@ static const char usage[] =
 	"    %s [dev=<dev>] [part=<partmodel>] <test item> [<test item>...]\n"
 	"\n"
 	"Test items:\n"
-	"    all - Test all following itemsn\n"
+	"    all - Test all following items\n"
 	"    rw - Test read/write/erase on main storage.\n"
 	"    otp - Test read/write/erase on OTP region(s).\n"
 	"          This only allowed if the OTP region supports erase operation.\n"

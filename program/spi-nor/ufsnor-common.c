@@ -779,7 +779,7 @@ ufprog_status erase_flash(struct ufsnor_instance *inst, uint64_t addr, uint64_t 
 
 		ret = erase_flash_die(inst, opaddr, opsize, dieaddr + opaddr, sizeerased, total_size);
 		if (ret) {
-			os_fprintf(stderr, "Verification failed on Die %u, addr 0x%" PRIx64 "\n", die, opaddr);
+			os_fprintf(stderr, "Erase failed on Die %u, addr 0x%" PRIx64 "\n", die, opaddr);
 			goto out;
 		}
 

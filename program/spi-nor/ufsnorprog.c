@@ -581,7 +581,7 @@ static int do_snor_uid(void *priv, int argc, char *argv[])
 
 	ret = ufprog_spi_nor_read_uid(inst->snor, NULL, &len);
 	if (ret == UFP_UNSUPPORTED) {
-		os_fprintf(stderr, "Unique ID is not supported by thsi flash chip\n");
+		os_fprintf(stderr, "Unique ID is not supported by this flash chip\n");
 		return 1;
 	}
 
@@ -1212,18 +1212,18 @@ static int do_snor_otp(void *priv, int argc, char *argv[])
 	}
 
 	if (!parse_args(args, ARRAY_SIZE(args), argc, argv, &argp))
-		return false;
+		return 1;
 
 	if (index_set) {
 		if (index < inst->info.otp->start_index ||
 		    index >= inst->info.otp->start_index + inst->info.otp->count) {
 			os_fprintf(stderr, "OTP region index %u is invalid\n", index);
-			return false;
+			return 1;
 		}
 	} else {
 		if (inst->info.otp->count > 1 && strcmp(argv[argp], "info")) {
 			os_fprintf(stderr, "OTP region index must be specified\n");
-			return false;
+			return 1;
 		}
 
 		index = inst->info.otp->start_index;
