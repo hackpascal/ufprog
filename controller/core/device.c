@@ -85,7 +85,7 @@ ufprog_status UFPROG_API ufprog_controller_open_device(struct ufprog_controller_
 	return UFP_OK;
 }
 
-static int dir_enum_devices(void *priv, uint32_t index, const char *dir)
+static int UFPROG_API dir_enum_devices(void *priv, uint32_t index, const char *dir)
 {
 	struct json_object *jroot, *jconfig, *jarr;
 	const char *driver_name, *if_type_name;

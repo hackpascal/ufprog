@@ -77,7 +77,7 @@ ufprog_bool UFPROG_API os_init(void);
 const char *UFPROG_API os_prog_name(void);
 
 /* System default logging callback */
-void UFPROG_API set_os_default_log_print(void);
+void set_os_default_log_print(void);
 
 /* System implementation of getline */
 char *UFPROG_API os_getline_alloc(FILE *f);

@@ -38,6 +38,6 @@ struct ftdi_libusb_open_info {
 	uint32_t interface_number;
 };
 
-int ftdi_libusb_try_match_open(void *priv, struct json_object *match, int index);
+int UFPROG_API ftdi_libusb_try_match_open(void *priv, struct json_object *match, int index);
 
 #endif /* _UFPROG_FTDI_LIBUSB_H_ */

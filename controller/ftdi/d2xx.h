@@ -126,7 +126,7 @@ extern fn_FT_GetBitMode FT_GetBitMode;
 int d2xx_init(void);
 void d2xx_deinit(void);
 
-int ftdi_d2xx_try_match_open(void *priv, struct json_object *match, int index);
+int UFPROG_API ftdi_d2xx_try_match_open(void *priv, struct json_object *match, int index);
 
 struct ft_handle {
 	FT_HANDLE ftHandle;

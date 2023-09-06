@@ -1372,7 +1372,7 @@ ufprog_status UFPROG_API json_array_foreach(struct json_object *config, const ch
 	return UFP_OK;
 }
 
-static int dir_enum_open_config(void *priv, uint32_t index, const char *dir)
+static int UFPROG_API dir_enum_open_config(void *priv, uint32_t index, const char *dir)
 {
 	struct json_open_config_data *data = priv;
 	char *config_path;
@@ -1432,7 +1432,7 @@ ufprog_status UFPROG_API json_open_config(const char *name, struct json_object *
 	return UFP_OK;
 }
 
-static int dir_enum_save_config(void *priv, uint32_t index, const char *dir)
+static int UFPROG_API dir_enum_save_config(void *priv, uint32_t index, const char *dir)
 {
 	struct json_open_config_data *data = priv;
 	char *config_path;

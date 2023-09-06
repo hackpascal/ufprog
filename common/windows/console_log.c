@@ -24,7 +24,7 @@ static void UFPROG_API win_console_log_print(void *priv, const struct log_data *
 	default_console_log(data, NULL, win_console_print);
 }
 
-void UFPROG_API set_os_default_log_print(void)
+void set_os_default_log_print(void)
 {
 	set_log_print_cb(NULL, win_console_log_print);
 }

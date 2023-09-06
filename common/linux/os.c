@@ -324,7 +324,7 @@ static void UFPROG_API linux_console_log_print(void *priv, const struct log_data
 	default_console_log(data, NULL, linux_console_print);
 }
 
-void UFPROG_API set_os_default_log_print(void)
+void set_os_default_log_print(void)
 {
 	set_log_print_cb(NULL, linux_console_log_print);
 }

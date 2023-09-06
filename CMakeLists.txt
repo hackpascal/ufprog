@@ -16,7 +16,7 @@ else()
 	add_compile_options(-ffunction-sections -fdata-sections -Wall -Werror -g3 -fexec-charset=UTF-8)
 	add_link_options(-Wl,--gc-sections)
 	if(MINGW)
-		add_link_options(-municode)
+		add_link_options(-municode -Wl,--enable-stdcall-fixup)
 	endif()
 endif()
 
