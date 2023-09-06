@@ -1,0 +1,130 @@
+LIBRARY ufprog-nand-core
+
+EXPORTS
+	ufprog_nand_check_buf_bitflips
+	ufprog_nand_check_buf_bitflips_by_bits
+
+	ufprog_nand_compute_id_len
+
+	ufprog_nand_cell_type
+	ufprog_nand_info
+
+	ufprog_nand_select_die
+
+	ufprog_nand_read_page
+	ufprog_nand_read_pages
+	ufprog_nand_write_page
+	ufprog_nand_write_pages
+	ufprog_nand_erase_block
+
+	ufprog_nand_read_uid
+
+	ufprog_nand_otp_read
+	ufprog_nand_otp_write
+	ufprog_nand_otp_lock
+	ufprog_nand_otp_locked
+
+	ufprog_nand_free_page_layout
+	ufprog_nand_convert_page_format
+
+	ufprog_nand_check_bbm
+	ufprog_nand_write_bbm
+
+	ufprog_nand_checkbad
+	ufprog_nand_markbad
+
+	ufprog_nand_bbm_add_page
+	ufprog_nand_bbm_add_check_pos
+	ufprog_nand_bbm_add_mark_pos
+
+	ufprog_nand_set_ecc
+	ufprog_nand_get_ecc
+	ufprog_nand_default_ecc
+	ufprog_nand_get_bbm_config
+
+	ufprog_nand_generate_page_layout
+	ufprog_nand_page_layout_to_map
+	ufprog_nand_fill_page_by_layout
+
+	ufprog_nand_torture_block
+
+	ufprog_load_ecc_config
+	ufprog_load_ecc_driver
+	ufprog_unload_ecc_driver
+	ufprog_ecc_driver_instance_count
+	ufprog_ecc_driver_name
+	ufprog_ecc_driver_version
+	ufprog_ecc_driver_api_version
+	ufprog_ecc_driver_desc
+
+	ufprog_ecc_open_chip
+	ufprog_ecc_free_chip
+	ufprog_ecc_chip_name
+	ufprog_ecc_chip_type
+	ufprog_ecc_chip_type_name
+	ufprog_ecc_get_config
+	ufprog_ecc_get_bbm_config
+	ufprog_ecc_support_convert_page_layout
+	ufprog_ecc_get_page_layout
+	ufprog_ecc_convert_page_layout
+	ufprog_ecc_encode_page
+	ufprog_ecc_decode_page
+	ufprog_ecc_get_status
+	ufprog_ecc_bbm_add_page
+	ufprog_ecc_bbm_add_check_pos
+	ufprog_ecc_bbm_add_mark_pos
+
+	ufprog_load_bbt_config
+	ufprog_load_bbt_driver
+	ufprog_unload_bbt_driver
+	ufprog_bbt_driver_instance_count
+	ufprog_bbt_driver_name
+	ufprog_bbt_driver_version
+	ufprog_bbt_driver_api_version
+	ufprog_bbt_driver_desc
+
+	ufprog_bbt_create
+	ufprog_bbt_free
+	ufprog_bbt_name
+	ufprog_bbt_reprobe
+	ufprog_bbt_commit
+	ufprog_bbt_modify_config
+	ufprog_bbt_get_config
+	ufprog_bbt_get_state
+	ufprog_bbt_set_state
+	ufprog_bbt_is_reserved
+
+	ufprog_bbt_ram_create
+
+	ufprog_load_ftl_config
+	ufprog_load_ftl_driver
+	ufprog_unload_ftl_driver
+	ufprog_ftl_driver_instance_count
+	ufprog_ftl_driver_name
+	ufprog_ftl_driver_version
+	ufprog_ftl_driver_api_version
+	ufprog_ftl_driver_desc
+
+	ufprog_ftl_create
+	ufprog_ftl_free
+	ufprog_ftl_get_size
+	ufprog_ftl_read_page
+	ufprog_ftl_read_pages
+	ufprog_ftl_write_page
+	ufprog_ftl_write_pages
+	ufprog_ftl_erase_block
+	ufprog_ftl_erase_blocks
+	ufprog_ftl_block_checkbad
+	ufprog_ftl_block_markbad
+
+	ufprog_ftl_basic_create
+
+	ufprog_pp_check_recover
+	ufprog_pp_calc_crc
+	ufprog_pp_read_str
+	ufprog_pp_resolve_memorg
+
+	ufprog_onfi_revision
+
+	ufprog_nand_update_param
+	ufprog_nand_print_ecc_result
