@@ -72,16 +72,31 @@ uint32_t UFPROG_API generic_hweight8(uint8_t w);
 #define hweight16(_word)	generic_hweight16(_word)
 #define hweight8(_word)		generic_hweight8(_word)
 #else
-#define ffs(_word)		(__builtin_constant_p(_word) ?  __builtin_ffsll(_word) : generic_ffs(_word))
-#define ffs64(_word)		(__builtin_constant_p(_word) ?  __builtin_ffsll(_word) : generic_ffs64(_word))
+#define ffs64(_word)		(__builtin_constant_p(_word) ?  (uint32_t)__builtin_ffsll(_word) : generic_ffs64(_word))
 
-#define __builtin_flsll(_word)	((_word) ? sizeof((_word)) * 8 - __builtin_clzll(_word) : 0)
-#define fls(_word)		(__builtin_constant_p(_word) ?  __builtin_flsll(_word) : generic_fls(_word))
-#define fls64(_word)		(__builtin_constant_p(_word) ?  __builtin_flsll(_word) : generic_fls64(_word))
+#define __builtin_flsll(_word)	((_word) ? sizeof(long long) * 8 - __builtin_clzll(_word) : 0)
+#define fls64(_word)		(__builtin_constant_p(_word) ?  (uint32_t)__builtin_flsll(_word) : generic_fls64(_word))
 
-#define hweight32(_word)	(__builtin_constant_p(_word) ?  __builtin_popcountll(_word) : generic_hweight32(_word))
-#define hweight16(_word)	(__builtin_constant_p(_word) ?  __builtin_popcountll(_word) : generic_hweight16(_word))
-#define hweight8(_word)		(__builtin_constant_p(_word) ?  __builtin_popcountll(_word) : generic_hweight8(_word))
+#if defined(__MINGW32__)
+#define ffs(_word)		(__builtin_constant_p(_word) ?  __builtin_ffs(_word) : generic_ffs(_word))
+
+#define __builtin_fls(_word)	((_word) ? sizeof(int) * 8 - __builtin_clz(_word) : 0)
+#define fls(_word)		(__builtin_constant_p(_word) ?  __builtin_fls(_word) : generic_fls(_word))
+#elif defined(__MINGW64__)
+#define ffs			ffs64
+#define fls			fls64
+#else
+#ifndef __GLIBC__
+#define ffs(_word)		(__builtin_constant_p(_word) ?  (uint32_t)__builtin_ffsl(_word) : generic_ffs(_word))
+#endif
+
+#define __builtin_flsl(_word)	((_word) ? sizeof(long) * 8 - __builtin_clzl(_word) : 0)
+#define fls(_word)		(__builtin_constant_p(_word) ?  (uint32_t)__builtin_flsl(_word) : generic_fls(_word))
+#endif
+
+#define hweight32(_word)	(__builtin_constant_p(_word) ?  __builtin_popcount(_word) : generic_hweight32(_word))
+#define hweight16(_word)	(__builtin_constant_p(_word) ?  __builtin_popcount(_word) : generic_hweight16(_word))
+#define hweight8(_word)		(__builtin_constant_p(_word) ?  __builtin_popcount(_word) : generic_hweight8(_word))
 #endif
 
 static inline ufprog_bool is_power_of_2(uint64_t n)

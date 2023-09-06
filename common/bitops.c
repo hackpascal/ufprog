@@ -14,12 +14,12 @@ uint32_t UFPROG_API generic_ffs(size_t word)
 	if (!word)
 		return 0;
 
-	if (SIZE_MAX == UINT64_MAX) {
+#if SIZE_MAX == UINT64_MAX
 		if ((word & 0xffffffff) == 0) {
 			num += 32;
 			word >>= 32;
 		}
-	}
+#endif
 
 	if ((word & 0xffff) == 0) {
 		num += 16;
@@ -47,21 +47,53 @@ uint32_t UFPROG_API generic_ffs(size_t word)
 	return num;
 }
 
+#if SIZE_MAX == UINT64_MAX
+uint32_t UFPROG_API generic_fls(size_t word)
+{
+	uint32_t num = 64;
+
+	if (!word)
+		return 0;
+
+		if (!(word & 0xffffffff00000000ULL)) {
+			num -= 32;
+			word <<= 32;
+		}
+
+	if (!(word & 0xffff000000000000ULL)) {
+		num -= 16;
+		word <<= 16;
+	}
+
+	if (!(word & 0xff00000000000000ULL)) {
+		num -= 8;
+		word <<= 8;
+	}
+
+	if (!(word & 0xf000000000000000ULL)) {
+		num -= 4;
+		word <<= 4;
+	}
+
+	if (!(word & 0xc000000000000000ULL)) {
+		num -= 2;
+		word <<= 2;
+	}
+
+	if (!(word & 0x8000000000000000ULL)) {
+		num -= 1;
+		word <<= 1;
+	}
+
+	return num;
+	}
+#else
 uint32_t UFPROG_API generic_fls(size_t word)
 {
 	uint32_t num = 32;
 
 	if (!word)
 		return 0;
-
-	if (SIZE_MAX == UINT64_MAX) {
-		num = 64;
-
-		if (!(word & 0xffffffff00000000ULL)) {
-			num -= 32;
-			word <<= 32;
-		}
-	}
 
 	if (!(word & 0xffff0000U)) {
 		num -= 16;
@@ -90,6 +122,7 @@ uint32_t UFPROG_API generic_fls(size_t word)
 
 	return num;
 }
+#endif
 
 uint32_t UFPROG_API generic_hweight32(uint32_t w)
 {
