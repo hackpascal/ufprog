@@ -26,8 +26,8 @@ struct ch34x_handle;
 
 #define CH347_SPI_DFL_PRESCALER			5
 
-/* We use 512B packet size suggested by the CH347Demo */
-#define CH347_PACKET_LEN			512
+/* We use 510B packet size which is tested to be OK */
+#define CH347_PACKET_LEN			510
 
 #if CH347_PACKET_LEN > CH347_MAX_XFER_LEN - CH347_SPI_CMD_LEN
 #error CH347_PACKET_LEN too large

@@ -197,7 +197,7 @@ ufprog_status UFPROG_API ufprog_device_open(uint32_t if_type, struct json_object
 
 	wchdev->handle = (struct ch34x_handle *)((uintptr_t)wchdev + sizeof(*wchdev));
 	wchdev->handle->iIndex = oi.devidx;
-	wchdev->max_payload_len = CH347_PACKET_LEN;
+	wchdev->max_payload_len = CH347_PACKET_LEN - CH347_SPI_CMD_LEN;
 
 	STATUS_CHECK_GOTO_RET(ch347_init(wchdev, thread_safe), ret, cleanup);
 
