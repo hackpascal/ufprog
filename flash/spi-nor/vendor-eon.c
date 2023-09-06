@@ -45,7 +45,7 @@
 #define EON_F_DC_SR3_BIT5_4			BIT(8)
 #define EON_F_DC_SR3_BIT7			BIT(9)
 
-static struct spi_nor_part_flag_enum_info eon_vendor_flag_info[] = {
+static const struct spi_nor_part_flag_enum_info eon_vendor_flag_info[] = {
 	{ 0, "otp-type-1" },
 	{ 1, "otp-type-2" },
 	{ 2, "otp-type-3" },

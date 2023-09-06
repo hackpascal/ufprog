@@ -41,7 +41,7 @@
 #define ISSI_F_ECC				BIT(5)
 #define ISSI_F_WP_TBS				BIT(6)
 
-static struct spi_nor_part_flag_enum_info issi_vendor_flag_info[] = {
+static const struct spi_nor_part_flag_enum_info issi_vendor_flag_info[] = {
 	{ 0, "otp-no-erase" },
 	{ 1, "otp-control-byte-mode" },
 	{ 2, "otp-winbond-mode" },

@@ -1316,8 +1316,6 @@ static bool spi_nor_probe_jedec_id_retry(struct spi_nor *snor, struct spi_nor_ve
 	retvp->part = NULL;
 	retvp->vendor = NULL;
 
-	STATUS_CHECK_RET(spi_nor_set_low_speed(snor));
-
 retry:
 	/* SPI cmd */
 	snor->state.cmd_buswidth_curr = 1;
@@ -1372,6 +1370,9 @@ retry:
 static bool spi_nor_probe_jedec_id(struct spi_nor *snor, struct spi_nor_vendor_part *retvp)
 {
 	char idstr[20];
+
+	if (spi_nor_set_low_speed(snor))
+		logm_warn("Failed to set spi bus low speed\n");
 
 	/* Read JEDEC ID. This may fail due to new ID not recorded. */
 	if (!spi_nor_probe_jedec_id_retry(snor, retvp, SNOR_ID_READ_RETRIES))
@@ -2163,19 +2164,21 @@ ufprog_status UFPROG_API ufprog_spi_nor_set_bus_width(struct spi_nor *snor, uint
 ufprog_status spi_nor_wait_busy(struct spi_nor *snor, uint32_t wait_ms)
 {
 	uint64_t tmo = os_get_timer_us() + wait_ms * 1000;
-	ufprog_status ret;
 	uint8_t sr;
 
 	do {
-		ret = spi_nor_read_sr(snor, &sr);
-		if (ret) {
-			logm_err("Error while waiting for flash idle\n");
-			return ret;
-		}
+		STATUS_CHECK_RET(spi_nor_read_sr(snor, &sr));
 
 		if (!(sr & SR_BUSY))
-			return UFP_OK;
+			break;
 	} while (os_get_timer_us() <= tmo);
+
+	/* Last check */
+	if (sr & SR_BUSY)
+		STATUS_CHECK_RET(spi_nor_read_sr(snor, &sr));
+
+	if (!(sr & SR_BUSY))
+		return UFP_OK;
 
 	logm_err("Timed out waiting for flash idle\n");
 

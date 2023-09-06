@@ -29,12 +29,12 @@
 
 #define SNOR_DFL_PAGE_SIZE			256
 
-#define SNOR_READ_NO_ADDR_DUMMY_OP(_opcode, _bw, _len, _id)	\
+#define SNOR_READ_NO_ADDR_DUMMY_OP(_opcode, _bw, _len, _data)	\
 	SPI_MEM_OP(						\
 		SPI_MEM_OP_CMD(_opcode, _bw),			\
 		SPI_MEM_OP_NO_ADDR,				\
 		SPI_MEM_OP_NO_DUMMY,				\
-		SPI_MEM_OP_DATA_IN(_len, _id, _bw)		\
+		SPI_MEM_OP_DATA_IN(_len, _data, _bw)		\
 	);
 
 #define SNOR_READ_ID_OP(_opcode, _bw, _len, _ndummy, _id)	\
@@ -53,12 +53,12 @@
 		SPI_MEM_OP_DATA_IN(_len, _data, _bw)		\
 	);
 
-#define SNOR_WRITE_NO_ADDR_DUMMY_OP(_opcode, _bw, _len, _id)	\
+#define SNOR_WRITE_NO_ADDR_DUMMY_OP(_opcode, _bw, _len, _data)	\
 	SPI_MEM_OP(						\
 		SPI_MEM_OP_CMD(_opcode, _bw),			\
 		SPI_MEM_OP_NO_ADDR,				\
 		SPI_MEM_OP_NO_DUMMY,				\
-		SPI_MEM_OP_DATA_OUT(_len, _id, _bw)		\
+		SPI_MEM_OP_DATA_OUT(_len, _data, _bw)		\
 	);
 
 struct spi_nor_param {

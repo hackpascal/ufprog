@@ -21,7 +21,7 @@
  /* ESMT vendor flags */
 #define ESMT_F_OTP_NO_EXSO				BIT(0)
 
-static struct spi_nor_part_flag_enum_info esmt_vendor_flag_info[] = {
+static const struct spi_nor_part_flag_enum_info esmt_vendor_flag_info[] = {
 	{ 0, "otp-no-exso" },
 };
 

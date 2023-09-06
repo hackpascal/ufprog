@@ -1095,6 +1095,7 @@ static int UFPROG_API spi_nor_ext_vendors_cb(void *priv, const char *key, struct
 		new_vendor->name = os_strdup(vendor->name);
 		new_vendor->mfr_id = vendor->mfr_id;
 		new_vendor->default_part_fixups = vendor->default_part_fixups;
+		new_vendor->default_part_ops = vendor->default_part_ops;
 		new_vendor->ops = vendor->ops;
 	} else {
 		ret = json_read_hex32(jobj, "mfr-id", &mfr_id, 0);

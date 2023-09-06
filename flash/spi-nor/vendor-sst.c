@@ -22,7 +22,7 @@
 /* SST vendor flags */
 #define SST_F_PWRON_BLK_LOCKS			BIT(0)
 
-static struct spi_nor_part_flag_enum_info sst_vendor_flag_info[] = {
+static const struct spi_nor_part_flag_enum_info sst_vendor_flag_info[] = {
 	{ 0, "power-on-block-locks" },
 };
 

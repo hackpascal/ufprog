@@ -62,7 +62,7 @@
 #define GD_F_OTP_LOCK_CR_BIT3			BIT(14)
 #define GD_F_IOM_NVCR0				BIT(15)
 
-static struct spi_nor_part_flag_enum_info gigadevice_vendor_flag_info[] = {
+static const struct spi_nor_part_flag_enum_info gigadevice_vendor_flag_info[] = {
 	{ 0, "otp-1" },
 	{ 1, "qpi-dummy-10" },
 	{ 2, "qpi-4b-opcode" },
