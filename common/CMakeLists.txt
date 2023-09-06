@@ -34,6 +34,7 @@ set(ufprog_common_src
 	hexdump.c
 	progbar.c
 	buffdiff.c
+	bitmap.c
 	internal/plugin-common.c
 )
 

@@ -137,6 +137,14 @@ EXPORTS
 	crc32_no_comp
 	crc32_be_no_comp
 
+	bitmap_create
+	bitmap_free
+	bitmap_set
+	bitmap_get
+	bitmap_reset
+	bitmap_data
+	bitmap_data_size
+
 	generic_ffs
 	generic_fls
 	generic_hweight32
