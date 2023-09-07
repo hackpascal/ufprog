@@ -55,6 +55,7 @@ struct nand_chip {
 	uint16_t bus_width;
 	uint16_t bits_per_cell;
 	uint32_t nops;
+	bool random_page_write;
 	struct nand_id id;
 	struct nand_memorg memorg;
 	struct nand_ecc_config ecc_req;

@@ -188,6 +188,7 @@ ufprog_status UFPROG_API ufprog_nand_info(struct nand_chip *nand, struct nand_in
 	retinfo->bus_width = nand->bus_width;
 	retinfo->bits_per_cell = nand->bits_per_cell;
 	retinfo->nops = nand->nops;
+	retinfo->random_page_write = nand->random_page_write;
 
 	if (nand->read_uid) {
 		ret = nand->read_uid(nand, NULL, &retinfo->uid_length);
@@ -1172,7 +1173,9 @@ ufprog_status UFPROG_API ufprog_nand_torture_block(struct nand_chip *nand, uint3
 
 	STATUS_CHECK_RET(nand_torture_test_pattern(nand, block, TORTURE_TEST_PAT, TORTURE_TEST_PAT, true));
 	STATUS_CHECK_RET(nand_torture_test_pattern(nand, block, TORTURE_TEST_CMP_PAT, TORTURE_TEST_CMP_PAT, true));
-	STATUS_CHECK_RET(nand_torture_test_pattern(nand, block, TORTURE_TEST_PAT, 0, false));
+
+	if (nand->random_page_write)
+		STATUS_CHECK_RET(nand_torture_test_pattern(nand, block, TORTURE_TEST_PAT, 0, false));
 
 	/* Test passed. Erase this block. */
 	ret = ufprog_nand_erase_block(nand, block << nand->maux.pages_per_block_shift);

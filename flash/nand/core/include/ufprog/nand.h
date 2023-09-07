@@ -82,6 +82,7 @@ struct nand_info {
 	uint32_t nops;
 	uint32_t uid_length;
 	uint32_t otp_pages;
+	ufprog_bool random_page_write;
 	struct nand_id id;
 	struct nand_ecc_config ecc_req;
 	struct nand_memorg memorg;
