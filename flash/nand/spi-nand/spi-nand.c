@@ -1220,6 +1220,8 @@ static ufprog_status spi_nand_setup_param_final(struct spi_nand *snand, const st
 			snand->nand.otp_ops = vendor->default_part_otp_ops;
 	}
 
+	snand->nand.random_page_write = !!(part->flags & SNAND_F_RND_PAGE_WRITE);
+
 	memcpy(&snand->nand.memorg, part->memorg, sizeof(snand->nand.memorg));
 	ufprog_nand_update_param(&snand->nand);
 

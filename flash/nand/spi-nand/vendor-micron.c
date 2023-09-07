@@ -443,6 +443,8 @@ ufprog_status micron_part_fixup(struct spi_nand *snand, struct spi_nand_flash_pa
 		}
 	}
 
+	bp->p.flags |= SNAND_F_RND_PAGE_WRITE;
+
 	return UFP_OK;
 }
 

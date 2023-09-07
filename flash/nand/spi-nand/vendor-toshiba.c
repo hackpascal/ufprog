@@ -190,6 +190,8 @@ static ufprog_status toshiba_part_fixup(struct spi_nand *snand, struct spi_nand_
 
 	bp->p.nops = bp->p.memorg->page_size / 512;
 
+	bp->p.flags |= SNAND_F_RND_PAGE_WRITE;
+
 	return UFP_OK;
 }
 

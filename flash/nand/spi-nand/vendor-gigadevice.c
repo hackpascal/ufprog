@@ -739,6 +739,8 @@ static ufprog_status gd_part_fixup(struct spi_nand *snand, struct spi_nand_flash
 	if (bp->p.vendor_flags & GD_F_PP_OTP_PAGE_4)
 		spi_nand_probe_onfi_generic(snand, bp, 4, false);
 
+	bp->p.flags |= SNAND_F_RND_PAGE_WRITE;
+
 	return UFP_OK;
 }
 

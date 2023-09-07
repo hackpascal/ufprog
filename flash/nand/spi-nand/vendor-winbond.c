@@ -313,6 +313,8 @@ static ufprog_status winbond_part_fixup(struct spi_nand *snand, struct spi_nand_
 		}
 	}
 
+	bp->p.flags |= SNAND_F_RND_PAGE_WRITE;
+
 	return UFP_OK;
 }
 

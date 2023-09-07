@@ -27,6 +27,7 @@ struct spi_nand_flash_part_blank;
 #define SNAND_F_CONTINUOUS_READ			BIT(7)
 #define SNAND_F_BBM_2ND_PAGE			BIT(8)
 #define SNAND_F_NO_OP				BIT(9)
+#define SNAND_F_RND_PAGE_WRITE			BIT(10)
 
 #define SNAND_FLAGS(_f)				.flags = (_f)
 #define SNAND_VENDOR_FLAGS(_f)			.vendor_flags = (_f)

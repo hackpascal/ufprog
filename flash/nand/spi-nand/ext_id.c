@@ -54,6 +54,7 @@ static const struct spi_nand_part_flag_enum_info part_flags[] = {
 	{ 7, "continuous-read" },
 	{ 8, "bbm-check-2nd-page" },
 	{ 9, "no-op" },
+	{ 10, "random-page-write" },
 };
 
 static const struct spi_nand_part_flag_enum_info part_id_types[] = {
