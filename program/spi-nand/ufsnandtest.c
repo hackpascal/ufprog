@@ -626,7 +626,7 @@ static int nand_test_rw(struct ufnand_instance *nandinst, uint64_t addr, uint64_
 		goto cleanup_bbt;
 	os_printf("\n");
 
-	if (!raw || nandinst->info.nops == 1)
+	if (!raw || !nandinst->info.random_page_write || nandinst->info.nops == 1)
 		goto end;
 
 	os_printf("5. Writing complementary pattern\n");
