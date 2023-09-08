@@ -11,7 +11,9 @@
 
 #include <ufprog/spi-nor.h>
 
-#define SNOR_REGACC_F_LITTLE_ENDIAN			BIT(0)
+#define SNOR_MAX_REG_DESC				4
+
+#define SNOR_REGACC_F_BIG_ENDIAN			BIT(0)
 #define SNOR_REGACC_F_NO_WREN				BIT(1)
 #define SNOR_REGACC_F_VOLATILE_WREN_50H			BIT(2)
 #define SNOR_REGACC_F_HAS_VOLATILE_WR_OPCODE		BIT(3)
@@ -19,36 +21,44 @@
 
 enum snor_reg_access_type {
 	SNOR_REG_NORMAL,
-	SNOR_REG_SRCR,
-	SNOR_REG_DUAL,
+	SNOR_REG_READ_MULTI_WRITE_ONCE,
 
 	__MAX_SNOR_REG_ACCESS_TYPE
 };
 
-struct spi_nor_reg_access {
-	enum snor_reg_access_type type;
+struct spi_nor_reg_desc {
 	uint32_t flags;
 	uint8_t read_opcode;
-	uint8_t read_opcode2;
 	uint8_t write_opcode;
-	uint8_t write_opcode2;
 	uint8_t write_opcode_volatile;
 	uint8_t naddr;
 	uint8_t ndummy_read;
 	uint8_t ndummy_write;
 	uint8_t ndata;
 	uint32_t addr;
+};
+
+struct spi_nor_reg_access {
+	enum snor_reg_access_type type;
+	bool read_big_endian;
+	bool write_big_endian;
+	uint32_t num;
+	struct spi_nor_reg_desc desc[SNOR_MAX_REG_DESC];
 
 	ufprog_status (*pre_acc)(struct spi_nor *snor, const struct spi_nor_reg_access *access);
 	ufprog_status (*post_acc)(struct spi_nor *snor, const struct spi_nor_reg_access *access);
 };
 
 #define SNOR_REG_ACC_NORMAL(_read_opcode, _write_opcode)						\
-	{ .type = SNOR_REG_NORMAL, .ndata = 1, .read_opcode = (_read_opcode), .write_opcode = (_write_opcode) }
+	{ .type = SNOR_REG_NORMAL, .num = 1,								\
+	  .desc[0] = { .ndata = 1, .read_opcode = (_read_opcode), .write_opcode = (_write_opcode), },	\
+	}
 
 #define SNOR_REG_ACC_SRCR(_read_opcode, _read_opcode2, _write_opcode)					\
-	{ .type = SNOR_REG_SRCR, .ndata = 2, .flags = SNOR_REGACC_F_LITTLE_ENDIAN,			\
-	  .read_opcode = (_read_opcode), .read_opcode2 = (_read_opcode2), .write_opcode = (_write_opcode) }
+	{ .type = SNOR_REG_READ_MULTI_WRITE_ONCE, .num = 2,						\
+	  .desc[0] = { .ndata = 1, .read_opcode = (_read_opcode), .write_opcode = (_write_opcode), },	\
+	  .desc[1] = { .ndata = 1, .read_opcode = (_read_opcode2), },					\
+	}
 
 #define VALUE_ITEM(_val, _name)										\
 	{ .value = (_val), .name = (_name) }

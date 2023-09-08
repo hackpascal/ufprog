@@ -63,20 +63,27 @@ static ufprog_status eon_otp_sr_post_acc(struct spi_nor *snor, const struct spi_
 
 static struct spi_nor_reg_access eon_otp_sr_acc = {
 	.type = SNOR_REG_NORMAL,
+	.num = 1,
+	.desc[0] = {
 	.ndata = 1,
 	.read_opcode = SNOR_CMD_READ_SR,
 	.write_opcode = SNOR_CMD_WRITE_SR,
+	},
 	.pre_acc = eon_otp_sr_pre_acc,
 	.post_acc = eon_otp_sr_post_acc,
 };
 
 static const struct spi_nor_reg_access eon_sr1_sr4_acc = {
-	.type = SNOR_REG_DUAL,
-	.flags = SNOR_REGACC_F_LITTLE_ENDIAN,
+	.type = SNOR_REG_NORMAL,
+	.num = 2,
+	.desc[0] = {
 	.read_opcode = SNOR_CMD_READ_SR,
-	.read_opcode2 = SNOR_CMD_EON_READ_SR4,
 	.write_opcode = SNOR_CMD_WRITE_SR,
-	.write_opcode2 = SNOR_CMD_EON_WRITE_SR4,
+	},
+	.desc[1] = {
+		.read_opcode = SNOR_CMD_EON_READ_SR4,
+		.write_opcode = SNOR_CMD_EON_WRITE_SR4,
+	},
 };
 
 static const struct spi_nor_reg_field_item en25p05_sr_fields[] = {

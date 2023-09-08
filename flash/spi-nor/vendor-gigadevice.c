@@ -82,12 +82,16 @@ static const struct spi_nor_part_flag_enum_info gigadevice_vendor_flag_info[] = 
 };
 
 #define GD_REG_ACC_NVCR(_addr)											\
-	{ .type = SNOR_REG_NORMAL, .read_opcode = SNOR_CMD_READ_NVCR, .write_opcode = SNOR_CMD_WRITE_NVCR,	\
-	  .ndata = 1, .addr = (_addr), .ndummy_read = 1, .flags = SNOR_REGACC_F_ADDR_4B_MODE, }
+	{ .type = SNOR_REG_NORMAL, .num = 1,									\
+	  .desc[0] = { .read_opcode = SNOR_CMD_READ_NVCR, .write_opcode = SNOR_CMD_WRITE_NVCR,			\
+		       .ndata = 1, .addr = (_addr), .ndummy_read = 1, .flags = SNOR_REGACC_F_ADDR_4B_MODE, }	\
+	}
 
 #define GD_REG_ACC_VCR(_addr)											\
-	{ .type = SNOR_REG_NORMAL, .read_opcode = SNOR_CMD_READ_VCR, .write_opcode = SNOR_CMD_WRITE_VCR,	\
-	  .ndata = 1, .addr = (_addr), .ndummy_read = 1, .flags = SNOR_REGACC_F_ADDR_4B_MODE }
+	{ .type = SNOR_REG_NORMAL, .num = 1,									\
+	  .desc[0] = { .read_opcode = SNOR_CMD_READ_VCR, .write_opcode = SNOR_CMD_WRITE_VCR,			\
+		       .ndata = 1, .addr = (_addr), .ndummy_read = 1, .flags = SNOR_REGACC_F_ADDR_4B_MODE, }	\
+	}
 
 static const struct spi_nor_reg_access gd_nvcr_0_acc = GD_REG_ACC_NVCR(0);
 static const struct spi_nor_reg_access gd_nvcr_1_acc = GD_REG_ACC_NVCR(1);
@@ -102,12 +106,16 @@ static const struct spi_nor_reg_access gd_vcr_1_acc = GD_REG_ACC_VCR(1);
 static const struct spi_nor_reg_access gd_vcr_4_acc = GD_REG_ACC_VCR(4);
 
 static const struct spi_nor_reg_access gd_srcr_acc = {
-	.type = SNOR_REG_DUAL,
-	.flags = SNOR_REGACC_F_LITTLE_ENDIAN,
+	.type = SNOR_REG_NORMAL,
+	.num = 2,
+	.desc[0] = {
 	.read_opcode = SNOR_CMD_READ_SR,
-	.read_opcode2 = SNOR_CMD_READ_CR,
 	.write_opcode = SNOR_CMD_WRITE_SR,
-	.write_opcode2 = SNOR_CMD_WRITE_CR,
+	},
+	.desc[0] = {
+		.read_opcode = SNOR_CMD_READ_CR,
+		.write_opcode = SNOR_CMD_WRITE_CR,
+	},
 };
 
 static const struct spi_nor_reg_field_item gd25dxc_sr_fields[] = {

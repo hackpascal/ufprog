@@ -28,10 +28,13 @@ static const struct spi_nor_part_flag_enum_info sst_vendor_flag_info[] = {
 
 static const struct spi_nor_reg_access sst_qpi_read_sr_acc = {
 	.type = SNOR_REG_NORMAL,
+	.num = 1,
+	.desc[0] = {
 	.read_opcode = SNOR_CMD_READ_SR,
 	.write_opcode = SNOR_CMD_WRITE_SR,
 	.ndummy_read = 1,
 	.ndata = 1,
+	},
 };
 
 static const struct spi_nor_otp_info sst_otp_800h_16b = {

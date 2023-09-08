@@ -55,46 +55,60 @@ static const struct spi_nor_reg_access issi_fr_acc = SNOR_REG_ACC_NORMAL(SNOR_CM
 
 static const struct spi_nor_reg_access issi_rr_acc = {
 	.type = SNOR_REG_NORMAL,
+	.num = 1,
+	.desc[0] = {
 	.flags = SNOR_REGACC_F_HAS_VOLATILE_WR_OPCODE | SNOR_REGACC_F_NO_WREN,
 	.read_opcode = SNOR_CMD_READ_READ_PARAMETERS,
 	.write_opcode = SNOR_CMD_SET_READ_PARAMETERS_NV,
 	.write_opcode_volatile = SNOR_CMD_SET_READ_PARAMETERS,
 	.ndata = 1,
+	},
 };
 
 static const struct spi_nor_reg_access issi_err_acc = {
 	.type = SNOR_REG_NORMAL,
+	.num = 1,
+	.desc[0] = {
 	.flags = SNOR_REGACC_F_HAS_VOLATILE_WR_OPCODE | SNOR_REGACC_F_NO_WREN,
 	.read_opcode = SNOR_CMD_READ_EXT_READ_PARAMETERS,
 	.write_opcode = SNOR_CMD_SET_EXT_READ_PARAMETERS_NV,
 	.write_opcode_volatile = SNOR_CMD_SET_EXT_READ_PARAMETERS_V,
 	.ndata = 1,
+	},
 };
 
 static const struct spi_nor_reg_access issi_abr_acc = {
 	.type = SNOR_REG_NORMAL,
-	.flags = SNOR_REGACC_F_LITTLE_ENDIAN,
+	.num = 1,
+	.desc[0] = {
 	.read_opcode = SNOR_CMD_READ_AUTOBOOT_REG,
 	.write_opcode = SNOR_CMD_WRITE_AUTOBOOT_REG,
 	.ndata = 4,
+	},
 };
 
 static const struct spi_nor_reg_access issi_bar_acc = {
 	.type = SNOR_REG_NORMAL,
+	.num = 1,
+	.desc[0] = {
 	.flags = SNOR_REGACC_F_HAS_VOLATILE_WR_OPCODE | SNOR_REGACC_F_NO_WREN,
 	.read_opcode = SNOR_CMD_READ_BANK,
 	.write_opcode = SNOR_CMD_WRITE_BANK_NV,
 	.write_opcode_volatile = SNOR_CMD_WRITE_BANK,
 	.ndata = 1,
+	},
 };
 
 static const struct spi_nor_reg_access issi_dlpr_acc = {
 	.type = SNOR_REG_NORMAL,
+	.num = 1,
+	.desc[0] = {
 	.flags = SNOR_REGACC_F_HAS_VOLATILE_WR_OPCODE | SNOR_REGACC_F_NO_WREN,
 	.read_opcode = SNOR_CMD_READ_DLP_REG,
 	.write_opcode = SNOR_CMD_WRITE_DLP_REG_NV,
 	.write_opcode_volatile = SNOR_CMD_WRITE_DLP_REG_V,
 	.ndata = 1,
+	},
 };
 
 static const struct spi_nor_reg_field_item is25cd_sr_fields[] = {
