@@ -451,8 +451,8 @@ static const struct spi_nor_flash_part_fixup w25q256xv_fixups = {
 	.pre_param_setup = w25q256xv_fixup_model,
 };
 
-static DEFINE_SNOR_ALIAS(w25q80_alias, "W25Q80BV", "W25Q80DV");
-static DEFINE_SNOR_ALIAS(w25q16bv_alias, "W25Q16CV", "W25Q16DV");
+static DEFINE_SNOR_ALIAS(w25q80_alias, SNOR_ALIAS_MODEL("W25Q80BV"), SNOR_ALIAS_MODEL("W25Q80DV"));
+static DEFINE_SNOR_ALIAS(w25q16bv_alias, SNOR_ALIAS_MODEL("W25Q16CV"), SNOR_ALIAS_MODEL("W25Q16DV"));
 
 static const struct spi_nor_flash_part winbond_parts[] = {
 	SNOR_PART("W25X05", SNOR_ID(0xef, 0x30, 0x10), SZ_64K,

@@ -1910,12 +1910,12 @@ ufprog_status UFPROG_API ufprog_spi_nor_part_init(struct spi_nor *snor, const ch
 
 	if (strcasecmp(part, vpreq.part->model)) {
 		for (i = 0; i < vpreq.part->alias->num; i++) {
-			if (!strcasecmp(part, vpreq.part->alias->names[i])) {
-				namelen = strlen(vpreq.part->alias->names[i]);
+			if (!strcasecmp(part, vpreq.part->alias->items[i].model)) {
+				namelen = strlen(vpreq.part->alias->items[i].model);
 				if (namelen >= sizeof(bp.model))
 					namelen = sizeof(bp.model) - 1;
 
-				memcpy(bp.model, vpreq.part->alias->names[i], namelen);
+				memcpy(bp.model, vpreq.part->alias->items[i].model, namelen);
 				bp.model[namelen] = 0;
 
 				break;

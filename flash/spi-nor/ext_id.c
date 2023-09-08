@@ -717,9 +717,9 @@ static ufprog_status spi_nor_ext_part_read_alias(struct json_object *jpart, stru
 						 const char *path)
 {
 	struct spi_nor_flash_part_alias *alias;
-	struct json_object *jalias;
+	struct json_object *jalias, *jitem;
+	const char *vendor, *model;
 	ufprog_status ret;
-	const char *name;
 	size_t i, n;
 
 	ret = json_read_array(jpart, "alias", &jalias);
@@ -735,7 +735,7 @@ static ufprog_status spi_nor_ext_part_read_alias(struct json_object *jpart, stru
 
 	n = json_array_len(jalias);
 
-	alias = calloc(1, sizeof(*alias) + n * sizeof(const char *));
+	alias = calloc(1, sizeof(*alias) + n * sizeof(struct spi_nor_flash_part_alias_item));
 	if (!alias) {
 		logm_err("No memory for flash part alias\n");
 		return UFP_NOMEM;
@@ -744,19 +744,38 @@ static ufprog_status spi_nor_ext_part_read_alias(struct json_object *jpart, stru
 	alias->num = (uint32_t)n;
 
 	for (i = 0; i < n; i++) {
-		ret = json_array_read_str(jalias, i, &name, NULL);
+		ret = json_array_read_obj(jalias, i, &jitem);
 		if (ret) {
 			logm_err("Invalid type of %s/%s/%zu\n", path, "alias", i);
 			return ret;
 		}
 
-		if (!*name) {
-			logm_err("Alias from %s/%s/%zu must not be empty\n", path, "alias", i);
+		ret = json_read_str(jitem, "vendor", &vendor, NULL);
+		if (ret) {
+			if (ret != UFP_NOT_EXIST) {
+				logm_err("Invalid type of %s/%s/%zu/%s\n", path, "alias", i, "vendor");
+				return ret;
+			}
+		} else {
+			alias->items[i].vendor = spi_nor_find_vendor_by_id(vendor);
+			if (!alias->items[i].vendor) {
+				logm_err("Vendor named '%s' does not exist\n", vendor);
+				return UFP_JSON_DATA_INVALID;
+			}
+		}
+
+		ret = json_read_str(jitem, "model", &model, NULL);
+		if (ret) {
+			if (ret == UFP_NOT_EXIST)
+				logm_err("Alias model name from %s/%s/%zu must not be empty\n", path, "alias", i);
+			else
+				logm_err("Invalid type of %s/%s/%zu/%s\n", path, "alias", i, "model");
+
 			return UFP_JSON_DATA_INVALID;
 		}
 
-		alias->names[i] = os_strdup(name);
-		if (!alias->names[i]) {
+		alias->items[i].model = os_strdup(model);
+		if (alias->items[i].model) {
 			logm_err("No memory for flash part alias\n");
 			return UFP_NOMEM;
 		}
@@ -818,8 +837,8 @@ static void spi_nor_reset_ext_part(struct spi_nor_flash_part *part)
 
 	if (part->alias) {
 		for (i = 0; i < part->alias->num; i++) {
-			if (part->alias->names[i])
-				free((void *)part->alias->names[i]);
+			if (part->alias->items[i].model)
+				free((void *)part->alias->items[i].model);
 		}
 
 		free((void *)part->alias);

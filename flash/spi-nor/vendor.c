@@ -203,8 +203,11 @@ uint32_t spi_nor_vendor_list_parts(const struct spi_nor_vendor *vendor, const ch
 		if (part->alias && part->alias->num) {
 			for (j = 0; j < part->alias->num; j++) {
 				if (list) {
-					list[count].vendor = vendor->name;
-					list[count].name = part->alias->names[j];
+					if (part->alias->items[j].vendor)
+						list[count].vendor = part->alias->items[j].vendor->name;
+					else
+						list[count].vendor = vendor->name;
+					list[count].name = part->alias->items[j].model;
 				}
 
 				count++;

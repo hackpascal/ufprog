@@ -78,8 +78,8 @@ static const struct spi_nor_otp_info esmt_otp_4k = {
 	.size = 0x1000,
 };
 
-static DEFINE_SNOR_ALIAS(f25l004a_alias, "F25S004A");
-static DEFINE_SNOR_ALIAS(f25l04pa_alias, "F25S04PA");
+static DEFINE_SNOR_ALIAS(f25l004a_alias, SNOR_ALIAS_MODEL("F25S004A"));
+static DEFINE_SNOR_ALIAS(f25l04pa_alias, SNOR_ALIAS_MODEL("F25S04PA"));
 
 static const struct spi_nor_flash_part esmt_parts[] = {
 	SNOR_PART("F25L05PA", SNOR_ID(0x8c, 0x30, 0x10), SZ_64K,

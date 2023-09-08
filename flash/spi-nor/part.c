@@ -215,7 +215,7 @@ const struct spi_nor_flash_part *spi_nor_find_part_by_name(const struct spi_nor_
 			continue;
 
 		for (j = 0; j < parts[i].alias->num; j++) {
-			if (!strcasecmp(parts[i].alias->names[j], model))
+			if (!strcasecmp(parts[i].alias->items[j].model, model))
 				return &parts[i];
 		}
 	}

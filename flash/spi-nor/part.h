@@ -216,15 +216,24 @@ struct spi_nor_flash_part_ops {
 
 #define SNOR_OPS(_ops)				.ops = (_ops)
 
-struct spi_nor_flash_part_alias {
-	uint32_t num;
-	const char *names[];
+struct spi_nor_flash_part_alias_item {
+	const struct spi_nor_vendor *vendor;
+	const char *model;
 };
 
-#define DEFINE_SNOR_ALIAS(_name, ...)							\
-	const struct spi_nor_flash_part_alias _name = {					\
-		.names = { __VA_ARGS__ },						\
-		.num = sizeof((const char *[]){ __VA_ARGS__ }) / sizeof(const char *) }
+#define SNOR_ALIAS_VENDOR_MODEL(_vendor, _model)	{ .vendor = (_vendor), .model = (_model) }
+#define SNOR_ALIAS_MODEL(_model)			{ .model = (_model) }
+
+struct spi_nor_flash_part_alias {
+	uint32_t num;
+	struct spi_nor_flash_part_alias_item items[];
+};
+
+#define DEFINE_SNOR_ALIAS(_name, ...)								\
+	const struct spi_nor_flash_part_alias _name = {						\
+		.items = { __VA_ARGS__ },							\
+		.num = sizeof((const struct spi_nor_flash_part_alias_item[]){ __VA_ARGS__ }) /	\
+		       sizeof(struct spi_nor_flash_part_alias_item) }
 
 #define SNOR_ALIAS(_alias)			.alias = (_alias)
 
