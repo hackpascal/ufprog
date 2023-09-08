@@ -47,7 +47,7 @@ struct spi_nand *UFPROG_API ufprog_spi_nand_create(void)
 
 	snand = calloc(1, sizeof(*snand));
 	if (!snand) {
-		logm_err("No memory for SPI-NOR object\n");
+		logm_err("No memory for SPI-NAND object\n");
 		return NULL;
 	}
 
