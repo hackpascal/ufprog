@@ -453,10 +453,11 @@ static ufprog_status spi_nor_ext_part_read_io_caps(struct json_object *jpart, co
 }
 
 static ufprog_status spi_nor_ext_part_read_erase_info(struct json_object *jpart, const char *field,
-						      struct spi_nor_erase_info **outei, const char *path)
+						      const struct spi_nor_erase_info **outei, bool *ret_needs_free,
+						      const char *path)
 {
 	const struct spi_nor_erase_info *cei;
-	struct spi_nor_erase_info tmpei;
+	struct spi_nor_erase_info *tmpei;
 	struct json_object *jei;
 	const char *ei_name;
 	ufprog_status ret;
@@ -481,35 +482,36 @@ static ufprog_status spi_nor_ext_part_read_erase_info(struct json_object *jpart,
 			ret = UFP_NOT_EXIST;
 			goto cleanup;
 		}
+
+		*(outei) = cei;
+		*ret_needs_free = false;
+
+		ret = UFP_OK;
 	} else if (json_is_array(jpart, field)) {
 		json_read_array(jpart, field, &jei);
 
-		ret = spi_nor_parse_ext_erase_group(jei, &tmpei, npath);
-		if (ret) {
-			logm_err("Failed to parse erase group %s\n", npath);
-			ret = UFP_JSON_DATA_INVALID;
+		tmpei = malloc(sizeof(struct spi_nor_erase_info));
+		if (!tmpei) {
+			logm_err("No memory for erase group %s\n", npath);
+			ret = UFP_NOMEM;
 			goto cleanup;
 		}
 
-		cei = &tmpei;
+		ret = spi_nor_parse_ext_erase_group(jei, tmpei, npath);
+		if (ret) {
+			logm_err("Failed to parse erase group %s\n", npath);
+			ret = UFP_JSON_DATA_INVALID;
+			free(tmpei);
+			goto cleanup;
+		}
+
+		*(outei) = tmpei;
+		*ret_needs_free = true;
 	} else {
 		logm_err("Invalid type of %s\n", npath);
 		ret = UFP_JSON_TYPE_INVALID;
 		goto cleanup;
 	}
-
-	*outei = malloc(sizeof(struct spi_nor_erase_info));
-	if (!*outei) {
-		logm_err("No memory for erase group %s\n", npath);
-		ret = UFP_NOMEM;
-		goto cleanup;
-	}
-
-	memcpy(*outei, cei, sizeof(struct spi_nor_erase_info));
-
-	free(npath);
-
-	return UFP_OK;
 
 cleanup:
 	free(npath);
@@ -518,11 +520,11 @@ cleanup:
 }
 
 static ufprog_status spi_nor_ext_part_read_io_opcodes(struct json_object *jpart, const char *field,
-						      struct spi_nor_io_opcode **out_opcodes, uint32_t *out_iocaps,
-						      const char *path)
+						      const struct spi_nor_io_opcode **out_opcodes, uint32_t *out_iocaps,
+						      bool *ret_needs_free, const char *path)
 {
-	struct spi_nor_io_opcode tmp_opcodes[__SPI_MEM_IO_MAX];
 	const struct spi_nor_io_opcode *copcodes;
+	struct spi_nor_io_opcode *tmp_opcodes;
 	struct json_object *jopcode;
 	const char *opcode_name;
 	ufprog_status ret;
@@ -549,35 +551,35 @@ static ufprog_status spi_nor_ext_part_read_io_opcodes(struct json_object *jpart,
 		}
 
 		*out_iocaps = 0;
+		*(out_opcodes) = copcodes;
+		*ret_needs_free = false;
+
+		ret = UFP_OK;
 	} else if (json_is_obj(jpart, field)) {
 		json_read_obj(jpart, field, &jopcode);
+
+		tmp_opcodes = malloc(sizeof(struct spi_nor_io_opcode) * __SPI_MEM_IO_MAX);
+		if (!tmp_opcodes) {
+			logm_err("No memory for I/O opcode group %s\n", npath);
+			ret = UFP_NOMEM;
+			goto cleanup;
+		}
 
 		ret = spi_nor_parse_ext_io_opcodes(jopcode, tmp_opcodes, out_iocaps, npath);
 		if (ret) {
 			logm_err("Failed to parse I/O opcode group %s\n", npath);
 			ret = UFP_JSON_DATA_INVALID;
+			free(tmp_opcodes);
 			goto cleanup;
 		}
 
-		copcodes = tmp_opcodes;
+		*(out_opcodes) = tmp_opcodes;
+		*ret_needs_free = true;
 	} else {
 		logm_err("Invalid type of %s\n", npath);
 		ret = UFP_JSON_TYPE_INVALID;
 		goto cleanup;
 	}
-
-	*out_opcodes = malloc(sizeof(struct spi_nor_io_opcode) * __SPI_MEM_IO_MAX);
-	if (!*out_opcodes) {
-		logm_err("No memory for I/O opcode group %s\n", npath);
-		ret = UFP_NOMEM;
-		goto cleanup;
-	}
-
-	memcpy(*out_opcodes, copcodes, sizeof(struct spi_nor_io_opcode) * __SPI_MEM_IO_MAX);
-
-	free(npath);
-
-	return UFP_OK;
 
 cleanup:
 	free(npath);
@@ -795,32 +797,32 @@ static void spi_nor_reset_ext_part(struct spi_nor_flash_part *part)
 		part->model = NULL;
 	}
 
-	if (part->erase_info_3b) {
+	if (part->erase_info_3b && (part->ext_id_flags & SPI_NOR_EXT_PART_FREE_ERASE_GROUP_3B)) {
 		free((void *)part->erase_info_3b);
 		part->erase_info_3b = NULL;
 	}
 
-	if (part->erase_info_4b) {
+	if (part->erase_info_4b && (part->ext_id_flags & SPI_NOR_EXT_PART_FREE_ERASE_GROUP_4B)) {
 		free((void *)part->erase_info_4b);
 		part->erase_info_4b = NULL;
 	}
 
-	if (part->read_opcodes_3b) {
+	if (part->read_opcodes_3b && (part->ext_id_flags & SPI_NOR_EXT_PART_FREE_READ_OPCODES_3B)) {
 		free((void *)part->read_opcodes_3b);
 		part->read_opcodes_3b = NULL;
 	}
 
-	if (part->read_opcodes_4b) {
+	if (part->read_opcodes_4b && (part->ext_id_flags & SPI_NOR_EXT_PART_FREE_READ_OPCODES_4B)) {
 		free((void *)part->read_opcodes_4b);
 		part->read_opcodes_4b = NULL;
 	}
 
-	if (part->pp_opcodes_3b) {
+	if (part->pp_opcodes_3b && (part->ext_id_flags & SPI_NOR_EXT_PART_FREE_PP_OPCODES_3B)) {
 		free((void *)part->pp_opcodes_3b);
 		part->pp_opcodes_3b = NULL;
 	}
 
-	if (part->pp_opcodes_4b) {
+	if (part->pp_opcodes_4b && (part->ext_id_flags & SPI_NOR_EXT_PART_FREE_PP_OPCODES_4B)) {
 		free((void *)part->pp_opcodes_4b);
 		part->pp_opcodes_4b = NULL;
 	}
@@ -844,6 +846,8 @@ static void spi_nor_reset_ext_part(struct spi_nor_flash_part *part)
 		free((void *)part->alias);
 		part->alias = NULL;
 	}
+
+	part->ext_id_flags = 0;
 }
 
 static int UFPROG_API spi_nor_ext_vendor_parts_cb(void *priv, const char *key, struct json_object *jpart)
@@ -851,12 +855,13 @@ static int UFPROG_API spi_nor_ext_vendor_parts_cb(void *priv, const char *key, s
 	struct ext_parts_info *pi = priv;
 	struct spi_nor_flash_part *part = &pi->parts[pi->nparts];
 	const struct spi_nor_flash_part *chkpart;
+	const struct spi_nor_io_opcode *opcodes;
 	struct spi_nor_flash_part_alias *alias;
+	const struct spi_nor_erase_info *ei;
 	struct spi_nor_wp_info *wp_ranges;
-	struct spi_nor_io_opcode *opcodes;
-	struct spi_nor_erase_info *ei;
 	struct spi_nor_otp_info *otp;
 	uint32_t val, io_caps;
+	bool needs_free;
 	char *path;
 
 	if (!*key) {
@@ -982,37 +987,49 @@ static int UFPROG_API spi_nor_ext_vendor_parts_cb(void *priv, const char *key, s
 	if (pi->ret)
 		goto cleanup;
 
-	pi->ret = spi_nor_ext_part_read_erase_info(jpart, "erase-info-3b", &ei, path);
+	pi->ret = spi_nor_ext_part_read_erase_info(jpart, "erase-info-3b", &ei, &needs_free, path);
 	if (pi->ret)
 		goto cleanup;
+	if (needs_free)
+		part->ext_id_flags |= SPI_NOR_EXT_PART_FREE_ERASE_GROUP_3B;
 	part->erase_info_3b = ei;
 
-	pi->ret = spi_nor_ext_part_read_erase_info(jpart, "erase-info-4b", &ei, path);
+	pi->ret = spi_nor_ext_part_read_erase_info(jpart, "erase-info-4b", &ei, &needs_free, path);
 	if (pi->ret)
 		goto cleanup;
+	if (needs_free)
+		part->ext_id_flags |= SPI_NOR_EXT_PART_FREE_ERASE_GROUP_4B;
 	part->erase_info_4b = ei;
 
-	pi->ret = spi_nor_ext_part_read_io_opcodes(jpart, "read-opcodes-3b", &opcodes, &io_caps, path);
+	pi->ret = spi_nor_ext_part_read_io_opcodes(jpart, "read-opcodes-3b", &opcodes, &io_caps, &needs_free, path);
 	if (pi->ret)
 		goto cleanup;
+	if (needs_free)
+		part->ext_id_flags |= SPI_NOR_EXT_PART_FREE_READ_OPCODES_3B;
 	part->read_opcodes_3b = opcodes;
 	part->read_io_caps |= io_caps;
 
-	pi->ret = spi_nor_ext_part_read_io_opcodes(jpart, "read-opcodes-4b", &opcodes, &io_caps, path);
+	pi->ret = spi_nor_ext_part_read_io_opcodes(jpart, "read-opcodes-4b", &opcodes, &io_caps, &needs_free, path);
 	if (pi->ret)
 		goto cleanup;
+	if (needs_free)
+		part->ext_id_flags |= SPI_NOR_EXT_PART_FREE_READ_OPCODES_4B;
 	part->read_opcodes_4b = opcodes;
 	part->read_io_caps |= io_caps;
 
-	pi->ret = spi_nor_ext_part_read_io_opcodes(jpart, "pp-opcodes-3b", &opcodes, &io_caps, path);
+	pi->ret = spi_nor_ext_part_read_io_opcodes(jpart, "pp-opcodes-3b", &opcodes, &io_caps, &needs_free, path);
 	if (pi->ret)
 		goto cleanup;
+	if (needs_free)
+		part->ext_id_flags |= SPI_NOR_EXT_PART_FREE_PP_OPCODES_3B;
 	part->pp_opcodes_3b = opcodes;
 	part->pp_io_caps |= io_caps;
 
-	pi->ret = spi_nor_ext_part_read_io_opcodes(jpart, "pp-opcodes-4b", &opcodes, &io_caps, path);
+	pi->ret = spi_nor_ext_part_read_io_opcodes(jpart, "pp-opcodes-4b", &opcodes, &io_caps, &needs_free, path);
 	if (pi->ret)
 		goto cleanup;
+	if (needs_free)
+		part->ext_id_flags |= SPI_NOR_EXT_PART_FREE_PP_OPCODES_4B;
 	part->pp_opcodes_4b = opcodes;
 	part->pp_io_caps |= io_caps;
 

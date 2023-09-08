@@ -280,6 +280,8 @@ struct spi_nor_flash_part {
 
 	const struct spi_nor_flash_part_ops *ops;
 	const struct spi_nor_flash_part_fixup *fixups;
+
+	uint32_t ext_id_flags;
 };
 
 struct spi_nor_flash_part_blank {

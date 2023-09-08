@@ -11,6 +11,13 @@
 
 #include <ufprog/common.h>
 
+#define SPI_NOR_EXT_PART_FREE_ERASE_GROUP_3B		BIT(0)
+#define SPI_NOR_EXT_PART_FREE_ERASE_GROUP_4B		BIT(1)
+#define SPI_NOR_EXT_PART_FREE_READ_OPCODES_3B		BIT(2)
+#define SPI_NOR_EXT_PART_FREE_READ_OPCODES_4B		BIT(3)
+#define SPI_NOR_EXT_PART_FREE_PP_OPCODES_3B		BIT(4)
+#define SPI_NOR_EXT_PART_FREE_PP_OPCODES_4B		BIT(5)
+
 struct spi_nor_part_flag_enum_info {
 	uint32_t val;
 	const char *name;
