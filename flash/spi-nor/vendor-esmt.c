@@ -331,8 +331,9 @@ static const struct spi_nor_flash_part_otp_ops esmt_otp_no_exso_ops = {
 
 static ufprog_status esmt_part_fixup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
 {
-	spi_nor_blank_part_fill_default_opcodes(bp);
 	uint32_t scur;
+
+	spi_nor_blank_part_fill_default_opcodes(bp);
 
 	if (bp->p.pp_io_caps & BIT_SPI_MEM_IO_1_4_4) {
 		bp->pp_opcodes_3b[SPI_MEM_IO_1_4_4].opcode = SNOR_CMD_PAGE_PROG_QUAD_IO;
