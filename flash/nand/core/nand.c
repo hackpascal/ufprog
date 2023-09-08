@@ -1174,7 +1174,7 @@ ufprog_status UFPROG_API ufprog_nand_torture_block(struct nand_chip *nand, uint3
 	STATUS_CHECK_RET(nand_torture_test_pattern(nand, block, TORTURE_TEST_PAT, TORTURE_TEST_PAT, true));
 	STATUS_CHECK_RET(nand_torture_test_pattern(nand, block, TORTURE_TEST_CMP_PAT, TORTURE_TEST_CMP_PAT, true));
 
-	if (nand->random_page_write)
+	if (nand->random_page_write && nand->nops > 1)
 		STATUS_CHECK_RET(nand_torture_test_pattern(nand, block, TORTURE_TEST_PAT, 0, false));
 
 	/* Test passed. Erase this block. */
