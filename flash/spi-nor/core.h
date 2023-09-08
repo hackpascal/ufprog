@@ -94,7 +94,8 @@ struct spi_nor_ext_param {
 };
 
 struct spi_nor_reg_param {
-	const struct spi_nor_reg_access *sr;
+	const struct spi_nor_reg_access *sr_r;
+	const struct spi_nor_reg_access *sr_w;
 	const struct spi_nor_reg_access *cr;
 	uint32_t cr_shift;
 };

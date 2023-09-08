@@ -370,8 +370,10 @@ static ufprog_status sst_part_fixup(struct spi_nor *snor, struct spi_nor_flash_p
 
 static ufprog_status sst_post_param_setup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
 {
-	if (snor->state.cmd_buswidth_curr == 4)
-		snor->state.reg.sr = &sst_qpi_read_sr_acc;
+	if (snor->state.cmd_buswidth_curr == 4) {
+		snor->state.reg.sr_r = &sst_qpi_read_sr_acc;
+		snor->state.reg.sr_w = &sst_qpi_read_sr_acc;
+	}
 
 	snor->param.max_pp_time_ms = SNOR_PP_TIMEOUT_MS;
 
@@ -591,10 +593,13 @@ static ufprog_status sst_read_uid(struct spi_nor *snor, void *data, uint32_t *re
 
 static ufprog_status sst_setup_qpi(struct spi_nor *snor, bool enabled)
 {
-	if (enabled)
-		snor->state.reg.sr = &sst_qpi_read_sr_acc;
-	else
-		snor->state.reg.sr = &sr_acc;
+	if (enabled) {
+		snor->state.reg.sr_r = &sst_qpi_read_sr_acc;
+		snor->state.reg.sr_w = &sst_qpi_read_sr_acc;
+	} else {
+		snor->state.reg.sr_r = &sr_acc;
+		snor->state.reg.sr_w = &sr_acc;
+	}
 
 	return UFP_OK;
 }

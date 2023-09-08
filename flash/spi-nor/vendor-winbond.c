@@ -1424,6 +1424,7 @@ static ufprog_status winbond_part_fixup(struct spi_nor *snor, struct spi_nor_fla
 		snor->state.reg.cr = &cr_acc;
 		snor->state.reg.cr_shift = 0;
 	} else {
+		snor->state.reg.sr_w = &srcr_acc;
 		snor->state.reg.cr = &srcr_acc;
 		snor->state.reg.cr_shift = 8;
 	}

@@ -256,7 +256,7 @@ ufprog_status spi_nor_read_sr(struct spi_nor *snor, uint8_t *retval)
 	ufprog_status ret;
 	uint32_t val;
 
-	ret = spi_nor_read_reg_acc(snor, snor->state.reg.sr, &val);
+	ret = spi_nor_read_reg_acc(snor, snor->state.reg.sr_r, &val);
 	if (ret)
 		logm_err("Failed to read status register\n");
 	else
@@ -269,10 +269,10 @@ ufprog_status spi_nor_write_sr(struct spi_nor *snor, uint8_t val, bool volatile_
 {
 	ufprog_status ret;
 
-	if (snor->state.reg.cr == &srcr_acc)
-		ret = spi_nor_update_reg_acc(snor, &srcr_acc, 0xff, val, volatile_write);
+	if (snor->state.reg.cr == snor->state.reg.sr_w)
+		ret = spi_nor_update_reg_acc(snor, snor->state.reg.sr_w, 0xff, val, volatile_write);
 	else
-		ret = spi_nor_write_reg_acc(snor, snor->state.reg.sr, val, volatile_write);
+		ret = spi_nor_write_reg_acc(snor, snor->state.reg.sr_w, val, volatile_write);
 
 	if (ret)
 		logm_err("Failed to write status register\n");
@@ -1722,7 +1722,8 @@ static ufprog_status spi_nor_pre_init(struct spi_nor *snor)
 static ufprog_status spi_nor_init(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 				  struct spi_nor_flash_part_blank *bp)
 {
-	snor->state.reg.sr = &sr_acc;
+	snor->state.reg.sr_r = &sr_acc;
+	snor->state.reg.sr_w = &sr_acc;
 
 	if (vp->part && vp->part->fixups && vp->part->fixups->pre_param_setup)
 		STATUS_CHECK_RET(vp->part->fixups->pre_param_setup(snor, bp));
