@@ -301,6 +301,11 @@ ufprog_status spi_nor_write_enable(struct spi_nor *snor)
 	return UFP_OK;
 }
 
+ufprog_status spi_nor_data_write_enable(struct spi_nor *snor)
+{
+	return snor->ext_param.data_write_enable(snor);
+}
+
 ufprog_status spi_nor_write_disable(struct spi_nor *snor)
 {
 	ufprog_status ret;
@@ -1561,6 +1566,9 @@ static ufprog_status spi_nor_setup_param_final(struct spi_nor *snor, const struc
 	snor->param.flags = part->flags;
 	snor->param.vendor_flags = part->vendor_flags;
 
+	if (!snor->ext_param.data_write_enable)
+		snor->ext_param.data_write_enable = spi_nor_write_enable;
+
 	if (!snor->ext_param.write_page) {
 		if (snor->param.flags & SNOR_F_AAI_WRITE)
 			snor->ext_param.write_page = spi_nor_aai_write;
@@ -2266,7 +2274,7 @@ static ufprog_status spi_nor_page_program(struct spi_nor *snor, uint64_t addr, s
 	while (proglen) {
 		STATUS_CHECK_RET(spi_nor_setup_addr(snor, &op.addr.val));
 
-		STATUS_CHECK_RET(spi_nor_write_enable(snor));
+		STATUS_CHECK_RET(spi_nor_data_write_enable(snor));
 
 		STATUS_CHECK_RET(ufprog_spi_mem_adjust_op_size(snor->spi, &op));
 
@@ -2462,7 +2470,7 @@ static ufprog_status spi_nor_erase_block(struct spi_nor *snor, uint64_t addr, co
 
 	STATUS_CHECK_RET(spi_nor_set_low_speed(snor));
 	STATUS_CHECK_RET(spi_nor_setup_addr(snor, &op.addr.val));
-	STATUS_CHECK_RET(spi_nor_write_enable(snor));
+	STATUS_CHECK_RET(spi_nor_data_write_enable(snor));
 	STATUS_CHECK_RET(ufprog_spi_mem_exec_op(snor->spi, &op));
 	STATUS_CHECK_RET(spi_nor_wait_busy(snor, ei->max_erase_time_ms));
 

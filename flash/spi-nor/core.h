@@ -90,6 +90,7 @@ struct spi_nor_ext_param {
 	struct spi_nor_erase_region *erase_regions;
 	uint32_t num_erase_regions;
 
+	ufprog_status (*data_write_enable)(struct spi_nor *snor);
 	ufprog_status (*write_page)(struct spi_nor *snor, uint64_t addr, size_t len, const void *data, size_t *retlen);
 };
 
@@ -154,6 +155,7 @@ ufprog_status spi_nor_read_sr(struct spi_nor *snor, uint8_t *retval);
 ufprog_status spi_nor_write_sr(struct spi_nor *snor, uint8_t val, bool volatile_write);
 
 ufprog_status spi_nor_write_enable(struct spi_nor *snor);
+ufprog_status spi_nor_data_write_enable(struct spi_nor *snor);
 ufprog_status spi_nor_volatile_write_enable(struct spi_nor *snor);
 ufprog_status spi_nor_write_disable(struct spi_nor *snor);
 
