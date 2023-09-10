@@ -890,6 +890,8 @@ void spi_nor_gen_erase_info(const struct spi_nor_flash_part *part, const struct 
 
 static void spi_nor_get_3b_opcodes(const struct spi_nor_flash_part *part, struct spi_nor_opcodes *opcodes)
 {
+	const struct spi_nor_erase_info *ei;
+
 	if (part->read_opcodes_3b)
 		opcodes->read = part->read_opcodes_3b;
 	else
@@ -901,13 +903,20 @@ static void spi_nor_get_3b_opcodes(const struct spi_nor_flash_part *part, struct
 		opcodes->pp = default_pp_opcodes_3b;
 
 	if (part->erase_info_3b)
-		memcpy(&opcodes->ei, part->erase_info_3b, sizeof(opcodes->ei));
+		ei = part->erase_info_3b;
 	else
-		spi_nor_gen_erase_info(part, &default_erase_opcodes_3b, &opcodes->ei);
+		ei = &default_erase_opcodes_3b;
+
+	if (part->flags & (SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SECT_256K))
+		spi_nor_gen_erase_info(part, ei, &opcodes->ei);
+	else
+		memcpy(&opcodes->ei, ei, sizeof(opcodes->ei));
 }
 
 static void spi_nor_get_4b_3b_opcodes(const struct spi_nor_flash_part *part, struct spi_nor_opcodes *opcodes)
 {
+	const struct spi_nor_erase_info *ei;
+
 	if (part->read_opcodes_4b)
 		opcodes->read = part->read_opcodes_4b;
 	else if (part->read_opcodes_3b)
@@ -923,15 +932,22 @@ static void spi_nor_get_4b_3b_opcodes(const struct spi_nor_flash_part *part, str
 		opcodes->pp = default_pp_opcodes_3b;
 
 	if (part->erase_info_4b)
-		memcpy(&opcodes->ei, part->erase_info_4b, sizeof(opcodes->ei));
-	else if (part->erase_info_3b)
-		memcpy(&opcodes->ei, part->erase_info_3b, sizeof(opcodes->ei));
+		ei = part->erase_info_4b;
+	if (part->erase_info_3b)
+		ei = part->erase_info_3b;
 	else
-		spi_nor_gen_erase_info(part, &default_erase_opcodes_3b, &opcodes->ei);
+		ei = &default_erase_opcodes_3b;
+
+	if (part->flags & (SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SECT_256K))
+		spi_nor_gen_erase_info(part, ei, &opcodes->ei);
+	else
+		memcpy(&opcodes->ei, ei, sizeof(opcodes->ei));
 }
 
 static void spi_nor_get_4b_opcodes(const struct spi_nor_flash_part *part, struct spi_nor_opcodes *opcodes)
 {
+	const struct spi_nor_erase_info *ei;
+
 	if (part->read_opcodes_4b)
 		opcodes->read = part->read_opcodes_4b;
 	else
@@ -943,9 +959,14 @@ static void spi_nor_get_4b_opcodes(const struct spi_nor_flash_part *part, struct
 		opcodes->pp = default_pp_opcodes_4b;
 
 	if (part->erase_info_4b)
-		memcpy(&opcodes->ei, part->erase_info_4b, sizeof(opcodes->ei));
+		ei = part->erase_info_4b;
 	else
-		spi_nor_gen_erase_info(part, &default_erase_opcodes_4b, &opcodes->ei);
+		ei = &default_erase_opcodes_4b;
+
+	if (part->flags & (SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_SECT_256K))
+		spi_nor_gen_erase_info(part, ei, &opcodes->ei);
+	else
+		memcpy(&opcodes->ei, ei, sizeof(opcodes->ei));
 }
 
 static bool spi_nor_is_valid_erase_info(const struct spi_nor_erase_info *ei)
