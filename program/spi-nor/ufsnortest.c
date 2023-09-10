@@ -90,7 +90,7 @@ static int snor_test_rw(struct ufsnor_instance *inst)
 
 	for (i = 0; i < test_size; i++) {
 		if (buf[i] != 0xff) {
-			os_fprintf(stderr, "Data at 0x%zx is not 0xff\n", i);
+			os_fprintf(stderr, "Data at 0x%zx is 0x%02x, expected 0xff\n", i, buf[i]);
 			goto out;
 		}
 	}
@@ -104,11 +104,21 @@ static int snor_test_rw(struct ufsnor_instance *inst)
 		goto out;
 	os_printf("\n");
 
+	os_printf("4. Writing complementary pattern\n");
+
+	for (i = 0; i < test_size; i++)
+		test_pat[i] ^= 0xff;
+
+	ret = write_flash_no_erase(inst, 0, test_size, test_pat, false);
+	if (ret)
+		goto out;
+	os_printf("\n");
+
+	os_printf("5. Verify all zero data\n");
+
 	memset(test_pat, 0, test_size);
 
-	os_printf("4. Writing zero data and verify\n");
-
-	ret = write_flash_no_erase(inst, 0, test_size, test_pat, true);
+	ret = verify_flash(inst, 0, test_size, test_pat);
 	if (ret)
 		goto out;
 	os_printf("\n");
@@ -190,6 +200,34 @@ static ufprog_status snor_test_otp_region(struct ufsnor_instance *inst, uint32_t
 	for (i = 0; i < test_size; i++) {
 		if (test_pat[i] != buf[i]) {
 			log_err("Data at 0x%x is different: expected 0x%02x, got 0x%02x\n", i, test_pat[i], buf[i]);
+			goto out;
+		}
+	}
+	os_printf("       Succeeded\n");
+
+	os_printf("    5. Write complementary pattern\n");
+
+	for (i = 0; i < test_size; i++)
+		test_pat[i] ^= 0xff;
+
+	ret = ufprog_spi_nor_otp_write(inst->snor, index, 0, test_size, test_pat);
+	if (ret) {
+		os_fprintf(stderr, "Failed to write OTP region %u\n", index);
+		goto out;
+	}
+	os_printf("       Succeeded\n");
+
+	os_printf("    6. Verify all zero data\n");
+
+	ret = ufprog_spi_nor_otp_read(inst->snor, index, 0, test_size, buf);
+	if (ret) {
+		os_fprintf(stderr, "Failed to read OTP region %u\n", index);
+		goto out;
+	}
+
+	for (i = 0; i < test_size; i++) {
+		if (buf[i]) {
+			log_err("Data at 0x%x is 0x%02x\n", i, buf[i]);
 			goto out;
 		}
 	}
