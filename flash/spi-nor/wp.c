@@ -364,75 +364,75 @@ const struct spi_nor_wp_info wpr_4bp_tb = SNOR_WP_BP(&sr_acc,
 );
 
 const struct spi_nor_wp_info wpr_4bp_tb_cmp = SNOR_WP_BP(&srcr_acc,
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, 0                                                  , -1),	/* None */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,          SR_TB4                                    , -1),	/* None */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -1),	/* None */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -1),	/* None */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP, 0                                                      , -1),	/* None */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,              SR_TB4                                    , -1),	/* None */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,     SR_CMP |          SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -1),	/* None */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,     SR_CMP | SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                   SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,          SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP                                             , -2),	/* All */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4                                    , -2),	/* All */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                       SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,              SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,     SR_CMP                                             , -2),	/* All */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,     SR_CMP | SR_TB4                                    , -2),	/* All */
 
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                                              SR_BP0, 0),	/* Upper 64KB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                                     SR_BP1         , 1),	/* Upper 128KB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                                     SR_BP1 | SR_BP0, 2),	/* Upper 256KB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                            SR_BP2                  , 3),	/* Upper 512KB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                            SR_BP2 |          SR_BP0, 4),	/* Upper 1MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                            SR_BP2 | SR_BP1         , 5),	/* Upper 2MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                            SR_BP2 | SR_BP1 | SR_BP0, 6),	/* Upper 4MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                   SR_BP3                           , 7),	/* Upper 8MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                   SR_BP3 |                   SR_BP0, 8),	/* Upper 16MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                   SR_BP3 |          SR_BP1         , 9),	/* Upper 32MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                   SR_BP3 |          SR_BP1 | SR_BP0, 10),	/* Upper 64MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                   SR_BP3 | SR_BP2                  , 11),	/* Upper 128MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                   SR_BP3 | SR_BP2 | SR_BP1         , 12),	/* Upper 256MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                   SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Upper 512MB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                                                  SR_BP0, 0),	/* Upper 64KB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                                         SR_BP1         , 1),	/* Upper 128KB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                                         SR_BP1 | SR_BP0, 2),	/* Upper 256KB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                                SR_BP2                  , 3),	/* Upper 512KB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                                SR_BP2 |          SR_BP0, 4),	/* Upper 1MB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                                SR_BP2 | SR_BP1         , 5),	/* Upper 2MB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                                SR_BP2 | SR_BP1 | SR_BP0, 6),	/* Upper 4MB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                       SR_BP3                           , 7),	/* Upper 8MB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                       SR_BP3 |                   SR_BP0, 8),	/* Upper 16MB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                       SR_BP3 |          SR_BP1         , 9),	/* Upper 32MB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                       SR_BP3 |          SR_BP1 | SR_BP0, 10),	/* Upper 64MB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                       SR_BP3 | SR_BP2                  , 11),	/* Upper 128MB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                       SR_BP3 | SR_BP2 | SR_BP1         , 12),	/* Upper 256MB */
+	SNOR_WP_BP_UP(BP_3_0_TB_CMP,                       SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Upper 512MB */
 
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 |                            SR_BP0, 0),	/* Lower 64KB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 |                   SR_BP1         , 1),	/* Lower 128KB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 |                   SR_BP1 | SR_BP0, 2),	/* Lower 256KB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 |          SR_BP2                  , 3),	/* Lower 512KB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 |          SR_BP2 |          SR_BP0, 4),	/* Lower 1MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 |          SR_BP2 | SR_BP1         , 5),	/* Lower 2MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 |          SR_BP2 | SR_BP1 | SR_BP0, 6),	/* Lower 4MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 | SR_BP3                           , 7),	/* Lower 8MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 | SR_BP3 |                   SR_BP0, 8),	/* Lower 16MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 | SR_BP3 |          SR_BP1         , 9),	/* Lower 32MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 | SR_BP3 |          SR_BP1 | SR_BP0, 10),	/* Lower 64MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 | SR_BP3 | SR_BP2                  , 11),	/* Lower 128MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1         , 12),	/* Lower 256MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP,          SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Lower 512MB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 |                            SR_BP0, 0),	/* Lower 64KB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 |                   SR_BP1         , 1),	/* Lower 128KB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 |                   SR_BP1 | SR_BP0, 2),	/* Lower 256KB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 |          SR_BP2                  , 3),	/* Lower 512KB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 |          SR_BP2 |          SR_BP0, 4),	/* Lower 1MB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 |          SR_BP2 | SR_BP1         , 5),	/* Lower 2MB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 |          SR_BP2 | SR_BP1 | SR_BP0, 6),	/* Lower 4MB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 | SR_BP3                           , 7),	/* Lower 8MB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 | SR_BP3 |                   SR_BP0, 8),	/* Lower 16MB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 | SR_BP3 |          SR_BP1         , 9),	/* Lower 32MB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 | SR_BP3 |          SR_BP1 | SR_BP0, 10),	/* Lower 64MB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 | SR_BP3 | SR_BP2                  , 11),	/* Lower 128MB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1         , 12),	/* Lower 256MB */
+	SNOR_WP_BP_LO(BP_3_0_TB_CMP,              SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Lower 512MB */
 
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |                                     SR_BP0, 0),	/* Lower T - 64KB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |                            SR_BP1         , 1),	/* Lower T - 128KB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |                            SR_BP1 | SR_BP0, 2),	/* Lower T - 256KB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |                   SR_BP2                  , 3),	/* Lower T - 512KB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |                   SR_BP2 |          SR_BP0, 4),	/* Lower T - 1MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |                   SR_BP2 | SR_BP1         , 5),	/* Lower T - 2MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |                   SR_BP2 | SR_BP1 | SR_BP0, 6),	/* Lower T - 4MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3                           , 7),	/* Lower T - 8MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 |                   SR_BP0, 8),	/* Lower T - 16MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 |          SR_BP1         , 9),	/* Lower T - 32MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 |          SR_BP1 | SR_BP0, 10),	/* Lower T - 64MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 | SR_BP2                  , 11),	/* Lower T - 128MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 | SR_BP2 | SR_BP1         , 12),	/* Lower T - 256MB */
-	SNOR_WP_BP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Lower T - 512MB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |                                     SR_BP0, 0),	/* Lower T - 64KB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |                            SR_BP1         , 1),	/* Lower T - 128KB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |                            SR_BP1 | SR_BP0, 2),	/* Lower T - 256KB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |                   SR_BP2                  , 3),	/* Lower T - 512KB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |                   SR_BP2 |          SR_BP0, 4),	/* Lower T - 1MB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |                   SR_BP2 | SR_BP1         , 5),	/* Lower T - 2MB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |                   SR_BP2 | SR_BP1 | SR_BP0, 6),	/* Lower T - 4MB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3                           , 7),	/* Lower T - 8MB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 |                   SR_BP0, 8),	/* Lower T - 16MB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 |          SR_BP1         , 9),	/* Lower T - 32MB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 |          SR_BP1 | SR_BP0, 10),	/* Lower T - 64MB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 | SR_BP2                  , 11),	/* Lower T - 128MB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 | SR_BP2 | SR_BP1         , 12),	/* Lower T - 256MB */
+	SNOR_WP_BP_CMP_LO(BP_3_0_TB_CMP, SR_CMP |          SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Lower T - 512MB */
 
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |                            SR_BP0, 0),	/* Upper T - 64KB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |                   SR_BP1         , 1),	/* Upper T - 128KB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |                   SR_BP1 | SR_BP0, 2),	/* Upper T - 256KB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |          SR_BP2                  , 3),	/* Upper T - 512KB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |          SR_BP2 |          SR_BP0, 4),	/* Upper T - 1MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |          SR_BP2 | SR_BP1         , 5),	/* Upper T - 2MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |          SR_BP2 | SR_BP1 | SR_BP0, 6),	/* Upper T - 4MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3                           , 7),	/* Upper T - 8MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 |                   SR_BP0, 8),	/* Upper T - 16MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 |          SR_BP1         , 9),	/* Upper T - 32MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 |          SR_BP1 | SR_BP0, 10),	/* Upper T - 64MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 | SR_BP2                  , 11),	/* Upper T - 128MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1         , 12),	/* Upper T - 256MB */
-	SNOR_WP_BP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Upper T - 512MB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |                            SR_BP0, 0),	/* Upper T - 64KB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |                   SR_BP1         , 1),	/* Upper T - 128KB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |                   SR_BP1 | SR_BP0, 2),	/* Upper T - 256KB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |          SR_BP2                  , 3),	/* Upper T - 512KB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |          SR_BP2 |          SR_BP0, 4),	/* Upper T - 1MB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |          SR_BP2 | SR_BP1         , 5),	/* Upper T - 2MB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 |          SR_BP2 | SR_BP1 | SR_BP0, 6),	/* Upper T - 4MB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3                           , 7),	/* Upper T - 8MB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 |                   SR_BP0, 8),	/* Upper T - 16MB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 |          SR_BP1         , 9),	/* Upper T - 32MB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 |          SR_BP1 | SR_BP0, 10),	/* Upper T - 64MB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 | SR_BP2                  , 11),	/* Upper T - 128MB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1         , 12),	/* Upper T - 256MB */
+	SNOR_WP_BP_CMP_UP(BP_3_0_TB_CMP, SR_CMP | SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Upper T - 512MB */
 );
 
 struct spi_nor_wp_info *wp_bp_info_copy(const struct spi_nor_wp_info *src)

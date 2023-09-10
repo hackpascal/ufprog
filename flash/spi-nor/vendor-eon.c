@@ -474,7 +474,7 @@ static const struct spi_nor_wp_info en25s10_wpr = SNOR_WP_BP(&sr_acc,
 	SNOR_WP_BP_UP(BP_2_0,     SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
 
 	SNOR_WP_SP_CMP_LO(BP_2_0,                   SR_BP0, 4),		/* Lower T - 64KB */
-	SNOR_WP_RP_CMP_LO(BP_2_0,          SR_BP1         , 3),		/* Lower T - 32KB */
+	SNOR_WP_SP_CMP_LO(BP_2_0,          SR_BP1         , 3),		/* Lower T - 32KB */
 	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2 |          SR_BP0, 2),		/* Lower T - 16KB */
 	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2 | SR_BP1         , 1),		/* Lower T - 8KB */
 );

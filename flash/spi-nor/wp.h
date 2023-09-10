@@ -42,8 +42,8 @@ struct spi_nor_wp_range {
 
 #define SNOR_WP_BP_LO(_mask, _val, _lshift)		SNOR_WP_BP_BLK(_mask, _val, true, false, _lshift)
 #define SNOR_WP_BP_UP(_mask, _val, _lshift)		SNOR_WP_BP_BLK(_mask, _val, false, false, _lshift)
-#define SNOR_WP_BP_CMP_LO(_mask, _val, _lshift)		SNOR_WP_BP_BLK(_mask, _val, true, true, _lshift)
-#define SNOR_WP_BP_CMP_UP(_mask, _val, _lshift)		SNOR_WP_BP_BLK(_mask, _val, false, true, _lshift)
+#define SNOR_WP_BP_CMP_LO(_mask, _val, _lshift)		SNOR_WP_BP_BLK(_mask, _val, false, true, _lshift)
+#define SNOR_WP_BP_CMP_UP(_mask, _val, _lshift)		SNOR_WP_BP_BLK(_mask, _val, true, true, _lshift)
 
 #define SNOR_WP_BP_SEC(_mask, _val, _lower, _cmp, _lshift)						\
 	{ .sr_mask = (_mask), .sr_val = (_val), .lower = (_lower), .cmp = (_cmp), .shift = (_lshift),	\
@@ -51,8 +51,8 @@ struct spi_nor_wp_range {
 
 #define SNOR_WP_SP_LO(_mask, _val, _lshift)		SNOR_WP_BP_SEC(_mask, _val, true, false, _lshift)
 #define SNOR_WP_SP_UP(_mask, _val, _lshift)		SNOR_WP_BP_SEC(_mask, _val, false, false, _lshift)
-#define SNOR_WP_SP_CMP_LO(_mask, _val, _lshift)		SNOR_WP_BP_SEC(_mask, _val, true, true, _lshift)
-#define SNOR_WP_SP_CMP_UP(_mask, _val, _lshift)		SNOR_WP_BP_SEC(_mask, _val, false, true, _lshift)
+#define SNOR_WP_SP_CMP_LO(_mask, _val, _lshift)		SNOR_WP_BP_SEC(_mask, _val, false, true, _lshift)
+#define SNOR_WP_SP_CMP_UP(_mask, _val, _lshift)		SNOR_WP_BP_SEC(_mask, _val, true, true, _lshift)
 
 #define SNOR_WP_BP_RATIO(_mask, _val, _lower, _cmp, _rshift)						\
 	{ .sr_mask = (_mask), .sr_val = (_val), .lower = (_lower), .cmp = (_cmp), .shift = (_rshift),	\
@@ -60,8 +60,8 @@ struct spi_nor_wp_range {
 
 #define SNOR_WP_RP_LO(_mask, _val, _rshift)		SNOR_WP_BP_RATIO(_mask, _val, true, false, _rshift)
 #define SNOR_WP_RP_UP(_mask, _val, _rshift)		SNOR_WP_BP_RATIO(_mask, _val, false, false, _rshift)
-#define SNOR_WP_RP_CMP_LO(_mask, _val, _rshift)		SNOR_WP_BP_RATIO(_mask, _val, true, true, _rshift)
-#define SNOR_WP_RP_CMP_UP(_mask, _val, _rshift)		SNOR_WP_BP_RATIO(_mask, _val, false, true, _rshift)
+#define SNOR_WP_RP_CMP_LO(_mask, _val, _rshift)		SNOR_WP_BP_RATIO(_mask, _val, false, true, _rshift)
+#define SNOR_WP_RP_CMP_UP(_mask, _val, _rshift)		SNOR_WP_BP_RATIO(_mask, _val, true, true, _rshift)
 
 struct spi_nor_wp_info {
 	const struct spi_nor_reg_access *access;
