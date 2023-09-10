@@ -639,13 +639,16 @@ static ufprog_status snor_print_reg_fields(struct ufsnor_instance *inst, const s
 	const char *fname;
 	ufprog_status ret;
 
-	os_printf("Register '%s' (%s):\n", reg->name, reg->desc);
+	os_printf("Register '%s' (%s): ", reg->name, reg->desc);
 
 	ret = ufprog_spi_nor_read_reg(inst->snor, reg->access, &val);
 	if (ret) {
+		os_printf("\n");
 		os_fprintf(stderr, "Failed to read register '%s'\n", reg->name);
 		return ret;
 	}
+
+	os_printf("0x%02X\n", val);
 
 	for (i = 0; i < reg->nfields; i++) {
 		fval = (val >> reg->fields[i].shift) & reg->fields[i].mask;
