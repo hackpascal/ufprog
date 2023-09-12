@@ -22,6 +22,7 @@ static const struct spi_nor_vendor *vendors[] = {
 	&vendor_intel,
 	&vendor_issi,
 	&vendor_issi_pmc, /* PMC comes after ISSI */
+	&vendor_macronix,
 	&vendor_sst,
 	&vendor_winbond,
 };

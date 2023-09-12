@@ -20,6 +20,7 @@ set(ufprog_spi_nor_vendor_src
 	vendor-gigadevice.c
 	vendor-intel.c
 	vendor-issi.c
+	vendor-macronix.c
 	vendor-sst.c
 	vendor-winbond.c
 )
