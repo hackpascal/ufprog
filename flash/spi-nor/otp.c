@@ -355,7 +355,8 @@ ufprog_status scur_otp_read_cust(struct spi_nor *snor, uint32_t addr, uint32_t l
 
 ufprog_status scur_otp_read(struct spi_nor *snor, uint32_t index, uint32_t addr, uint32_t len, void *data)
 {
-	return scur_otp_read_cust(snor, snor->ext_param.otp->start_index + addr, len, data, false);
+	return scur_otp_read_cust(snor, snor->ext_param.otp->start_index + index * snor->ext_param.otp->size + addr,
+				  len, data, false);
 }
 
 ufprog_status scur_otp_write_cust(struct spi_nor *snor, uint32_t addr, uint32_t len, const void *data, bool no_exso)
@@ -378,7 +379,8 @@ ufprog_status scur_otp_write_cust(struct spi_nor *snor, uint32_t addr, uint32_t 
 
 ufprog_status scur_otp_write(struct spi_nor *snor, uint32_t index, uint32_t addr, uint32_t len, const void *data)
 {
-	return scur_otp_write_cust(snor, snor->ext_param.otp->start_index + addr, len, data, false);
+	return scur_otp_write_cust(snor, snor->ext_param.otp->start_index + index * snor->ext_param.otp->size + addr,
+				   len, data, false);
 }
 
 ufprog_status scur_otp_lock_cust(struct spi_nor *snor, bool no_exso)
