@@ -395,6 +395,7 @@ ufprog_status scur_otp_lock_cust(struct spi_nor *snor, bool no_exso)
 	} else {
 		STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &scur_acc, 0, SCUR_LDSO, false));
 		STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, &scur_acc, &reg));
+		spi_nor_write_disable(snor);
 
 		if (!(reg & SCUR_LDSO))
 			return UFP_FAIL;
