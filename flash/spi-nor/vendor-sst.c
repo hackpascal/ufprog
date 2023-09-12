@@ -30,10 +30,10 @@ static const struct spi_nor_reg_access sst_qpi_read_sr_acc = {
 	.type = SNOR_REG_NORMAL,
 	.num = 1,
 	.desc[0] = {
-	.read_opcode = SNOR_CMD_READ_SR,
-	.write_opcode = SNOR_CMD_WRITE_SR,
-	.ndummy_read = 1,
-	.ndata = 1,
+		.read_opcode = SNOR_CMD_READ_SR,
+		.write_opcode = SNOR_CMD_WRITE_SR,
+		.ndummy_read = 1,
+		.ndata = 1,
 	},
 };
 
@@ -349,7 +349,8 @@ static const struct spi_nor_flash_part sst_parts[] = {
 	),
 };
 
-static ufprog_status sst_part_fixup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status sst_part_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+				    struct spi_nor_flash_part_blank *bp)
 {
 	spi_nor_blank_part_fill_default_opcodes(bp);
 

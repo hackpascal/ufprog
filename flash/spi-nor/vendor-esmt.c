@@ -329,7 +329,8 @@ static const struct spi_nor_flash_part_otp_ops esmt_otp_no_exso_ops = {
 	.locked = esmt_otp_locked_no_exso,
 };
 
-static ufprog_status esmt_part_fixup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status esmt_part_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+				     struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t scur;
 

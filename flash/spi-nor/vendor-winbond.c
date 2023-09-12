@@ -99,7 +99,8 @@ static const struct snor_reg_info w25q_2_regs = SNOR_REG_INFO(&w25q_sr1, &w25q_s
 static const struct snor_reg_info w25q_3_regs = SNOR_REG_INFO(&w25q_sr1, &w25q_sr2, &w25q_sr3);
 static const struct snor_reg_info w25q_4b_3_regs = SNOR_REG_INFO(&w25q_sr1, &w25q_sr2, &w25q_sr3_4b);
 
-static ufprog_status w25q16xv_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status w25q16xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	char model_ver = 'B';
 
@@ -128,7 +129,8 @@ static const struct spi_nor_flash_part_fixup w25q16xv_fixups = {
 	.pre_param_setup = w25q16xv_fixup_model,
 };
 
-static ufprog_status w25q16xw_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status w25q16xw_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	char model_ver = 'D';
 
@@ -167,7 +169,8 @@ static const struct spi_nor_flash_part_fixup w25q16xw_fixups = {
 	.pre_param_setup = w25q16xw_fixup_model,
 };
 
-static ufprog_status w25q32xv_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status w25q32xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	char model_ver = 'B';
 	uint32_t dw;
@@ -209,7 +212,8 @@ static const struct spi_nor_flash_part_fixup w25q32xv_fixups = {
 	.pre_param_setup = w25q32xv_fixup_model,
 };
 
-static ufprog_status w25q32xw_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status w25q32xw_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	char model_ver = 'D';
 
@@ -248,7 +252,8 @@ static const struct spi_nor_flash_part_fixup w25q32xw_fixups = {
 	.pre_param_setup = w25q32xw_fixup_model,
 };
 
-static ufprog_status w25q64xv_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status w25q64xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	char model_ver = 'B';
 	uint32_t dw;
@@ -295,7 +300,8 @@ static const struct spi_nor_flash_part_fixup w25q64xv_fixups = {
 	.pre_param_setup = w25q64xv_fixup_model,
 };
 
-static ufprog_status w25q64xw_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status w25q64xw_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	char model_ver = 'D';
 
@@ -336,7 +342,8 @@ static const struct spi_nor_flash_part_fixup w25q64xw_fixups = {
 	.pre_param_setup = w25q64xw_fixup_model,
 };
 
-static ufprog_status w25q128xv_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status w25q128xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					   struct spi_nor_flash_part_blank *bp)
 {
 	char model_ver = 'B';
 	uint32_t dw;
@@ -379,7 +386,8 @@ static const struct spi_nor_flash_part_fixup w25q128xv_fixups = {
 	.pre_param_setup = w25q128xv_fixup_model,
 };
 
-static ufprog_status w25q128xw_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status w25q128xw_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					   struct spi_nor_flash_part_blank *bp)
 {
 	char model_ver = 'D';
 
@@ -418,7 +426,8 @@ static const struct spi_nor_flash_part_fixup w25q128xw_fixups = {
 	.pre_param_setup = w25q128xw_fixup_model,
 };
 
-static ufprog_status w25q256xv_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status w25q256xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					   struct spi_nor_flash_part_blank *bp)
 {
 	char model_ver = 'B';
 	uint32_t dw;
@@ -1350,7 +1359,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 	),
 };
 
-static ufprog_status winbond_part_fixup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status winbond_part_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					struct spi_nor_flash_part_blank *bp)
 {
 	uint8_t sr3;
 

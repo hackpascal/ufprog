@@ -65,9 +65,9 @@ static struct spi_nor_reg_access eon_otp_sr_acc = {
 	.type = SNOR_REG_NORMAL,
 	.num = 1,
 	.desc[0] = {
-	.ndata = 1,
-	.read_opcode = SNOR_CMD_READ_SR,
-	.write_opcode = SNOR_CMD_WRITE_SR,
+		.ndata = 1,
+		.read_opcode = SNOR_CMD_READ_SR,
+		.write_opcode = SNOR_CMD_WRITE_SR,
 	},
 	.pre_acc = eon_otp_sr_pre_acc,
 	.post_acc = eon_otp_sr_post_acc,
@@ -77,8 +77,8 @@ static const struct spi_nor_reg_access eon_sr1_sr4_acc = {
 	.type = SNOR_REG_NORMAL,
 	.num = 2,
 	.desc[0] = {
-	.read_opcode = SNOR_CMD_READ_SR,
-	.write_opcode = SNOR_CMD_WRITE_SR,
+		.read_opcode = SNOR_CMD_READ_SR,
+		.write_opcode = SNOR_CMD_WRITE_SR,
 	},
 	.desc[1] = {
 		.read_opcode = SNOR_CMD_EON_READ_SR4,
@@ -831,121 +831,131 @@ static const struct spi_nor_wp_info wpr_3bp_tb_sec_cmp_only = SNOR_WP_BP(&sr_acc
 	SNOR_WP_SP_CMP_LO(BP_2_0_TB_SEC, SR_SEC | SR_TB | SR_BP2 | SR_BP1         , 3),		/* Lower T - 32KB */
 );
 
-static ufprog_status en25f10_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25f10_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					 struct spi_nor_flash_part_blank *bp)
 {
 	if (!snor->sfdp.bfpt)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25F10");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25F10");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25F10A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25F10A");
 }
 
 static const struct spi_nor_flash_part_fixup en25f10_fixups = {
 	.pre_param_setup = en25f10_fixup_model,
 };
 
-static ufprog_status en25s10_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25s10_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					 struct spi_nor_flash_part_blank *bp)
 {
 	if (!snor->sfdp.bfpt)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25S10");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25S10");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25S10A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25S10A");
 }
 
 static const struct spi_nor_flash_part_fixup en25s10_fixups = {
 	.pre_param_setup = en25s10_fixup_model,
 };
 
-static ufprog_status en25f20_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25f20_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					 struct spi_nor_flash_part_blank *bp)
 {
 	if (!snor->sfdp.bfpt)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25F20");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25F20");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25F20A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25F20A");
 }
 
 static const struct spi_nor_flash_part_fixup en25f20_fixups = {
 	.pre_param_setup = en25f20_fixup_model,
 };
 
-static ufprog_status en25s20_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25s20_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					 struct spi_nor_flash_part_blank *bp)
 {
 	if (!snor->sfdp.bfpt)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25S20");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25S20");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25S20A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25S20A");
 }
 
 static const struct spi_nor_flash_part_fixup en25s20_fixups = {
 	.pre_param_setup = en25s20_fixup_model,
 };
 
-static ufprog_status en25f40_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25f40_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					 struct spi_nor_flash_part_blank *bp)
 {
 	if (!snor->sfdp.bfpt)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25F40");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25F40");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25F40A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25F40A");
 }
 
 static const struct spi_nor_flash_part_fixup en25f40_fixups = {
 	.pre_param_setup = en25f40_fixup_model,
 };
 
-static ufprog_status en25s40_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25s40_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					 struct spi_nor_flash_part_blank *bp)
 {
 	if (!snor->sfdp.bfpt)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25S40");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25S40");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25S40A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25S40A");
 }
 
 static const struct spi_nor_flash_part_fixup en25s40_fixups = {
 	.pre_param_setup = en25s40_fixup_model,
 };
 
-static ufprog_status en25q40_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25q40_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					 struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t dw;
 
 	if (!snor->sfdp.bfpt)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25Q40");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25Q40");
 
 	dw = sfdp_dw(snor->sfdp.bfpt, 3);
 	if (FIELD_GET(BFPT_DW3_1S_1S_4S_FAST_READ_OPCODE, dw) == SNOR_CMD_FAST_READ_QUAD_OUT)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25Q40B");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25Q40B");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25Q40A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25Q40A");
 }
 
 static const struct spi_nor_flash_part_fixup en25q40_fixups = {
 	.pre_param_setup = en25q40_fixup_model,
 };
 
-static ufprog_status en25s32_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25s32_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					 struct spi_nor_flash_part_blank *bp)
 {
 	if (!snor->sfdp.bfpt)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25S32");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25S32");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25S32A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25S32A");
 }
 
 static const struct spi_nor_flash_part_fixup en25s32_fixups = {
 	.pre_param_setup = en25s32_fixup_model,
 };
 
-static ufprog_status en25q32_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25q32_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					 struct spi_nor_flash_part_blank *bp)
 {
 	if (!snor->sfdp.bfpt)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25Q32B");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25Q32B");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25Q32C");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25Q32C");
 }
 
 static const struct spi_nor_flash_part_fixup en25q32_fixups = {
 	.pre_param_setup = en25q32_fixup_model,
 };
 
-static ufprog_status en25qa32b_wpr_4bp_tbl_select(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25qa32b_wpr_4bp_tbl_select(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+						  struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t regval;
 
@@ -963,7 +973,8 @@ static const struct spi_nor_flash_part_fixup en25qa32b_wpr_4bp_tbl_fixups = {
 	.pre_param_setup = en25qa32b_wpr_4bp_tbl_select,
 };
 
-static ufprog_status en25qa32_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25qa32_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t dw;
 
@@ -972,16 +983,17 @@ static ufprog_status en25qa32_fixup_model(struct spi_nor *snor, struct spi_nor_f
 
 	dw = sfdp_dw(snor->sfdp.bfpt, 3);
 	if (FIELD_GET(BFPT_DW3_1S_1S_4S_FAST_READ_OPCODE, dw) == SNOR_CMD_FAST_READ_QUAD_OUT)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25QA32B");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QA32B");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25QA32A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QA32A");
 }
 
 static const struct spi_nor_flash_part_fixup en25qa32_fixups = {
 	.pre_param_setup = en25qa32_fixup_model,
 };
 
-static ufprog_status en25qa64a_wpr_4bp_tbl_select(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25qa64a_wpr_4bp_tbl_select(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+						  struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t regval;
 
@@ -999,19 +1011,21 @@ static const struct spi_nor_flash_part_fixup en25qa64a_wpr_4bp_tbl_fixups = {
 	.pre_param_setup = en25qa64a_wpr_4bp_tbl_select,
 };
 
-static ufprog_status en25s64_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25s64_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					 struct spi_nor_flash_part_blank *bp)
 {
 	if (!snor->sfdp.bfpt)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25S64");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25S64");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25S64A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25S64A");
 }
 
 static const struct spi_nor_flash_part_fixup en25s64_fixups = {
 	.pre_param_setup = en25s64_fixup_model,
 };
 
-static ufprog_status en25qa128a_wpr_4bp_tbl_select(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25qa128a_wpr_4bp_tbl_select(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+						   struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t regval;
 
@@ -1029,7 +1043,8 @@ static const struct spi_nor_flash_part_fixup en25qa128a_wpr_4bp_tbl_fixups = {
 	.pre_param_setup = en25qa128a_wpr_4bp_tbl_select,
 };
 
-static ufprog_status en25qh16b_wpr_4bp_cmp_select(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25qh16b_wpr_4bp_cmp_select(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+						  struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t regval;
 
@@ -1047,7 +1062,8 @@ static const struct spi_nor_flash_part_fixup en25qh16b_wpr_4bp_cmp_fixups = {
 	.pre_param_setup = en25qh16b_wpr_4bp_cmp_select,
 };
 
-static ufprog_status en25qh16_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25qh16_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t dw;
 
@@ -1056,16 +1072,17 @@ static ufprog_status en25qh16_fixup_model(struct spi_nor *snor, struct spi_nor_f
 
 	dw = sfdp_dw(snor->sfdp.bfpt, 3);
 	if (FIELD_GET(BFPT_DW3_1S_1S_4S_FAST_READ_OPCODE, dw) == SNOR_CMD_FAST_READ_QUAD_OUT)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25QH16B");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH16B");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25QH16A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH16A");
 }
 
 static const struct spi_nor_flash_part_fixup en25qh16_fixups = {
 	.pre_param_setup = en25qh16_fixup_model,
 };
 
-static ufprog_status en25qh32_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25qh32_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t dw;
 
@@ -1074,16 +1091,17 @@ static ufprog_status en25qh32_fixup_model(struct spi_nor *snor, struct spi_nor_f
 
 	dw = sfdp_dw(snor->sfdp.bfpt, 3);
 	if (FIELD_GET(BFPT_DW3_1S_1S_4S_FAST_READ_OPCODE, dw) == SNOR_CMD_FAST_READ_QUAD_OUT)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25QH32B");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH32B");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25QH32A");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH32A");
 }
 
 static const struct spi_nor_flash_part_fixup en25qh32_fixups = {
 	.pre_param_setup = en25qh32_fixup_model,
 };
 
-static ufprog_status en25qh64_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25qh64_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t dw;
 
@@ -1092,16 +1110,17 @@ static ufprog_status en25qh64_fixup_model(struct spi_nor *snor, struct spi_nor_f
 
 	dw = sfdp_dw(snor->sfdp.bfpt, 3);
 	if (FIELD_GET(BFPT_DW3_1S_1S_4S_FAST_READ_OPCODE, dw) == SNOR_CMD_FAST_READ_QUAD_OUT)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25QH64A");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH64A");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25QH64");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH64");
 }
 
 static const struct spi_nor_flash_part_fixup en25qh64_fixups = {
 	.pre_param_setup = en25qh64_fixup_model,
 };
 
-static ufprog_status en25qh128_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25qh128_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					   struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t dw;
 
@@ -1110,24 +1129,25 @@ static ufprog_status en25qh128_fixup_model(struct spi_nor *snor, struct spi_nor_
 
 	dw = sfdp_dw(snor->sfdp.bfpt, 3);
 	if (FIELD_GET(BFPT_DW3_1S_1S_4S_FAST_READ_OPCODE, dw) == SNOR_CMD_FAST_READ_QUAD_OUT)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25QH128A");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH128A");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25QH128");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH128");
 }
 
 static const struct spi_nor_flash_part_fixup en25qh128_fixups = {
 	.pre_param_setup = en25qh128_fixup_model,
 };
 
-static ufprog_status en25qh256_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status en25qh256_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					   struct spi_nor_flash_part_blank *bp)
 {
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
 	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B)
-		return spi_nor_reprobe_part(snor, bp, NULL, "EN25QH256A");
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH256A");
 
-	return spi_nor_reprobe_part(snor, bp, NULL, "EN25QH256");
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH256");
 }
 
 static const struct spi_nor_flash_part_fixup en25qh256_fixups = {
@@ -2672,7 +2692,8 @@ static const struct spi_nor_flash_part_otp_ops eon_otp_secr_ops = {
 	.secr = &eon_secr_otp_ops,
 };
 
-static ufprog_status eon_part_fixup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status eon_part_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+				    struct spi_nor_flash_part_blank *bp)
 {
 	if (bp->p.size > SZ_16M) {
 		/* Set to a known address mode (3-Byte) */

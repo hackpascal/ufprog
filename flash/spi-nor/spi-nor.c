@@ -1612,14 +1612,7 @@ static ufprog_status spi_nor_setup_param_final(struct spi_nor *snor, const struc
 			snor->state.reg.cr_shift = 0;
 		}
 	}
-
-	memset(snor->param.vendor, 0, sizeof(snor->param.vendor));
 	memset(snor->param.model, 0, sizeof(snor->param.model));
-
-	if (vendor)
-		snprintf(snor->param.vendor, sizeof(snor->param.vendor), "%s", vendor->name);
-	else
-		snprintf(snor->param.vendor, sizeof(snor->param.vendor), "Unknown (%02X)", snor->param.id.id[0]);
 
 	if (part->model) {
 		snprintf(snor->param.model, sizeof(snor->param.model), "%s", part->model);
@@ -1751,30 +1744,41 @@ static ufprog_status spi_nor_pre_init(struct spi_nor *snor)
 static ufprog_status spi_nor_init(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 				  struct spi_nor_flash_part_blank *bp)
 {
+	const struct spi_nor_vendor *vendor;
+
 	snor->state.reg.sr_r = &sr_acc;
 	snor->state.reg.sr_w = &sr_acc;
 
 	if (vp->part && vp->part->fixups && vp->part->fixups->pre_param_setup)
-		STATUS_CHECK_RET(vp->part->fixups->pre_param_setup(snor, bp));
+		STATUS_CHECK_RET(vp->part->fixups->pre_param_setup(snor, vp, bp));
 
-	if (vp->vendor && vp->vendor->default_part_fixups && vp->vendor->default_part_fixups->pre_param_setup)
-		STATUS_CHECK_RET(vp->vendor->default_part_fixups->pre_param_setup(snor, bp));
+	vendor = vp->vendor_init ? vp->vendor_init : vp->vendor;
 
-	STATUS_CHECK_RET(spi_nor_setup_param(snor, vp->vendor, &bp->p));
+	if (vendor && vendor->default_part_fixups && vendor->default_part_fixups->pre_param_setup)
+		STATUS_CHECK_RET(vendor->default_part_fixups->pre_param_setup(snor, NULL, bp));
+
+	STATUS_CHECK_RET(spi_nor_setup_param(snor, vendor, &bp->p));
 
 	if (vp->part && vp->part->fixups && vp->part->fixups->post_param_setup)
 		STATUS_CHECK_RET(vp->part->fixups->post_param_setup(snor, bp));
 
-	if (vp->vendor && vp->vendor->default_part_fixups && vp->vendor->default_part_fixups->post_param_setup)
-		STATUS_CHECK_RET(vp->vendor->default_part_fixups->post_param_setup(snor, bp));
+	if (vendor && vendor->default_part_fixups && vendor->default_part_fixups->post_param_setup)
+		STATUS_CHECK_RET(vendor->default_part_fixups->post_param_setup(snor, bp));
 
 	STATUS_CHECK_RET(spi_nor_setup_param_final(snor, vp->vendor, &bp->p));
 
 	if (vp->part && vp->part->fixups && vp->part->fixups->pre_chip_setup)
 		STATUS_CHECK_RET(vp->part->fixups->pre_chip_setup(snor));
 
-	if (vp->vendor && vp->vendor->default_part_fixups && vp->vendor->default_part_fixups->pre_chip_setup)
-		STATUS_CHECK_RET(vp->vendor->default_part_fixups->pre_chip_setup(snor));
+	if (vendor && vendor->default_part_fixups && vendor->default_part_fixups->pre_chip_setup)
+		STATUS_CHECK_RET(vendor->default_part_fixups->pre_chip_setup(snor));
+
+	memset(snor->param.vendor, 0, sizeof(snor->param.vendor));
+
+	if (vp->vendor)
+		snprintf(snor->param.vendor, sizeof(snor->param.vendor), "%s", vp->vendor->name);
+	else
+		snprintf(snor->param.vendor, sizeof(snor->param.vendor), "Unknown (%02X)", snor->param.id.id[0]);
 
 	logm_dbg("Vendor: %s, Model: %s\n", snor->param.vendor, snor->param.model);
 
@@ -1963,8 +1967,8 @@ out:
 
 ufprog_status UFPROG_API ufprog_spi_nor_probe_init(struct spi_nor *snor)
 {
+	struct spi_nor_vendor_part vp = { 0 };
 	struct spi_nor_flash_part_blank bp;
-	struct spi_nor_vendor_part vp;
 	ufprog_status ret;
 	bool sfdp_probed;
 	char idstr[20];
@@ -2037,23 +2041,36 @@ out:
 	return ret;
 }
 
-ufprog_status spi_nor_reprobe_part(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp,
-				   const struct spi_nor_vendor *vendor, const char *part)
+ufprog_status spi_nor_reprobe_part(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+				   struct spi_nor_flash_part_blank *bp, const struct spi_nor_vendor *vendor,
+				   const char *part)
 {
-	struct spi_nor_vendor_part vp;
+	struct spi_nor_vendor_part nvp;
+	struct spi_nor_id id;
 
-	if (!spi_nor_find_vendor_part_by_name(part, &vp)) {
+	if (!spi_nor_find_vendor_part_by_name(part, &nvp)) {
 		logm_err("Failed to find part %s\n", part);
 		return UFP_FAIL;
 	}
 
-	spi_nor_prepare_blank_part(bp, vp.part);
+	logm_dbg("Reprobing as %s\n", part);
+
+	/* Keep original JEDEC ID */
+	memcpy(&id, &bp->p.id, sizeof(id));
+
+	spi_nor_prepare_blank_part(bp, nvp.part);
+
+	/* Restore JEDEC ID */
+	memcpy(&bp->p.id, &id, sizeof(id));
 
 	if (!vendor)
-		vendor = vp.vendor;
+		vendor = nvp.vendor;
 
-	if (!spi_nor_probe_sfdp(snor, vendor, bp))
-		logm_errdbg("Failed to reprobe %s with SFDP\n", part);
+	if (spi_nor_probe_sfdp(snor, vendor, bp))
+		spi_nor_locate_sfdp_vendor(snor, snor->param.id.id[0], true);
+
+	if (nvp.part->fixups && nvp.part->fixups->pre_param_setup)
+		STATUS_CHECK_RET(nvp.part->fixups->pre_param_setup(snor, vp, bp));
 
 	return UFP_OK;
 }

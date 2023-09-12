@@ -43,6 +43,7 @@ struct spi_nor_vendor {
 };
 
 struct spi_nor_vendor_part {
+	const struct spi_nor_vendor *vendor_init;
 	const struct spi_nor_vendor *vendor;
 	const struct spi_nor_flash_part *part;
 };

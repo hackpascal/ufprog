@@ -109,8 +109,8 @@ static const struct spi_nor_reg_access gd_srcr_acc = {
 	.type = SNOR_REG_NORMAL,
 	.num = 2,
 	.desc[0] = {
-	.read_opcode = SNOR_CMD_READ_SR,
-	.write_opcode = SNOR_CMD_WRITE_SR,
+		.read_opcode = SNOR_CMD_READ_SR,
+		.write_opcode = SNOR_CMD_WRITE_SR,
 	},
 	.desc[0] = {
 		.read_opcode = SNOR_CMD_READ_CR,
@@ -792,10 +792,12 @@ static DEFINE_SNOR_ALIAS(gd25le256d_alias, SNOR_ALIAS_MODEL("GD25LQ256D"));
 static DEFINE_SNOR_ALIAS(gd25wb256e_alias, SNOR_ALIAS_MODEL("GD25WQ256D"));
 static DEFINE_SNOR_ALIAS(gd55wb512me_alias, SNOR_ALIAS_MODEL("GD55WR512ME"));
 
-static ufprog_status gd_pre_param_setup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp);
+static ufprog_status gd_pre_param_setup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					struct spi_nor_flash_part_blank *bp);
 static ufprog_status gd_read_uid_len(struct spi_nor *snor, void *data, uint32_t len);
 
-static ufprog_status gd25lx05_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status gd25lx05_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	bp->p.model = bp->model;
 
@@ -824,7 +826,8 @@ static const struct spi_nor_flash_part_fixup gd25lx05_fixups = {
 	.pre_param_setup = gd25lx05_fixup_model,
 };
 
-static ufprog_status gd25lx10_fixup_model(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status gd25lx10_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
 {
 	bp->p.model = bp->model;
 
@@ -867,11 +870,12 @@ static const struct spi_nor_flash_part_ops gd25lb128e_ops = {
 	.setup_qpi = gd25lb128e_setup_qpi,
 };
 
-static ufprog_status gd25le128e_fixup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status gd25le128e_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+				      struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t regval, dc;
 
-	STATUS_CHECK_RET(gd_pre_param_setup(snor, bp));
+	STATUS_CHECK_RET(gd_pre_param_setup(snor, vp, bp));
 
 	/* Handle GD_F_DC_SR3_BIT0_1 but not the same as others */
 
@@ -941,7 +945,8 @@ static const struct spi_nor_flash_part_otp_ops gd25q256c_otp_ops = {
 	.secr = &gd25q256c_secr_otp_ops,
 };
 
-static ufprog_status gd25q256c_fixup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status gd25q256c_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+				     struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t cr, lc;
 
@@ -1007,7 +1012,8 @@ static const struct spi_nor_flash_part_ops gd25q256c_part_ops = {
 	.read_uid = gd25q256c_read_uid,
 };
 
-static ufprog_status gd25b257d_fixup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status gd25b257d_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+				     struct spi_nor_flash_part_blank *bp)
 {
 	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &cr_acc, BITS(1, 0), 0, true));
 
@@ -1054,7 +1060,8 @@ static const struct spi_nor_flash_part_fixup gd25lx256d_fixups = {
 	.pre_chip_setup = gd25lx256d_otp_fixup,
 };
 
-static ufprog_status gd25s513md_fixup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status gd25s513md_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+				      struct spi_nor_flash_part_blank *bp)
 {
 	STATUS_CHECK_RET(spi_nor_select_die(snor, 1));
 	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &cr_acc, BITS(1, 0), 0, true));
@@ -2667,7 +2674,8 @@ static ufprog_status gd_part_setup_dummy_cycles_nvcr(struct spi_nor *snor, struc
 	return UFP_OK;
 }
 
-static ufprog_status gd_pre_param_setup(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+static ufprog_status gd_pre_param_setup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					struct spi_nor_flash_part_blank *bp)
 {
 	spi_nor_blank_part_fill_default_opcodes(bp);
 

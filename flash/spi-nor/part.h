@@ -171,7 +171,8 @@ enum snor_4b_dis_type {
 #define SNOR_PP_MAX_TIME_US(_us)		.max_pp_time_us = (_us)
 
 struct spi_nor_flash_part_fixup {
-	ufprog_status (*pre_param_setup)(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp);
+	ufprog_status (*pre_param_setup)(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					 struct spi_nor_flash_part_blank *bp);
 	ufprog_status (*post_param_setup)(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp);
 	ufprog_status (*pre_chip_setup)(struct spi_nor *snor);
 };
