@@ -2243,6 +2243,9 @@ ufprog_status UFPROG_API ufprog_spi_nor_read_no_check(struct spi_nor *snor, uint
 		SPI_MEM_OP_DATA_IN(len, data, spi_mem_io_info_data_bw(snor->state.read_io_info))
 	);
 
+	if (snor->ext_param.pre_read_hook)
+		STATUS_CHECK_RET(snor->ext_param.pre_read_hook(snor, addr, len, data));
+
 	STATUS_CHECK_RET(spi_nor_set_high_speed(snor));
 
 	while (len) {

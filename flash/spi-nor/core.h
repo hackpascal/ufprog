@@ -91,6 +91,7 @@ struct spi_nor_ext_param {
 	uint32_t num_erase_regions;
 
 	ufprog_status (*data_write_enable)(struct spi_nor *snor);
+	ufprog_status (*pre_read_hook)(struct spi_nor *snor, uint64_t addr, size_t len, void *data);
 	ufprog_status (*write_page)(struct spi_nor *snor, uint64_t addr, size_t len, const void *data, size_t *retlen);
 };
 
