@@ -281,7 +281,7 @@ static int do_snor_probe(void *priv, int argc, char *argv[])
 	if (ret)
 		goto cleanup;
 
-	if (list->num == 1)
+	if (list->num <= 1)
 		goto cleanup;
 
 	os_printf("\n");
