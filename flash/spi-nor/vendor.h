@@ -20,6 +20,7 @@
 #define SNOR_VENDOR_MACRONIX			0xc2
 #define SNOR_VENDOR_SST				0xbf
 #define SNOR_VENDOR_WINBOND			0xef
+#define SNOR_VENDOR_XMC				0x20
 #define SNOR_VENDOR_XTX				0x0b
 
 struct json_object;
@@ -59,6 +60,7 @@ extern const struct spi_nor_vendor vendor_issi_pmc;
 extern const struct spi_nor_vendor vendor_macronix;
 extern const struct spi_nor_vendor vendor_sst;
 extern const struct spi_nor_vendor vendor_winbond;
+extern const struct spi_nor_vendor vendor_xmc;
 extern const struct spi_nor_vendor vendor_xtx;
 
 ufprog_status spi_nor_vendors_init(void);

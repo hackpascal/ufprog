@@ -23,6 +23,7 @@ set(ufprog_spi_nor_vendor_src
 	vendor-macronix.c
 	vendor-sst.c
 	vendor-winbond.c
+	vendor-xmc.c
 	vendor-xtx.c
 )
 

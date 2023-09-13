@@ -25,6 +25,7 @@ static const struct spi_nor_vendor *vendors[] = {
 	&vendor_macronix,
 	&vendor_sst,
 	&vendor_winbond,
+	&vendor_xmc,
 	&vendor_xtx,
 };
 
