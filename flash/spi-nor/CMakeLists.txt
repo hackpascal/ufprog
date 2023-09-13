@@ -23,6 +23,7 @@ set(ufprog_spi_nor_vendor_src
 	vendor-macronix.c
 	vendor-sst.c
 	vendor-winbond.c
+	vendor-xtx.c
 )
 
 add_library(ufprog_spi_nor SHARED ${ufprog_spi_nor_src} ${ufprog_spi_nor_vendor_src} ufprog-spi-nor.def)
