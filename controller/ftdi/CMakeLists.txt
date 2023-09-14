@@ -17,6 +17,7 @@ set(mpsse_common_src
 )
 
 set(presets_libusb_files
+	presets/ft232h-libusb.json
 	presets/ft2232h-libusb.json
 	presets/ft4222h-libusb.json
 	presets/ft4232h-libusb.json
@@ -43,6 +44,7 @@ install(TARGETS ft4222h-libusb mpsse-libusb
 
 if(WIN32)
 set(presets_d2xx_files
+	presets/ft232h.json
 	presets/ft2232h.json
 	presets/ft4222h.json
 	presets/ft4232h.json
