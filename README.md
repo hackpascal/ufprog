@@ -45,14 +45,17 @@ Pull requests are welcome.
 * TBD: Parallel NAND/24 EEPROM
 
 ## Supported SPI-NOR flashes
-* Winbond
-* Microchip/SST
-* GigaDevice
-* ISSI
-* Intel
-* ESMT
 * EON
-* TBD: Macronix/XMC/Micron/Spansion/...
+* ESMT
+* GigaDevice
+* Intel
+* ISSI
+* Macronix
+* Microchip/SST
+* Winbond
+* XMC
+* XTX
+* TBD: Micron/Spansion/...
 
 ## Supported SPI-NAND flashes
 * Alliance Memory
