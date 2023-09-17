@@ -346,8 +346,8 @@ static ufprog_status nand_test_compare_page(struct ufnand_instance *nandinst, st
 			}
 		}
 
-		if (check && (pat[i] & buf[i]) != pat[i]) {
-			n = pat[i] & (pat[i] ^ buf[i]);
+		if (check && buf[i] != pat[i]) {
+			n = pat[i] ^ buf[i];
 			cnt += hweight8(n);
 		}
 	}
