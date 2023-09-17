@@ -214,7 +214,7 @@ static const struct spi_nand_flash_part gigadevice_parts[] = {
 		   NAND_OTP_INFO(&gd_otp),
 	),
 
-	SNAND_PART("GD5F1GQ4UxxIG", SNAND_ID(SNAND_ID_DIRECT, 0xc8, 0xb1, 0x48), &snand_memorg_1g_2k_128,
+	SNAND_PART("GD5F1GQ4UCxIG", SNAND_ID(SNAND_ID_DIRECT, 0xc8, 0xb1, 0x48), &snand_memorg_1g_2k_128,
 		   NAND_ECC_REQ(512, 8),
 		   SNAND_FLAGS(SNAND_F_NO_PP | SNAND_F_NOR_READ_CAP),
 		   SNAND_VENDOR_FLAGS(GD_F_ECC_CAP_8_BITS_SR_3BITS),
@@ -227,7 +227,7 @@ static const struct spi_nand_flash_part gigadevice_parts[] = {
 		   NAND_OTP_INFO(&gd_otp),
 	),
 
-	SNAND_PART("GD5F1GQ4RxxIG", SNAND_ID(SNAND_ID_DIRECT, 0xc8, 0xa1, 0x48), &snand_memorg_1g_2k_128, /* 1.8V */
+	SNAND_PART("GD5F1GQ4RCxIG", SNAND_ID(SNAND_ID_DIRECT, 0xc8, 0xa1, 0x48), &snand_memorg_1g_2k_128, /* 1.8V */
 		   NAND_ECC_REQ(512, 8),
 		   SNAND_FLAGS(SNAND_F_NO_PP | SNAND_F_NOR_READ_CAP),
 		   SNAND_VENDOR_FLAGS(GD_F_ECC_CAP_8_BITS_SR_3BITS),
