@@ -119,6 +119,7 @@ struct spi_nand_state {
 	uint32_t rd_io_info;
 
 	struct spi_nand_io_opcode pl_opcode;
+	struct spi_nand_io_opcode upd_opcode;
 	uint32_t pl_io_info;
 
 	uint8_t cfg[SNAND_MAX_DIES];
@@ -185,8 +186,9 @@ ufprog_status spi_nand_read_cache_custom(struct spi_nand *snand, const struct sp
 					 uint32_t io_info, uint32_t column, uint32_t len, void *data);
 ufprog_status spi_nand_read_cache_single(struct spi_nand *snand, uint32_t column, uint32_t len, void *data);
 
-ufprog_status spi_nand_program_load_custom(struct spi_nand *snand, const struct spi_nand_io_opcode *opcode,
-					   uint32_t io_info, uint32_t column, uint32_t len, const void *data);
+ufprog_status spi_nand_program_load_custom(struct spi_nand *snand, const struct spi_nand_io_opcode *pl_opcode,
+					   const struct spi_nand_io_opcode *upd_opcode, uint32_t io_info,
+					   uint32_t column, uint32_t len, const void *data);
 ufprog_status spi_nand_program_load_single(struct spi_nand *snand, uint32_t column, uint32_t len, const void *data);
 
 ufprog_status spi_nand_read_uid_otp(struct spi_nand *snand, uint32_t page, void *data, uint32_t *retlen);

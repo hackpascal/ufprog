@@ -783,6 +783,9 @@ static void spi_nand_reset_ext_part(struct spi_nand_flash_part *part)
 	if (part->pl_opcodes && (part->ext_id_flags & SPI_NAND_EXT_PART_FREE_PL_OPCODES))
 		free((void *)part->pl_opcodes);
 
+	if (part->upd_opcodes && (part->ext_id_flags & SPI_NAND_EXT_PART_FREE_UPD_OPCODES))
+		free((void *)part->upd_opcodes);
+
 	if (part->page_layout && (part->ext_id_flags & SPI_NAND_EXT_PART_FREE_PAGE_LAYOUT))
 		free((void *)part->page_layout);
 
@@ -927,6 +930,13 @@ static int UFPROG_API spi_nand_ext_vendor_parts_cb(void *priv, const char *key, 
 		part->ext_id_flags |= SPI_NAND_EXT_PART_FREE_PL_OPCODES;
 	part->pl_opcodes = opcodes;
 	part->pl_io_caps |= io_caps;
+
+	pi->ret = spi_nand_ext_part_read_io_opcodes(jpart, "upd-opcodes", &opcodes, &io_caps, &needs_free, path);
+	if (pi->ret)
+		goto cleanup;
+	if (needs_free)
+		part->ext_id_flags |= SPI_NAND_EXT_PART_FREE_UPD_OPCODES;
+	part->upd_opcodes = opcodes;
 
 	pi->ret = spi_nand_ext_part_read_ecc_req(jpart, &part->ecc_req, path);
 	if (pi->ret)

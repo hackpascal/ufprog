@@ -100,6 +100,7 @@ struct spi_nand_io_opcode {
 
 #define SNAND_RD_OPCODES(_opcodes)		.rd_opcodes = (_opcodes)
 #define SNAND_PL_OPCODES(_opcodes)		.pl_opcodes = (_opcodes)
+#define SNAND_UPD_OPCODES(_opcodes)		.upd_opcodes = (_opcodes)
 
 #define SNAND_PAGE_LAYOUT(_layout)		.page_layout = (_layout)
 
@@ -170,6 +171,7 @@ struct spi_nand_flash_part {
 
 	uint32_t pl_io_caps;
 	const struct spi_nand_io_opcode *pl_opcodes;
+	const struct spi_nand_io_opcode *upd_opcodes;
 
 	const struct nand_page_layout *page_layout;
 
@@ -193,6 +195,7 @@ struct spi_nand_flash_part_blank {
 
 	struct spi_nand_io_opcode rd_opcodes[__SPI_MEM_IO_MAX];
 	struct spi_nand_io_opcode pl_opcodes[__SPI_MEM_IO_MAX];
+	struct spi_nand_io_opcode upd_opcodes[__SPI_MEM_IO_MAX];
 };
 
 #define SNAND_PART(_model, _id, _memorg, _eccrq, ...) \
@@ -202,6 +205,7 @@ struct spi_nand_flash_part_blank {
 extern const struct spi_nand_io_opcode default_rd_opcodes_4d[];
 extern const struct spi_nand_io_opcode default_rd_opcodes_q2d[];
 extern const struct spi_nand_io_opcode default_pl_opcodes[];
+extern const struct spi_nand_io_opcode default_upd_opcodes[];
 
 /* Predefined register field values */
 extern const struct nand_memorg snand_memorg_512m_2k_64;

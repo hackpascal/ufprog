@@ -32,6 +32,11 @@ const struct spi_nand_io_opcode default_pl_opcodes[__SPI_MEM_IO_MAX] = {
 	SNAND_IO_OPCODE(SPI_MEM_IO_1_1_4, SNAND_CMD_PROGRAM_LOAD_QUAD_IN, 2, 0),
 };
 
+const struct spi_nand_io_opcode default_upd_opcodes[__SPI_MEM_IO_MAX] = {
+	SNAND_IO_OPCODE(SPI_MEM_IO_1_1_1, SNAND_CMD_RND_PROGRAM_LOAD, 2, 0),
+	SNAND_IO_OPCODE(SPI_MEM_IO_1_1_4, SNAND_CMD_RND_PROGRAM_LOAD_QUAD_IN, 2, 0),
+};
+
 const struct nand_memorg snand_memorg_512m_2k_64 = SNAND_MEMORG(2048, 64, 64, 512, 1, 1);
 const struct nand_memorg snand_memorg_512m_2k_128 = SNAND_MEMORG(2048, 128, 64, 512, 1, 1);
 const struct nand_memorg snand_memorg_1g_2k_64 = SNAND_MEMORG(2048, 64, 64, 1024, 1, 1);
@@ -91,6 +96,11 @@ void spi_nand_prepare_blank_part(struct spi_nand_flash_part_blank *bp, const str
 		memcpy(&bp->pl_opcodes, refpart->pl_opcodes, sizeof(bp->pl_opcodes));
 		bp->p.pl_opcodes = bp->pl_opcodes;
 	}
+
+	if (refpart->upd_opcodes) {
+		memcpy(&bp->upd_opcodes, refpart->upd_opcodes, sizeof(bp->upd_opcodes));
+		bp->p.upd_opcodes = bp->upd_opcodes;
+	}
 }
 
 void spi_nand_blank_part_fill_default_opcodes(struct spi_nand_flash_part_blank *bp)
@@ -106,6 +116,14 @@ void spi_nand_blank_part_fill_default_opcodes(struct spi_nand_flash_part_blank *
 	if (!bp->p.pl_opcodes) {
 		memcpy(&bp->pl_opcodes, &default_pl_opcodes, sizeof(bp->pl_opcodes));
 		bp->p.pl_opcodes = bp->pl_opcodes;
+
+		if (!bp->p.pl_io_caps)
+			bp->p.pl_io_caps = BIT_SPI_MEM_IO_1_1_1;
+	}
+
+	if (!bp->p.upd_opcodes) {
+		memcpy(&bp->upd_opcodes, &default_upd_opcodes, sizeof(bp->upd_opcodes));
+		bp->p.upd_opcodes = bp->upd_opcodes;
 
 		if (!bp->p.pl_io_caps)
 			bp->p.pl_io_caps = BIT_SPI_MEM_IO_1_1_1;

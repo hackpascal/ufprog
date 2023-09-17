@@ -28,6 +28,7 @@
 
 /* SPI-NAND opcodes for Micron M70A */
 #define SNAND_CMD_PROGRAM_LOAD_X2_M70A			0xa2
+#define SNAND_CMD_RND_PROGRAM_LOAD_X2_M70A		0x44
 
 /* Micron vendor flags */
 #define MT_F_ECC_CAP_1_BIT				BIT(0)
@@ -71,6 +72,12 @@ static const struct spi_nand_io_opcode m70a_pl_opcodes[__SPI_MEM_IO_MAX] = {
 	SNAND_IO_OPCODE(SPI_MEM_IO_1_1_1, SNAND_CMD_PROGRAM_LOAD, 2, 0),
 	SNAND_IO_OPCODE(SPI_MEM_IO_1_1_2, SNAND_CMD_PROGRAM_LOAD_X2_M70A, 2, 0),
 	SNAND_IO_OPCODE(SPI_MEM_IO_1_1_4, SNAND_CMD_PROGRAM_LOAD_QUAD_IN, 2, 0),
+};
+
+const struct spi_nand_io_opcode m70a_upd_opcodes[__SPI_MEM_IO_MAX] = {
+	SNAND_IO_OPCODE(SPI_MEM_IO_1_1_1, SNAND_CMD_RND_PROGRAM_LOAD, 2, 0),
+	SNAND_IO_OPCODE(SPI_MEM_IO_1_1_2, SNAND_CMD_RND_PROGRAM_LOAD_X2_M70A, 2, 0),
+	SNAND_IO_OPCODE(SPI_MEM_IO_1_1_4, SNAND_CMD_RND_PROGRAM_LOAD_QUAD_IN, 2, 0),
 };
 
 static DEFINE_SNAND_ALIAS(mt29f1g01abafd_alias, SNAND_ALIAS_VENDOR_MODEL(&vendor_esmt, "F50L1G41XA"));
@@ -193,6 +200,7 @@ static const struct spi_nand_flash_part micron_parts[] = {
 		   SNAND_PL_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		   SNAND_RD_OPCODES(default_rd_opcodes_4d),
 		   SNAND_PL_OPCODES(m70a_pl_opcodes),
+		   SNAND_UPD_OPCODES(m70a_upd_opcodes),
 		   SNAND_SPI_MAX_SPEED_MHZ(133), SNAND_DUAL_MAX_SPEED_MHZ(100), SNAND_QUAD_MAX_SPEED_MHZ(50),
 		   SNAND_PAGE_LAYOUT(&mt_4k_ecc_8bits_layout),
 		   NAND_OTP_INFO(&mt_otp),
@@ -209,6 +217,7 @@ static const struct spi_nand_flash_part micron_parts[] = {
 		   SNAND_PL_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		   SNAND_RD_OPCODES(default_rd_opcodes_4d),
 		   SNAND_PL_OPCODES(m70a_pl_opcodes),
+		   SNAND_UPD_OPCODES(m70a_upd_opcodes),
 		   SNAND_SPI_MAX_SPEED_MHZ(83), SNAND_DUAL_MAX_SPEED_MHZ(74), SNAND_QUAD_MAX_SPEED_MHZ(37),
 		   SNAND_PAGE_LAYOUT(&mt_4k_ecc_8bits_layout),
 		   NAND_OTP_INFO(&mt_otp),
@@ -239,6 +248,7 @@ static const struct spi_nand_flash_part micron_parts[] = {
 		   SNAND_PL_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		   SNAND_RD_OPCODES(default_rd_opcodes_4d),
 		   SNAND_PL_OPCODES(m70a_pl_opcodes),
+		   SNAND_UPD_OPCODES(m70a_upd_opcodes),
 		   SNAND_SPI_MAX_SPEED_MHZ(133), SNAND_DUAL_MAX_SPEED_MHZ(100), SNAND_QUAD_MAX_SPEED_MHZ(50),
 		   SNAND_PAGE_LAYOUT(&mt_4k_ecc_8bits_layout),
 		   NAND_OTP_INFO(&mt_otp),
@@ -254,6 +264,7 @@ static const struct spi_nand_flash_part micron_parts[] = {
 		   SNAND_PL_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		   SNAND_RD_OPCODES(default_rd_opcodes_4d),
 		   SNAND_PL_OPCODES(m70a_pl_opcodes),
+		   SNAND_UPD_OPCODES(m70a_upd_opcodes),
 		   SNAND_SPI_MAX_SPEED_MHZ(83), SNAND_DUAL_MAX_SPEED_MHZ(74), SNAND_QUAD_MAX_SPEED_MHZ(37),
 		   SNAND_PAGE_LAYOUT(&mt_4k_ecc_8bits_layout),
 		   NAND_OTP_INFO(&mt_otp),

@@ -845,14 +845,15 @@ static enum spi_mem_io_type spi_nand_choose_io_type(struct spi_nand *snand, cons
 }
 
 static bool spi_nand_test_rd_pl_opcode(struct spi_nand *snand, const struct spi_nand_io_opcode *rd_opcodes,
-				       uint32_t rd_io_caps,  const struct spi_nand_io_opcode *pl_opcodes,
-				       uint32_t pl_io_caps, bool same_cmd_bw, enum spi_mem_io_type *ret_rd_io_type,
+				       uint32_t rd_io_caps, const struct spi_nand_io_opcode *pl_opcodes,
+				       const struct spi_nand_io_opcode *upd_opcodes, uint32_t pl_io_caps,
+				       bool same_cmd_bw, enum spi_mem_io_type *ret_rd_io_type,
 				       enum spi_mem_io_type *ret_pl_io_type)
 {
 	enum spi_mem_io_type rd_io_type = SPI_MEM_IO_1_1_1, pl_io_type = SPI_MEM_IO_1_1_1;
 	uint32_t rd_bw, pl_bw, dis_bw, mask = 0;
 
-	if (!rd_opcodes || !pl_opcodes || !rd_io_caps || !pl_io_caps)
+	if (!rd_opcodes || !pl_opcodes || !upd_opcodes || !rd_io_caps || !pl_io_caps)
 		return false;
 
 	if (ufprog_spi_if_caps(snand->spi) & UFP_SPI_NO_QPI_BULK_READ)
@@ -869,6 +870,13 @@ static bool spi_nand_test_rd_pl_opcode(struct spi_nand *snand, const struct spi_
 		pl_io_type = spi_nand_choose_io_type(snand, pl_opcodes, pl_io_caps, SPI_DATA_OUT);
 		if (pl_io_type >= __SPI_MEM_IO_MAX)
 			return false;
+
+		if (!upd_opcodes[pl_io_type].opcode ||
+		    pl_opcodes[pl_io_type].naddrs != upd_opcodes[pl_io_type].naddrs ||
+		    pl_opcodes[pl_io_type].ndummy != upd_opcodes[pl_io_type].ndummy) {
+			mask = BIT(pl_io_type);
+			goto disable_current;
+		}
 
 		if (!same_cmd_bw)
 			break;
@@ -893,6 +901,7 @@ static bool spi_nand_test_rd_pl_opcode(struct spi_nand *snand, const struct spi_
 			mask |= BIT_SPI_MEM_IO_8_8_8 | BIT_SPI_MEM_IO_8D_8D_8D;
 		}
 
+	disable_current:
 		rd_io_caps &= ~mask;
 		pl_io_caps &= ~mask;
 	}
@@ -905,7 +914,7 @@ static bool spi_nand_test_rd_pl_opcode(struct spi_nand *snand, const struct spi_
 
 static bool spi_nand_setup_opcode(struct spi_nand *snand, const struct spi_nand_flash_part *part)
 {
-	const struct spi_nand_io_opcode *rd_opcodes, *pl_opcodes;
+	const struct spi_nand_io_opcode *rd_opcodes, *pl_opcodes, *upd_opcodes;
 	enum spi_mem_io_type rd_io_type, pl_io_type;
 	uint32_t rd_io_caps, pl_io_caps;
 	bool ret;
@@ -920,6 +929,11 @@ static bool spi_nand_setup_opcode(struct spi_nand *snand, const struct spi_nand_
 	else
 		pl_opcodes = default_pl_opcodes;
 
+	if (part->upd_opcodes)
+		upd_opcodes = part->upd_opcodes;
+	else
+		upd_opcodes = default_upd_opcodes;
+
 	if (part->rd_io_caps)
 		rd_io_caps = part->rd_io_caps;
 	else
@@ -930,7 +944,7 @@ static bool spi_nand_setup_opcode(struct spi_nand *snand, const struct spi_nand_
 	else
 		pl_io_caps = BIT_SPI_MEM_IO_1_1_1;
 
-	ret = spi_nand_test_rd_pl_opcode(snand, rd_opcodes, rd_io_caps, pl_opcodes, pl_io_caps,
+	ret = spi_nand_test_rd_pl_opcode(snand, rd_opcodes, rd_io_caps, pl_opcodes, upd_opcodes, pl_io_caps,
 					 false, &rd_io_type, &pl_io_type);
 	if (!ret) {
 		logm_err("Unable to select a proper opcode for read from cache/program load\n");
@@ -945,10 +959,11 @@ static bool spi_nand_setup_opcode(struct spi_nand *snand, const struct spi_nand_
 		 snand->state.rd_opcode.ndummy * spi_mem_io_addr_bw(rd_io_type) / 8);
 
 	memcpy(&snand->state.pl_opcode, &pl_opcodes[pl_io_type], sizeof(snand->state.pl_opcode));
+	memcpy(&snand->state.upd_opcode, &upd_opcodes[pl_io_type], sizeof(snand->state.upd_opcode));
 	snand->state.pl_io_info = ufprog_spi_mem_io_bus_width_info(pl_io_type);
 
-	logm_dbg("Selected opcode %02Xh for program load, I/O type %s\n", snand->state.pl_opcode.opcode,
-		 ufprog_spi_mem_io_name(pl_io_type));
+	logm_dbg("Selected opcode %02Xh/%02Xh for program load, I/O type %s\n", snand->state.pl_opcode.opcode,
+		 snand->state.upd_opcode.opcode, ufprog_spi_mem_io_name(pl_io_type));
 
 	return true;
 }
@@ -1968,19 +1983,23 @@ static ufprog_status spi_nand_ops_read_pages(struct nand_chip *nand, uint32_t pa
 	return spi_nand_chip_read_pages(snand, page, count, buf, snand->state.ecc_enabled, flags, retcount);
 }
 
-ufprog_status spi_nand_program_load_custom(struct spi_nand *snand, const struct spi_nand_io_opcode *opcode,
-					   uint32_t io_info, uint32_t column, uint32_t len, const void *data)
+ufprog_status spi_nand_program_load_custom(struct spi_nand *snand, const struct spi_nand_io_opcode *pl_opcode,
+					   const struct spi_nand_io_opcode *upd_opcode, uint32_t io_info,
+					   uint32_t column, uint32_t len, const void *data)
 {
 	struct ufprog_spi_mem_op op = SPI_MEM_OP(
-		SPI_MEM_OP_CMD(opcode->opcode, spi_mem_io_info_cmd_bw(io_info)),
-		SPI_MEM_OP_ADDR(opcode->naddrs, column, spi_mem_io_info_addr_bw(io_info)),
+		SPI_MEM_OP_CMD(pl_opcode->opcode, spi_mem_io_info_cmd_bw(io_info)),
+		SPI_MEM_OP_ADDR(pl_opcode->naddrs, column, spi_mem_io_info_addr_bw(io_info)),
 		SPI_MEM_OP_NO_DUMMY,
 		SPI_MEM_OP_DATA_OUT(len, data, spi_mem_io_info_data_bw(io_info))
 	);
 
 	while (len) {
+		STATUS_CHECK_RET(spi_nand_write_enable(snand));
 		STATUS_CHECK_RET(ufprog_spi_mem_adjust_op_size(snand->spi, &op));
 		STATUS_CHECK_RET(ufprog_spi_mem_exec_op(snand->spi, &op));
+
+		op.cmd.opcode = upd_opcode->opcode;
 
 		op.data.buf.tx = (const void *)((uintptr_t)op.data.buf.tx + op.data.len);
 
@@ -1996,12 +2015,14 @@ ufprog_status spi_nand_program_load_custom(struct spi_nand *snand, const struct 
 
 static ufprog_status spi_nand_program_load(struct spi_nand *snand, uint32_t column, uint32_t len, const void *data)
 {
-	return spi_nand_program_load_custom(snand, &snand->state.pl_opcode, snand->state.pl_io_info, column, len, data);
+	return spi_nand_program_load_custom(snand, &snand->state.pl_opcode, &snand->state.upd_opcode,
+					    snand->state.pl_io_info, column, len, data);
 }
 
 ufprog_status spi_nand_program_load_single(struct spi_nand *snand, uint32_t column, uint32_t len, const void *data)
 {
 	return spi_nand_program_load_custom(snand, &default_pl_opcodes[SPI_MEM_IO_1_1_1],
+					    &default_upd_opcodes[SPI_MEM_IO_1_1_1],
 					    ufprog_spi_mem_io_bus_width_info(SPI_MEM_IO_1_1_1), column, len, data);
 }
 
@@ -2013,7 +2034,6 @@ static ufprog_status spi_nand_die_write_page(struct spi_nand *snand, uint32_t pa
 
 	column |= spi_nand_get_plane_address(snand, page);
 
-	STATUS_CHECK_RET(spi_nand_write_enable(snand));
 	STATUS_CHECK_GOTO_RET(spi_nand_program_load(snand, column, len, data), ret, errout);
 	STATUS_CHECK_GOTO_RET(spi_nand_op_program_execute(snand, page), ret, errout);
 
