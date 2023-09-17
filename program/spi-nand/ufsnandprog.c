@@ -29,8 +29,8 @@ static struct ufsnand_instance snand_inst;
 
 static const char usage[] =
 	"Usage:\n"
-	"    %s [dev=<dev>] [part=<partmodel>] [die=<id>] [ftl=<ftlcfg>] [bbt=<bbtcfg>]\n"
-	"       [ecc=<ecccfg>] <subcommand> [option...]\n"
+	"    %s [dev=<dev>] [part=<partmodel>] [die=<id>] [ftl=<ftlcfg>]\n"
+	"       [bbt=<bbtcfg>] [ecc=<ecccfg>] <subcommand> [option...]\n"
 	"\n"
 	"Global options:\n"
 	"        dev  - Specify the device to be opened.\n"
@@ -99,7 +99,7 @@ static const char usage[] =
 	"               The part base address must be block size aligned.\n"
 	"               The behavior of logical address in part depends on the selected\n"
 	"               FTL.\n"
-	"        part-size - Specify the size of the partition."
+	"        part-size - Specify the size of the partition.\n"
 	"               If unspecified, the maximum size from part base will be used.\n"
 	"               The part size must be block size aligned.\n"
 	"\n"
@@ -158,7 +158,7 @@ static const char usage[] =
 	"                 aligned.\n"
 	"                 Default is 0 if not specified.\n"
 	"        size   - The size to be written. Default is the writable size from start\n"
-	"                 address to end of flash."
+	"                 address to end of flash.\n"
 	"                 The value of size must be page size (not including OOB)\n"
 	"                 aligned.\n"
 	"        count  - Number of pages to be written.\n"

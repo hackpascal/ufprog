@@ -2,7 +2,7 @@
 /*
  * Author: Weijie Gao <hackpascal@gmail.com>
  *
- * Windows platform specific definitions
+ * Platform specific definitions
  */
 #pragma once
 
