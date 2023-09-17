@@ -227,7 +227,7 @@
 					"id": [ "ef", "aa", "22" ],
 					"flags": [
 						"generic-uid",
-						"extended-ecc-4-sectors-max-8-bits"
+						"extended-ecc-bfr-max-8-bits"
 					],
 					"vendor-flags": [],
 					"number-of-programs": 4,

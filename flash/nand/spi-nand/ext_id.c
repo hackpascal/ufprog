@@ -723,6 +723,10 @@ static ufprog_status spi_nand_ext_part_read_alias(struct json_object *jpart,
 	alias->num = (uint32_t)n;
 
 	for (i = 0; i < n; i++) {
+		ret = json_array_read_str(jalias, i, &model, NULL);
+		if (!ret)
+			goto done;
+
 		ret = json_array_read_obj(jalias, i, &jitem);
 		if (ret) {
 			logm_err("Invalid type of %s/%s/%zu\n", path, "alias", i);
@@ -753,8 +757,9 @@ static ufprog_status spi_nand_ext_part_read_alias(struct json_object *jpart,
 			return UFP_JSON_DATA_INVALID;
 		}
 
+	done:
 		alias->items[i].model = os_strdup(model);
-		if (alias->items[i].model) {
+		if (!alias->items[i].model) {
 			logm_err("No memory for flash part alias\n");
 			return UFP_NOMEM;
 		}
@@ -769,35 +774,23 @@ static void spi_nand_reset_ext_part(struct spi_nand_flash_part *part)
 {
 	uint32_t i;
 
-	if (part->model) {
+	if (part->model)
 		free((void *)part->model);
-		part->model = NULL;
-	}
 
-	if (part->rd_opcodes && (part->ext_id_flags & SPI_NAND_EXT_PART_FREE_RD_OPCODES)) {
+	if (part->rd_opcodes && (part->ext_id_flags & SPI_NAND_EXT_PART_FREE_RD_OPCODES))
 		free((void *)part->rd_opcodes);
-		part->rd_opcodes = NULL;
-	}
 
-	if (part->pl_opcodes && (part->ext_id_flags & SPI_NAND_EXT_PART_FREE_PL_OPCODES)) {
+	if (part->pl_opcodes && (part->ext_id_flags & SPI_NAND_EXT_PART_FREE_PL_OPCODES))
 		free((void *)part->pl_opcodes);
-		part->pl_opcodes = NULL;
-	}
 
-	if (part->page_layout && (part->ext_id_flags & SPI_NAND_EXT_PART_FREE_PAGE_LAYOUT)) {
+	if (part->page_layout && (part->ext_id_flags & SPI_NAND_EXT_PART_FREE_PAGE_LAYOUT))
 		free((void *)part->page_layout);
-		part->page_layout = NULL;
-	}
 
-	if (part->memorg && (part->ext_id_flags & SPI_NAND_EXT_PART_FREE_MEMORG)) {
+	if (part->memorg && (part->ext_id_flags & SPI_NAND_EXT_PART_FREE_MEMORG))
 		free((void *)part->memorg);
-		part->memorg = NULL;
-	}
 
-	if (part->otp) {
+	if (part->otp)
 		free((void *)part->otp);
-		part->otp = NULL;
-	}
 
 	if (part->alias) {
 		for (i = 0; i < part->alias->num; i++) {
@@ -806,10 +799,9 @@ static void spi_nand_reset_ext_part(struct spi_nand_flash_part *part)
 		}
 
 		free((void *)part->alias);
-		part->alias = NULL;
 	}
 
-	part->ext_id_flags = 0;
+	memset(part, 0, sizeof(*part));
 }
 
 static int UFPROG_API spi_nand_ext_vendor_parts_cb(void *priv, const char *key, struct json_object *jpart)
@@ -1101,6 +1093,7 @@ static int UFPROG_API spi_nand_ext_vendors_cb(void *priv, const char *key, struc
 		}
 
 		logm_err("Invalid type of %s/%s\n", path, "parts");
+		*cbret = ret;
 		goto cleanup;
 	}
 
@@ -1117,8 +1110,10 @@ static int UFPROG_API spi_nand_ext_vendors_cb(void *priv, const char *key, struc
 	}
 
 	ret = spi_nand_load_flash_parts(jparts, &pi);
-	if (ret)
-		goto cleanup_pi;
+	if (ret) {
+		*cbret = ret;
+		goto cleanup;
+	}
 
 	new_vendor->parts = pi.parts;
 	new_vendor->nparts = pi.nparts;
@@ -1129,21 +1124,7 @@ out:
 	*cbret = UFP_OK;
 	return 0;
 
-cleanup_pi:
-	free(pi.parts);
-	pi.parts = NULL;
-
 cleanup:
-	if (new_vendor->id) {
-		free((void *)new_vendor->id);
-		new_vendor->id = NULL;
-	}
-
-	if (new_vendor->name) {
-		free((void *)new_vendor->name);
-		new_vendor->name = NULL;
-	}
-
 	free(path);
 
 	return 1;
@@ -1266,7 +1247,8 @@ static int UFPROG_API spi_nand_ext_io_opcodes_cb(void *priv, const char *key, st
 {
 	struct spi_nand_io_opcode *opcodes = NULL, tmp_opcodes[__SPI_MEM_IO_MAX];
 	ufprog_status ret, *cbret = priv;
-	char *path;
+	char *path, *nkey;
+	size_t keylen;
 
 	if (spi_nand_io_opcodes_find(key)) {
 		logm_err("I/O opcode group named '%s' is already defined\n", key);
@@ -1293,7 +1275,9 @@ static int UFPROG_API spi_nand_ext_io_opcodes_cb(void *priv, const char *key, st
 		goto cleanup;
 	}
 
-	opcodes = malloc(sizeof(*opcodes) * __SPI_MEM_IO_MAX);
+	keylen = strlen(key);
+
+	opcodes = malloc(sizeof(*opcodes) * __SPI_MEM_IO_MAX + keylen + 1);
 	if (!opcodes) {
 		logm_err("No memory for I/O opcode group '%s'\n", key);
 		*cbret = UFP_NOMEM;
@@ -1302,7 +1286,10 @@ static int UFPROG_API spi_nand_ext_io_opcodes_cb(void *priv, const char *key, st
 
 	memcpy(opcodes, tmp_opcodes, sizeof(*opcodes) * __SPI_MEM_IO_MAX);
 
-	ret = lookup_table_insert(ext_io_opcodes_list, key, opcodes);
+	nkey = (char *)opcodes + sizeof(*opcodes) * __SPI_MEM_IO_MAX;
+	memcpy(nkey, key, keylen + 1);
+
+	ret = lookup_table_insert(ext_io_opcodes_list, nkey, opcodes);
 	if (ret) {
 		logm_err("No memory for inserting I/O opcode group '%s'\n", key);
 		*cbret = UFP_NOMEM;
@@ -1427,7 +1414,7 @@ static int UFPROG_API spi_nand_ext_page_layout_cb(void *priv, const char *key, s
 {
 	struct nand_page_layout *page_layout = NULL;
 	ufprog_status ret, *cbret = priv;
-	char *path;
+	char *path, *nkey;
 
 	if (spi_nand_page_layout_find(key)) {
 		logm_err("Page layout named '%s' is already defined\n", key);
@@ -1454,7 +1441,14 @@ static int UFPROG_API spi_nand_ext_page_layout_cb(void *priv, const char *key, s
 		goto cleanup;
 	}
 
-	ret = lookup_table_insert(ext_page_layout_list, key, page_layout);
+	nkey = os_strdup(key);
+	if (!key) {
+		logm_err("No memory for page layout key name '%s'\n", key);
+		*cbret = UFP_NOMEM;
+		goto cleanup;
+	}
+
+	ret = lookup_table_insert(ext_page_layout_list, nkey, page_layout);
 	if (ret) {
 		logm_err("No memory for inserting page layout '%s'\n", key);
 		*cbret = UFP_NOMEM;
@@ -1506,6 +1500,7 @@ static int UFPROG_API spi_nand_reset_ext_page_layout(void *priv, struct ufprog_l
 	lookup_table_delete(tbl, key);
 
 	free(ptr);
+	free((void *)key);
 
 	return 0;
 }
@@ -1568,7 +1563,8 @@ static int UFPROG_API spi_nand_ext_memorg_cb(void *priv, const char *key, struct
 {
 	struct nand_memorg tmp_memorg, *memorg = NULL;
 	ufprog_status ret, *cbret = priv;
-	char *path;
+	char *path, *nkey;
+	size_t keylen;
 
 	if (spi_nand_memorg_find(key)) {
 		logm_err("Memory organization named '%s' is already defined\n", key);
@@ -1595,7 +1591,9 @@ static int UFPROG_API spi_nand_ext_memorg_cb(void *priv, const char *key, struct
 		goto cleanup;
 	}
 
-	memorg = malloc(sizeof(*memorg));
+	keylen = strlen(key);
+
+	memorg = malloc(sizeof(*memorg) + keylen + 1);
 	if (!memorg) {
 		logm_err("No memory for memory organization '%s'\n", key);
 		*cbret = UFP_NOMEM;
@@ -1604,7 +1602,10 @@ static int UFPROG_API spi_nand_ext_memorg_cb(void *priv, const char *key, struct
 
 	memcpy(memorg, &tmp_memorg, sizeof(*memorg));
 
-	ret = lookup_table_insert(ext_memorg_list, key, memorg);
+	nkey = (char *)memorg + sizeof(*memorg);
+	memcpy(nkey, key, keylen + 1);
+
+	ret = lookup_table_insert(ext_memorg_list, nkey, memorg);
 	if (ret) {
 		logm_err("No memory for inserting memory organization '%s'\n", key);
 		*cbret = UFP_NOMEM;
