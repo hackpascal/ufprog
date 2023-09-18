@@ -47,6 +47,14 @@ EXPORTS
 
 	os_read_text_file
 
+	serial_port_open
+	serial_port_close
+	serial_port_set_config
+	serial_port_get_config
+	serial_port_flush
+	serial_port_read
+	serial_port_write
+
 	set_log_print_cb
 	set_log_print_level
 	log_print

@@ -4,6 +4,7 @@ project(os_linux)
 
 set(os_linux_src
 	fsop.c
+	serial.c
 	os.c
 )
 

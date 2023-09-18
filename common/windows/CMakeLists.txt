@@ -4,6 +4,7 @@ project(os_win32)
 
 set(os_win32_src
 	fsop.c
+	serial.c
 	console_log.c
 	os.c
 	entry.c
