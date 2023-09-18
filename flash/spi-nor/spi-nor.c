@@ -791,15 +791,15 @@ static enum spi_mem_io_type spi_nor_choose_io_type(struct spi_nor *snor, const s
 {
 	enum spi_mem_io_type io_type;
 
-	for (io_type = __SPI_MEM_IO_MAX - 1; io_type >= 0; io_type--) {
-		if (!(io_caps & (1 << io_type)))
+	for (io_type = __SPI_MEM_IO_MAX; io_type > 0; io_type--) {
+		if (!(io_caps & (1 << (io_type - 1))))
 			continue;
 
-		if (!opcodes[io_type].opcode)
+		if (!opcodes[io_type - 1].opcode)
 			continue;
 
-		if (spi_nor_test_io_opcode(snor, opcodes, io_type, naddr, data_dir))
-			return io_type;
+		if (spi_nor_test_io_opcode(snor, opcodes, io_type - 1, naddr, data_dir))
+			return io_type - 1;
 	}
 
 	return __SPI_MEM_IO_MAX;
