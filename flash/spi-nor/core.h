@@ -104,6 +104,7 @@ struct spi_nor_reg_param {
 
 struct spi_nor_state {
 	uint32_t flags;
+	uint32_t vendor_flags;
 
 	uint32_t curr_die;
 	uint32_t curr_high_addr;
