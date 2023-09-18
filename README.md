@@ -34,6 +34,7 @@ Pull requests are welcome.
 * WCH CH347 (4.9MB/s read)
 * FTDI MPSSE chips (FT232H/FT2232H/FT4232H) (3MB/s read)
 * FTDI FT4222H (6MB/s read using QSPI)
+* Programmer using serprog protocol (860KB/s read using USB FS)
 
 ## Supported interfaces
 * SPI (Single/Dual/Quad/QPI using SPI-MEM)
