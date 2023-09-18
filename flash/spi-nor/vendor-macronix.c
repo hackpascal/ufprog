@@ -61,6 +61,9 @@
 #define MXIC_F_OCTAL				BIT(18)
 #define MXIC_F_WPR_4BP_TB_OTP			BIT(19)
 
+ /* Macronix vendor runtime flags */
+#define MXIC_SF_NO_QSPI				BIT(0)
+
 static const struct spi_nor_part_flag_enum_info macronix_vendor_flag_info[] = {
 	{ 0, "high-performance-mode" },
 	{ 1, "program-erase-fail-indicator-in-scur" },
@@ -2485,31 +2488,62 @@ static ufprog_status mx25l2026c_write_enable(struct spi_nor *snor)
 	return spi_nor_write_enable(snor);
 }
 
+static void mxic_test_controller_qspi_support(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
+{
+	if (spi_nor_test_io_opcode(snor, bp->read_opcodes_3b, SPI_MEM_IO_1_1_4, 3, SPI_DATA_IN) ||
+	    spi_nor_test_io_opcode(snor, bp->read_opcodes_3b, SPI_MEM_IO_1_4_4, 3, SPI_DATA_IN) ||
+	    spi_nor_test_io_opcode(snor, bp->read_opcodes_3b, SPI_MEM_IO_4_4_4, 3, SPI_DATA_IN) ||
+	    spi_nor_test_io_opcode(snor, bp->pp_opcodes_3b, SPI_MEM_IO_1_1_4, 3, SPI_DATA_OUT) ||
+	    spi_nor_test_io_opcode(snor, bp->pp_opcodes_3b, SPI_MEM_IO_4_4_4, 3, SPI_DATA_OUT))
+		return;
+
+	if (bp->p.size > SZ_16M &&
+	    (spi_nor_test_io_opcode(snor, bp->read_opcodes_4b, SPI_MEM_IO_1_1_4, 4, SPI_DATA_IN) ||
+	    spi_nor_test_io_opcode(snor, bp->read_opcodes_4b, SPI_MEM_IO_1_4_4, 4, SPI_DATA_IN) ||
+	    spi_nor_test_io_opcode(snor, bp->read_opcodes_4b, SPI_MEM_IO_4_4_4, 4, SPI_DATA_IN) ||
+	    spi_nor_test_io_opcode(snor, bp->pp_opcodes_4b, SPI_MEM_IO_1_1_4, 4, SPI_DATA_OUT) ||
+	    spi_nor_test_io_opcode(snor, bp->pp_opcodes_4b, SPI_MEM_IO_4_4_4, 4, SPI_DATA_OUT)))
+		return;
+
+	snor->state.vendor_flags |= MXIC_SF_NO_QSPI;
+}
+
 static ufprog_status mxic_part_setup_dummy_cycles(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp,
 						  const struct spi_nor_reg_access *regacc, uint32_t mask, uint32_t val)
 {
 	uint8_t sio_dc = 8, dual_dc = 8, dio_dc = 4, quad_dc = 8, qio_dc = 6;
-	uint32_t regval = 0;
 
 	if (mask)
 		STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, regacc, mask, val, true));
 
 	if (bp) {
-		if (mask)
-			STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, regacc, &regval));
-
-		if (mask && ((regval & mask) == val) && !(bp->p.vendor_flags & MXIC_F_DC_CR1_BIT7_6_RST_0)) {
+		if (!(bp->p.vendor_flags & MXIC_F_DC_CR1_BIT7_6_RST_0)) {
 			if (bp->p.vendor_flags & MXIC_F_DC_Q8) {
 				qio_dc = 8;
 			} else if (bp->p.vendor_flags & MXIC_F_DC_D8_Q10) {
 				dio_dc = 8;
 				qio_dc = 10;
 			} else if (bp->p.vendor_flags & (MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 | MXIC_F_DC_ALL_10)) {
-				sio_dc = 10;
-				dual_dc = 10;
-				dio_dc = 10;
-				quad_dc = 10;
-				qio_dc = 10;
+				mxic_test_controller_qspi_support(snor, bp);
+				if (snor->state.vendor_flags & MXIC_SF_NO_QSPI) {
+					sio_dc = 8;
+					dual_dc = 8;
+					dio_dc = 8;
+					quad_dc = 8;
+					qio_dc = 8;
+					if (bp->p.max_speed_quad_mhz > 104)
+						bp->p.max_speed_quad_mhz = 104;
+					if (bp->p.max_speed_dual_mhz > 104)
+						bp->p.max_speed_dual_mhz = 104;
+					if (bp->p.max_speed_spi_mhz > 104)
+						bp->p.max_speed_spi_mhz = 104;
+				} else {
+					sio_dc = 10;
+					dual_dc = 10;
+					dio_dc = 10;
+					quad_dc = 10;
+					qio_dc = 10;
+				}
 			} else if (bp->p.vendor_flags & MXIC_F_OCTAL) {
 				sio_dc = 16;
 				dual_dc = 16;
@@ -2552,9 +2586,6 @@ static ufprog_status mxic_part_setup_dummy_cycles(struct spi_nor *snor, struct s
 				bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].nmode = 0;
 			}
 		} else {
-			if (mask)
-				STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, regacc, mask, 0, true));
-
 			bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].ndummy = dio_dc;
 			bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].nmode = 0;
 			bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = qio_dc;
@@ -2703,15 +2734,15 @@ static ufprog_status macronix_part_fixup(struct spi_nor *snor, struct spi_nor_ve
 	}
 
 	if (bp->p.vendor_flags & MXIC_F_DC_CR1_BIT6)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, MXIC_DC_BIT6, 1 << 14));
+		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, 0, 0));
 	else if (bp->p.vendor_flags & MXIC_F_DC_CR1_BIT7)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, MXIC_DC_BIT7, 1 << 15));
+		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, 0, 0));
 	else if (bp->p.vendor_flags & MXIC_F_DC_CR1_BIT7_6)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 3 << 14));
+		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, 0, 0));
 	else if (bp->p.vendor_flags & (MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 | MXIC_F_DC_CR1_BIT7_6_RST_0))
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 0));
+		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, 0, 0));
 	else if (bp->p.vendor_flags & MXIC_F_OCTAL)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mxic_cr2_300_acc, MXIC_CR2_300_DC_MASK, 2));
+		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mxic_cr2_300_acc, 0, 0));
 	else
 		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, 0, 0));
 
@@ -2782,9 +2813,15 @@ static ufprog_status macronix_chip_setup(struct spi_nor *snor)
 		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT6, 1 << 14));
 	else if (snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7)
 		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7, 1 << 15));
-	else if (snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7_6)
+	else if ((snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7_6) && (snor->state.vendor_flags & MXIC_SF_NO_QSPI))
+		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 2 << 14));
+	else if ((snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7_6) && !(snor->state.vendor_flags & MXIC_SF_NO_QSPI))
 		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 3 << 14));
-	else if (snor->param.vendor_flags & (MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 | MXIC_F_DC_CR1_BIT7_6_RST_0))
+	else if (snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7_6_RST_0)
+		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 0));
+	else if (snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 && (snor->state.vendor_flags & MXIC_SF_NO_QSPI))
+		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 1 << 14));
+	else if ((snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10) && !(snor->state.vendor_flags & MXIC_SF_NO_QSPI))
 		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 0));
 	else if (snor->param.vendor_flags & MXIC_F_OCTAL)
 		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mxic_cr2_300_acc, MXIC_CR2_300_DC_MASK, 2));
