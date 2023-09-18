@@ -1,0 +1,24 @@
+{
+	"driver": "serprog",
+	"if_type": [ "spi" ],
+	"config": {
+		"match": [
+			{
+				"port": "COM1",
+				"note1": "port can be COM name or tty path. e.g. COM4 or /dev/ttyACM0",
+				"baudrate": 115200,
+				"note2": "baudrate is optional for Virtual COM Port. Default is 115200",
+				"data-bits": 8,
+				"note3": "data-bits can be set to 5/6/7/8. Default is 8",
+				"stop-bits": 1,
+				"note4": "stop-bits can be set to 1/1.5/2. Default is 1",
+				"parity": "none",
+				"note5": "parity can be none/odd/even/mark/space. Default is none",
+				"flow-control": "none",
+				"note6": "flow-control can be none or dtr/dsr or rts/cts. Default is none"
+			}
+		],
+		"timeout-ms": 5000,
+		"note6": "timeout-ms default is 5000ms. Can be set to 0 to wait forever"
+	}
+}

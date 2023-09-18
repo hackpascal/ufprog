@@ -1,0 +1,23 @@
+LIBRARY serprog
+
+EXPORTS
+	ufprog_plugin_init
+	ufprog_plugin_cleanup
+	ufprog_plugin_api_version
+	ufprog_plugin_desc
+	ufprog_controller_supported_if
+	ufprog_device_open
+	ufprog_device_free
+	ufprog_device_lock
+	ufprog_device_unlock
+
+	ufprog_spi_if_version
+	ufprog_spi_if_caps
+	ufprog_spi_max_read_granularity
+	ufprog_spi_set_speed
+	ufprog_spi_get_speed
+	ufprog_spi_set_mode
+	ufprog_spi_set_cs_pol
+	ufprog_spi_mem_adjust_op_size
+	ufprog_spi_mem_supports_op
+	ufprog_spi_mem_exec_op
