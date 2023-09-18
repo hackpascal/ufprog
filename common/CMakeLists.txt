@@ -39,7 +39,7 @@ set(ufprog_common_src
 )
 
 add_library(ufprog_common SHARED ${ufprog_common_src} ufprog-common.def)
-target_link_libraries(ufprog_common PRIVATE ${JSON_C_LIB} ${OSDEF})
+target_link_libraries(ufprog_common PRIVATE ${JSON_C_LIB} $<TARGET_OBJECTS:${OSDEF}> ${CMAKE_DL_LIBS})
 set_target_properties(ufprog_common PROPERTIES OUTPUT_NAME "ufprog-common")
 
 include_directories(${JSON_C_INC})
