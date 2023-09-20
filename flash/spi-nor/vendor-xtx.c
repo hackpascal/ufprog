@@ -26,7 +26,6 @@
 #define SR_CMP					BIT(14)
 
 /* BP Masks */
-#define BP_1_0					(SR_BP1 | SR_BP0)
 #define BP_2_0					(SR_BP2 | SR_BP1 | SR_BP0)
 #define BP_3_0_CMP_AS_TB			(SR_CMP | SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0)
 
@@ -267,27 +266,6 @@ static const struct spi_nor_reg_def xtx_lc1_adp_drv56_hold_rst_sr3 = SNOR_REG_DE
 static const struct snor_reg_info xtx_sr1_cr_sr3_lc1_adp_regs = SNOR_REG_INFO(&w25q_sr1, &xtx_cr_qe_lb12_wps_cr,
 									      &xtx_lc1_adp_drv56_hold_rst_sr3);
 
-
-static const struct spi_nor_wp_info xtx_wpr_2bp = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_1_0, 0              , -1),	/* None */
-	SNOR_WP_BP_UP(BP_1_0, SR_BP1 | SR_BP0, -2),	/* All */
-
-	SNOR_WP_BP_LO(BP_1_0,          SR_BP0, 0),	/* Lower 64KB */
-	SNOR_WP_BP_LO(BP_1_0, SR_BP1         , 1),	/* Lower 128KB */
-);
-
-static const struct spi_nor_wp_info xtx_wpr_3bp_up = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0, 0                       , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-
-	SNOR_WP_BP_UP(BP_2_0,                   SR_BP0, 0),	/* Upper 64KB */
-	SNOR_WP_BP_UP(BP_2_0,          SR_BP1         , 1),	/* Upper 128KB */
-	SNOR_WP_BP_UP(BP_2_0,          SR_BP1 | SR_BP0, 2),	/* Upper 256KB */
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2                  , 3),	/* Upper 512KB */
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2 |          SR_BP0, 4),	/* Upper 1MB */
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2 | SR_BP1         , 5),	/* Upper 2MB */
-);
-
 static const struct spi_nor_wp_info xtx_wpr_3bp_lo_cmp_sec = SNOR_WP_BP(&sr_acc,
 	SNOR_WP_BP_UP(BP_2_0, 0                       , -1),	/* None */
 	SNOR_WP_BP_UP(BP_2_0, SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
@@ -368,7 +346,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(120), SNOR_DUAL_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&xtx_2bp_regs),
-		  SNOR_WP_RANGES(&xtx_wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_lo),
 	),
 
 	SNOR_PART("XT25W02E", SNOR_ID(0x0b, 0x60, 0x12), SZ_256K,
@@ -379,7 +357,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(60), SNOR_DUAL_MAX_SPEED_MHZ(40),
 		  SNOR_REGS(&xtx_2bp_regs),
-		  SNOR_WP_RANGES(&xtx_wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_lo),
 	),
 
 	SNOR_PART("XT25F04*", SNOR_ID(0x0b, 0x40, 0x13), SZ_512K,
@@ -398,7 +376,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&xtx_3bp_srp_regs),
-		  SNOR_WP_RANGES(&xtx_wpr_3bp_up),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 	),
 
 	SNOR_PART("XT25F04D", SNOR_ID(0x0b, 0x40, 0x13), SZ_512K, /* SFDP 1.2 */

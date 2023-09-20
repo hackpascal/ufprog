@@ -27,7 +27,6 @@
 #define SR_SEC					BIT(6)
 
  /* BP Masks */
-#define BP_1_0					(SR_BP1 | SR_BP0)
 #define BP_2_0					(SR_BP2 | SR_BP1 | SR_BP0)
 #define BP_2_0_TB				(SR_TB | SR_BP2 | SR_BP1 | SR_BP0)
 #define BP_3_0					(SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0)
@@ -444,15 +443,6 @@ static const struct spi_nor_wp_info en25f05_wpr = SNOR_WP_BP(&sr_acc,
 	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2 | SR_BP1         , 0),		/* Lower T - 4KB */
 );
 
-static const struct spi_nor_wp_info en25p10_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_1_0, 0              , -1),	/* None */
-
-	SNOR_WP_BP_UP(BP_1_0, SR_BP1 | SR_BP0, -2),	/* All */
-
-	SNOR_WP_RP_UP(BP_1_0,          SR_BP0, 2),	/* Upper 1/4 */
-	SNOR_WP_RP_UP(BP_1_0, SR_BP1         , 1),	/* Upper 1/2 */
-);
-
 static const struct spi_nor_wp_info en25e10_wpr = SNOR_WP_BP(&sr_acc,
 	SNOR_WP_BP_UP(BP_2_0,     0                       , -1),	/* None */
 
@@ -477,19 +467,6 @@ static const struct spi_nor_wp_info en25s10_wpr = SNOR_WP_BP(&sr_acc,
 	SNOR_WP_SP_CMP_LO(BP_2_0,          SR_BP1         , 3),		/* Lower T - 32KB */
 	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2 |          SR_BP0, 2),		/* Lower T - 16KB */
 	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2 | SR_BP1         , 1),		/* Lower T - 8KB */
-);
-
-static const struct spi_nor_wp_info en25f40_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0, 0                       , -1),	/* None */
-
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-
-	SNOR_WP_BP_UP(BP_2_0,                   SR_BP0, 0),	/* Upper 64KB */
-	SNOR_WP_BP_UP(BP_2_0,          SR_BP1         , 1),	/* Upper 128KB */
-	SNOR_WP_BP_UP(BP_2_0,          SR_BP1 | SR_BP0, 2),	/* Upper 256KB */
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2                  , 3),	/* Upper 512KB */
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2 |          SR_BP0, 4),	/* Upper 1MB */
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2 | SR_BP1         , 5),	/* Upper 2MB */
 );
 
 static const struct spi_nor_wp_info en25q40_wpr = SNOR_WP_BP(&sr_acc,
@@ -626,19 +603,6 @@ static const struct spi_nor_wp_info en25q16a_wpr = SNOR_WP_BP(&sr_acc,
 	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB |          SR_BP1 | SR_BP0, 2),	/* Upper T - 256KB */
 	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB | SR_BP2                  , 3),	/* Upper T - 512KB */
 	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB | SR_BP2 |          SR_BP0, 4),	/* Upper T - 1MB */
-);
-
-static const struct spi_nor_wp_info en25q32_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0, 0                       , -1),	/* None */
-
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-
-	SNOR_WP_RP_UP(BP_2_0,                   SR_BP0, 6),	/* Upper 1/64 */
-	SNOR_WP_RP_UP(BP_2_0,          SR_BP1         , 5),	/* Upper 1/32 */
-	SNOR_WP_RP_UP(BP_2_0,          SR_BP1 | SR_BP0, 4),	/* Upper 1/16 */
-	SNOR_WP_RP_UP(BP_2_0, SR_BP2                  , 3),	/* Upper 1/8 */
-	SNOR_WP_RP_UP(BP_2_0, SR_BP2 |          SR_BP0, 2),	/* Upper 1/4 */
-	SNOR_WP_RP_UP(BP_2_0, SR_BP2 | SR_BP1         , 1),	/* Upper 1/2 */
 );
 
 static const struct spi_nor_wp_info en25q32b_wpr = SNOR_WP_BP(&sr_acc,
@@ -1190,7 +1154,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_ERASE_INFO(&en25p05_erase_opcodes),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&en25p05_regs),
-		  SNOR_WP_RANGES(&en25p10_wpr),
+		  SNOR_WP_RANGES(&wpr_2bp_up_ratio),
 	),
 
 	SNOR_PART("EN25F10(meta)", SNOR_ID(0x1c, 0x31, 0x11), SZ_128K,
@@ -1276,7 +1240,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&en25p05_regs),
-		  SNOR_WP_RANGES(&en25p10_wpr),
+		  SNOR_WP_RANGES(&wpr_2bp_up_ratio),
 	),
 
 	SNOR_PART("EN25F20(meta)", SNOR_ID(0x1c, 0x31, 0x12), SZ_256K,
@@ -1351,7 +1315,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&en25f_regs),
-		  SNOR_WP_RANGES(&en25f40_wpr),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 	),
 
 	SNOR_PART("EN25Q40(meta)", SNOR_ID(0x1c, 0x30, 0x13), SZ_512K,
@@ -1421,7 +1385,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(75),
 		  SNOR_REGS(&en25f_regs),
-		  SNOR_WP_RANGES(&en25f40_wpr),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 		  SNOR_OTP_INFO(&eon_otp_256b),
 	),
 
@@ -1490,7 +1454,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&en25f_regs),
-		  SNOR_WP_RANGES(&en25f40_wpr),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 	),
 
 	SNOR_PART("EN25Q80", SNOR_ID(0x1c, 0x30, 0x14), SZ_1M,
@@ -1568,7 +1532,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(75), SNOR_DUAL_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&en25f_regs),
-		  SNOR_WP_RANGES(&en25f40_wpr),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 		  SNOR_OTP_INFO(&eon_otp_256b),
 	),
 
@@ -1607,7 +1571,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&en25f_regs),
-		  SNOR_WP_RANGES(&en25f40_wpr),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 	),
 
 	SNOR_PART("EN25Q16(meta)", SNOR_ID(0x1c, 0x30, 0x15), SZ_2M,
@@ -1651,7 +1615,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(75),
 		  SNOR_REGS(&en25f_regs),
-		  SNOR_WP_RANGES(&en25f40_wpr),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 		  SNOR_OTP_INFO(&eon_otp_512b),
 	),
 
@@ -1800,7 +1764,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(75),
 		  SNOR_REGS(&en25f_regs),
-		  SNOR_WP_RANGES(&en25f40_wpr),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 		  SNOR_OTP_INFO(&eon_otp_512b),
 	),
 
@@ -1852,7 +1816,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(100), SNOR_DUAL_MAX_SPEED_MHZ(80), SNOR_QUAD_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&en25f_regs),
-		  SNOR_WP_RANGES(&en25q32_wpr),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 		  SNOR_OTP_INFO(&eon_otp_512b),
 	),
 
@@ -2026,7 +1990,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(75),
 		  SNOR_REGS(&en25f_regs),
-		  SNOR_WP_RANGES(&en25q32_wpr),
+		  SNOR_WP_RANGES(&wpr_3bp_up_ratio),
 		  SNOR_OTP_INFO(&eon_otp_512b),
 	),
 

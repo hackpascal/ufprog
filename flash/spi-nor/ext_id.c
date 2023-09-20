@@ -136,13 +136,21 @@ static const struct part_io_opcodes_item builtin_io_opcodes[] = {
 
 static const struct part_wp_item builtin_wp_items[] = {
 	{ "2bp-all", &wpr_2bp_all },
+	{ "2bp-up", &wpr_2bp_up },
+	{ "2bp-up-ratio", &wpr_2bp_up_ratio },
+	{ "2bp-lo", &wpr_2bp_lo },
+	{ "2bp-lo-ratio", &wpr_2bp_lo_ratio },
 	{ "2bp-tb", &wpr_2bp_tb },
+	{ "3bp-up", &wpr_3bp_up },
+	{ "3bp-up-ratio", &wpr_3bp_up_ratio },
 	{ "3bp-tb", &wpr_3bp_tb },
 	{ "3bp-tb-ratio", &wpr_3bp_tb_ratio },
 	{ "3bp-tb-sec", &wpr_3bp_tb_sec },
 	{ "3bp-tb-sec-ratio", &wpr_3bp_tb_sec_ratio },
 	{ "3bp-tb-sec-cmp", &wpr_3bp_tb_sec_cmp },
 	{ "3bp-tb-sec-cmp-ratio", &wpr_3bp_tb_sec_cmp_ratio },
+	{ "4bp-up", &wpr_4bp_up },
+	{ "4bp-lo", &wpr_4bp_lo },
 	{ "4bp-tb", &wpr_4bp_tb },
 	{ "4bp-tb-cmp", &wpr_4bp_tb_cmp },
 };

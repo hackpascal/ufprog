@@ -35,8 +35,6 @@
 
 /* BP Masks */
 #define SR_BP3					BIT(5)
-#define BP_1_0					(SR_BP1 | SR_BP0)
-#define BP_2_0					(SR_BP2 | SR_BP1 | SR_BP0)
 #define BP_3_0					(SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0)
 
  /* Macronix vendor flags */
@@ -245,46 +243,6 @@ static const struct spi_nor_otp_info mx25x_otp_48b = {
 	.size = 0x30,
 };
 
-static const struct spi_nor_wp_info mx25x_wpr_4bp_tb0 = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_3_0, 0                                , -1),	/* None */
-	SNOR_WP_BP_UP(BP_3_0, SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-
-	SNOR_WP_BP_UP(BP_3_0,                            SR_BP0, 0),	/* Upper 64KB */
-	SNOR_WP_BP_UP(BP_3_0,                   SR_BP1         , 1),	/* Upper 128KB */
-	SNOR_WP_BP_UP(BP_3_0,                   SR_BP1 | SR_BP0, 2),	/* Upper 256KB */
-	SNOR_WP_BP_UP(BP_3_0,          SR_BP2                  , 3),	/* Upper 512KB */
-	SNOR_WP_BP_UP(BP_3_0,          SR_BP2 |          SR_BP0, 4),	/* Upper 1MB */
-	SNOR_WP_BP_UP(BP_3_0,          SR_BP2 | SR_BP1         , 5),	/* Upper 2MB */
-	SNOR_WP_BP_UP(BP_3_0,          SR_BP2 | SR_BP1 | SR_BP0, 6),	/* Upper 4MB */
-	SNOR_WP_BP_UP(BP_3_0, SR_BP3                           , 7),	/* Upper 8MB */
-	SNOR_WP_BP_UP(BP_3_0, SR_BP3 |                   SR_BP0, 8),	/* Upper 16MB */
-	SNOR_WP_BP_UP(BP_3_0, SR_BP3 |          SR_BP1         , 9),	/* Upper 32MB */
-	SNOR_WP_BP_UP(BP_3_0, SR_BP3 |          SR_BP1 | SR_BP0, 10),	/* Upper 64MB */
-	SNOR_WP_BP_UP(BP_3_0, SR_BP3 | SR_BP2                  , 11),	/* Upper 128MB */
-	SNOR_WP_BP_UP(BP_3_0, SR_BP3 | SR_BP2 |          SR_BP0, 12),	/* Upper 256MB */
-	SNOR_WP_BP_UP(BP_3_0, SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Upper 512MB */
-);
-
-static const struct spi_nor_wp_info mx25x_wpr_4bp_tb1 = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_LO(BP_3_0, 0                                , -1),	/* None */
-	SNOR_WP_BP_LO(BP_3_0, SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-
-	SNOR_WP_BP_LO(BP_3_0,                            SR_BP0, 0),	/* Lower 64KB */
-	SNOR_WP_BP_LO(BP_3_0,                   SR_BP1         , 1),	/* Lower 128KB */
-	SNOR_WP_BP_LO(BP_3_0,                   SR_BP1 | SR_BP0, 2),	/* Lower 256KB */
-	SNOR_WP_BP_LO(BP_3_0,          SR_BP2                  , 3),	/* Lower 512KB */
-	SNOR_WP_BP_LO(BP_3_0,          SR_BP2 |          SR_BP0, 4),	/* Lower 1MB */
-	SNOR_WP_BP_LO(BP_3_0,          SR_BP2 | SR_BP1         , 5),	/* Lower 2MB */
-	SNOR_WP_BP_LO(BP_3_0,          SR_BP2 | SR_BP1 | SR_BP0, 6),	/* Lower 4MB */
-	SNOR_WP_BP_LO(BP_3_0, SR_BP3                           , 7),	/* Lower 8MB */
-	SNOR_WP_BP_LO(BP_3_0, SR_BP3 |                   SR_BP0, 8),	/* Lower 16MB */
-	SNOR_WP_BP_LO(BP_3_0, SR_BP3 |          SR_BP1         , 9),	/* Lower 32MB */
-	SNOR_WP_BP_LO(BP_3_0, SR_BP3 |          SR_BP1 | SR_BP0, 10),	/* Lower 64MB */
-	SNOR_WP_BP_LO(BP_3_0, SR_BP3 | SR_BP2                  , 11),	/* Lower 128MB */
-	SNOR_WP_BP_LO(BP_3_0, SR_BP3 | SR_BP2 |          SR_BP0, 12),	/* Lower 256MB */
-	SNOR_WP_BP_LO(BP_3_0, SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Lower 512MB */
-);
-
 static const struct spi_nor_wp_info mx25x_wpr_type2_4bp_tb0 = SNOR_WP_BP(&sr_acc,
 	SNOR_WP_BP_UP(BP_3_0, 0                                    , -1),	/* None */
 	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
@@ -345,25 +303,6 @@ static const struct spi_nor_wp_info mx25x_wpr_type3_4bp_tb0 = SNOR_WP_BP(&sr_acc
 	SNOR_WP_BP_UP(BP_3_0, SR_BP3 | SR_BP2                  , -2),	/* All */
 	SNOR_WP_BP_UP(BP_3_0, SR_BP3 | SR_BP2 |          SR_BP0, -2),	/* All */
 	SNOR_WP_BP_UP(BP_3_0, SR_BP3 | SR_BP2 | SR_BP1         , -2),	/* All */
-);
-
-static const struct spi_nor_wp_info mx25l1005_wpr_2bp = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_1_0, 0              , -1),	/* None */
-	SNOR_WP_BP_UP(BP_1_0, SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_1_0,          SR_BP0, 0),	/* Upper 64KB */
-	SNOR_WP_BP_UP(BP_1_0, SR_BP1         , 1),	/* Upper 128KB */
-);
-
-static const struct spi_nor_wp_info mx25l_wpr_3bp = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0, 0                       , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-
-	SNOR_WP_BP_UP(BP_2_0,                   SR_BP0, 0),	/* Upper 64KB */
-	SNOR_WP_BP_UP(BP_2_0,          SR_BP1         , 1),	/* Upper 128KB */
-	SNOR_WP_BP_UP(BP_2_0,          SR_BP1 | SR_BP0, 2),	/* Upper 256KB */
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2                  , 3),	/* Upper 512KB */
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2 |          SR_BP0, 4),	/* Upper 1MB */
-	SNOR_WP_BP_UP(BP_2_0, SR_BP2 | SR_BP1         , 5),	/* Upper 2MB */
 );
 
 static ufprog_status mx25x_wpr_type2_4bp_tb_select(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
@@ -621,7 +560,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(40),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&mx25l1005_wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_up),
 		  SNOR_FIXUPS(&mx25l10xx_fixups),
 	),
 
@@ -632,7 +571,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(66),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&mx25l1005_wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_up),
 	),
 
 	SNOR_PART("MX25L1006E", SNOR_ID(0xc2, 0x20, 0x11), SZ_128K, /* SFDP 1.0 */
@@ -642,7 +581,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&mx25l1005_wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_up),
 	),
 
 	SNOR_PART("MX25V1006E", SNOR_ID(0xc2, 0x20, 0x11), SZ_128K,
@@ -651,7 +590,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(75), SNOR_DUAL_MAX_SPEED_MHZ(70),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&mx25l1005_wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_up),
 	),
 
 	SNOR_PART("MX25V1006F", SNOR_ID(0xc2, 0x20, 0x11), SZ_128K,
@@ -719,7 +658,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(66),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&mx25l1005_wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_up),
 	),
 
 	SNOR_PART("MX25L2006E", SNOR_ID(0xc2, 0x20, 0x12), SZ_256K, /* SFDP 1.0 */
@@ -774,7 +713,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&mx25x_4bp_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	SNOR_PART("MX25V2035F", SNOR_ID(0xc2, 0x23, 0x12), SZ_256K, /* SFDP 1.6 */
@@ -845,7 +784,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&mx25x_3bp_regs),
-		  SNOR_WP_RANGES(&mx25l_wpr_3bp),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 	),
 
 	SNOR_PART("MX25L4006E", SNOR_ID(0xc2, 0x20, 0x13), SZ_512K, /* SFDP 1.0 */
@@ -855,7 +794,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(75), SNOR_DUAL_MAX_SPEED_MHZ(70),
 		  SNOR_REGS(&mx25x_3bp_regs),
-		  SNOR_WP_RANGES(&mx25l_wpr_3bp),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 	),
 
 	SNOR_PART("MX25V40066", SNOR_ID(0xc2, 0x20, 0x13), SZ_512K, /* SFDP 1.0 */
@@ -865,7 +804,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&mx25x_4bp_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	SNOR_PART("MX25V4035F", SNOR_ID(0xc2, 0x23, 0x13), SZ_512K, /* SFDP 1.6 */
@@ -960,7 +899,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&mx25x_3bp_regs),
-		  SNOR_WP_RANGES(&mx25l_wpr_3bp),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 	),
 
 	SNOR_PART("MX25L8006E", SNOR_ID(0xc2, 0x20, 0x14), SZ_1M, /* SFDP 1.0 */
@@ -971,7 +910,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(75), SNOR_DUAL_MAX_SPEED_MHZ(70),
 		  SNOR_REGS(&mx25x_3bp_regs),
-		  SNOR_WP_RANGES(&mx25l_wpr_3bp),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 	),
 
 	SNOR_PART("MX25L8035E", SNOR_ID(0xc2, 0x20, 0x14), SZ_1M,
@@ -1004,7 +943,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&mx25x_4bp_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	SNOR_PART("MX25V8035F", SNOR_ID(0xc2, 0x23, 0x14), SZ_1M, /* SFDP 1.6 */
@@ -1122,7 +1061,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&mx25x_3bp_regs),
-		  SNOR_WP_RANGES(&mx25l_wpr_3bp),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 	),
 
 	SNOR_PART("MX25L1605A", SNOR_ID(0xc2, 0x20, 0x15), SZ_2M,
@@ -1131,7 +1070,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(66),
 		  SNOR_REGS(&mx25x_3bp_regs),
-		  SNOR_WP_RANGES(&mx25l_wpr_3bp),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 	),
 
 	SNOR_PART("MX25L1605D", SNOR_ID(0xc2, 0x20, 0x15), SZ_2M,
@@ -1354,7 +1293,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&mx25x_3bp_regs),
-		  SNOR_WP_RANGES(&mx25l_wpr_3bp),
+		  SNOR_WP_RANGES(&wpr_3bp_up),
 	),
 
 	SNOR_PART("MX25L3205D", SNOR_ID(0xc2, 0x20, 0x16), SZ_4M,
@@ -1505,7 +1444,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(86),
 		  SNOR_REGS(&mx25x_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	SNOR_PART("MX25U3232F", SNOR_ID(0xc2, 0x25, 0x36), SZ_4M, /* SFDP 1.6 */
@@ -1620,7 +1559,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_4_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(86),
 		  SNOR_REGS(&mx25x_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	/**********************************************************************/
@@ -1639,7 +1578,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&mx25x_4bp_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	SNOR_PART("MX25L6405D", SNOR_ID(0xc2, 0x20, 0x17), SZ_8M,
@@ -1773,7 +1712,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(86),
 		  SNOR_REGS(&mx25x_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	SNOR_PART("MX25U6432F", SNOR_ID(0xc2, 0x25, 0x37), SZ_8M, /* SFDP 1.6 */
@@ -1829,7 +1768,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 /* | BIT_SPI_MEM_IO_1_4_4 (4PP is too slow) */),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(70), SNOR_QUAD_MAX_SPEED_MHZ(70),
 		  SNOR_REGS(&mx25x_4bp_qe_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	SNOR_PART("MX25R6435F", SNOR_ID(0xc2, 0x28, 0x17), SZ_8M, /* SFDP 1.6 */
@@ -1864,7 +1803,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&mx25x_4bp_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	SNOR_PART("MX25L12833F", SNOR_ID(0xc2, 0x20, 0x18), SZ_16M, /* SFDP 1.6 */
@@ -2007,7 +1946,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(84), SNOR_QUAD_MAX_SPEED_MHZ(84),
 		  SNOR_REGS(&mx25x_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	SNOR_PART("MX25U12873F", SNOR_ID(0xc2, 0x25, 0x38), SZ_16M, /* SFDP 1.0 */
@@ -2050,7 +1989,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 /* | BIT_SPI_MEM_IO_1_4_4 (4PP is too slow) */),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(70), SNOR_QUAD_MAX_SPEED_MHZ(70),
 		  SNOR_REGS(&mx25x_4bp_qe_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	SNOR_PART("MX25L12855F", SNOR_ID(0xc2, 0x26, 0x18), SZ_16M, /* DTR */
@@ -2196,7 +2135,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
 		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(84), SNOR_QUAD_MAX_SPEED_MHZ(84),
 		  SNOR_REGS(&mx25x_regs),
-		  SNOR_WP_RANGES(&mx25x_wpr_4bp_tb0),
+		  SNOR_WP_RANGES(&wpr_4bp_up),
 	),
 
 	SNOR_PART("MX25U25643G", SNOR_ID(0xc2, 0x25, 0x39), SZ_32M, /* SFDP 1.6, Preamble Bit, DTR */
@@ -2728,9 +2667,9 @@ static ufprog_status macronix_part_fixup(struct spi_nor *snor, struct spi_nor_ve
 		STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, &mx25rxf_srcr_acc, &regval));
 
 		if (regval & MXIC_TB_BIT)
-			bp->p.wp_ranges = &mx25x_wpr_4bp_tb1;
+			bp->p.wp_ranges = &wpr_4bp_lo;
 		else
-			bp->p.wp_ranges = &mx25x_wpr_4bp_tb0;
+			bp->p.wp_ranges = &wpr_4bp_up;
 	}
 
 	if (bp->p.vendor_flags & MXIC_F_DC_CR1_BIT6)
@@ -2766,6 +2705,9 @@ static ufprog_status mxic_read_uid(struct spi_nor *snor, void *data, uint32_t *r
 
 		if (retlen)
 			*retlen = MXIC_UID_LEN;
+
+		if (!data)
+			return UFP_OK;
 
 		if (snor->param.vendor_flags & (MXIC_F_OTP_64B_ESN_16B | MXIC_F_OTP_512B_ESN_16B |
 						MXIC_F_OTP_SINGLE_ESN_16B_FULL_LOCK))

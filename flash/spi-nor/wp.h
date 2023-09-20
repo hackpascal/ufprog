@@ -76,7 +76,15 @@ struct spi_nor_wp_info {
 
 extern const struct spi_nor_wp_info wpr_2bp_all;
 
+extern const struct spi_nor_wp_info wpr_2bp_up;
+extern const struct spi_nor_wp_info wpr_2bp_up_ratio;
+extern const struct spi_nor_wp_info wpr_2bp_lo;
+extern const struct spi_nor_wp_info wpr_2bp_lo_ratio;
+
 extern const struct spi_nor_wp_info wpr_2bp_tb;
+
+extern const struct spi_nor_wp_info wpr_3bp_up;
+extern const struct spi_nor_wp_info wpr_3bp_up_ratio;
 
 extern const struct spi_nor_wp_info wpr_3bp_tb;
 extern const struct spi_nor_wp_info wpr_3bp_tb_ratio;
@@ -86,6 +94,9 @@ extern const struct spi_nor_wp_info wpr_3bp_tb_sec_ratio;
 
 extern const struct spi_nor_wp_info wpr_3bp_tb_sec_cmp;
 extern const struct spi_nor_wp_info wpr_3bp_tb_sec_cmp_ratio;
+
+extern const struct spi_nor_wp_info wpr_4bp_up;
+extern const struct spi_nor_wp_info wpr_4bp_lo;
 
 extern const struct spi_nor_wp_info wpr_4bp_tb;
 extern const struct spi_nor_wp_info wpr_4bp_tb_cmp;
