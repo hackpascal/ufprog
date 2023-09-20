@@ -429,370 +429,370 @@ static const struct spi_nor_otp_info eon_otp_3x1k = {
 	.size = 0x400,
 };
 
-static const struct spi_nor_wp_info en25f05_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0,     0                       , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0,     SR_BP2                  , -1),	/* None */
+static const struct spi_nor_wp_info en25f05_wpr = SNOR_WP_BP(&sr_acc, BP_2_0,
+	SNOR_WP_BP_UP(    0                       , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_BP2                  , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0,     SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0,              SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(             SR_BP1 | SR_BP0, -2),	/* All */
 
-	SNOR_WP_RP_UP(BP_2_0,                       SR_BP0, 2),		/* Upper 1/4 */
-	SNOR_WP_RP_UP(BP_2_0,              SR_BP1         , 1),		/* Upper 1/2 */
+	SNOR_WP_RP_UP(                      SR_BP0, 2),		/* Upper 1/4 */
+	SNOR_WP_RP_UP(             SR_BP1         , 1),		/* Upper 1/2 */
 
-	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2 |          SR_BP0, 1),		/* Lower T - 8KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2 | SR_BP1         , 0),		/* Lower T - 4KB */
+	SNOR_WP_SP_CMP_LO(SR_BP2 |          SR_BP0, 1),		/* Lower T - 8KB */
+	SNOR_WP_SP_CMP_LO(SR_BP2 | SR_BP1         , 0),		/* Lower T - 4KB */
 );
 
-static const struct spi_nor_wp_info en25e10_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0,     0                       , -1),	/* None */
+static const struct spi_nor_wp_info en25e10_wpr = SNOR_WP_BP(&sr_acc, BP_2_0,
+	SNOR_WP_BP_UP(    0                       , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0,     SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0,     SR_BP2 |          SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0,     SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP2 |          SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP2 | SR_BP1         , -2),	/* All */
 
-	SNOR_WP_SP_CMP_LO(BP_2_0,                   SR_BP0, 1),		/* Lower T - 8KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0,          SR_BP1         , 2),		/* Lower T - 16KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0,          SR_BP1 | SR_BP0, 3),		/* Lower T - 32KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2                  , 4),		/* Lower T - 64KB */
+	SNOR_WP_SP_CMP_LO(                  SR_BP0, 1),		/* Lower T - 8KB */
+	SNOR_WP_SP_CMP_LO(         SR_BP1         , 2),		/* Lower T - 16KB */
+	SNOR_WP_SP_CMP_LO(         SR_BP1 | SR_BP0, 3),		/* Lower T - 32KB */
+	SNOR_WP_SP_CMP_LO(SR_BP2                  , 4),		/* Lower T - 64KB */
 );
 
-static const struct spi_nor_wp_info en25s10_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0,     0                       , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0,     SR_BP2                  , -1),	/* None */
+static const struct spi_nor_wp_info en25s10_wpr = SNOR_WP_BP(&sr_acc, BP_2_0,
+	SNOR_WP_BP_UP(    0                       , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_BP2                  , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0,              SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0,     SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(             SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
 
-	SNOR_WP_SP_CMP_LO(BP_2_0,                   SR_BP0, 4),		/* Lower T - 64KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0,          SR_BP1         , 3),		/* Lower T - 32KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2 |          SR_BP0, 2),		/* Lower T - 16KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2 | SR_BP1         , 1),		/* Lower T - 8KB */
+	SNOR_WP_SP_CMP_LO(                  SR_BP0, 4),		/* Lower T - 64KB */
+	SNOR_WP_SP_CMP_LO(         SR_BP1         , 3),		/* Lower T - 32KB */
+	SNOR_WP_SP_CMP_LO(SR_BP2 |          SR_BP0, 2),		/* Lower T - 16KB */
+	SNOR_WP_SP_CMP_LO(SR_BP2 | SR_BP1         , 1),		/* Lower T - 8KB */
 );
 
-static const struct spi_nor_wp_info en25q40_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0,     0                       , -1),	/* None */
+static const struct spi_nor_wp_info en25q40_wpr = SNOR_WP_BP(&sr_acc, BP_2_0,
+	SNOR_WP_BP_UP(    0                       , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0,     SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
 
-	SNOR_WP_SP_CMP_LO(BP_2_0,                   SR_BP0, 1),	/* Lower T - 8KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0,          SR_BP1         , 2),	/* Lower T - 16KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0,          SR_BP1 | SR_BP0, 3),	/* Lower T - 32KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2                  , 4),	/* Lower T - 64KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2 |          SR_BP0, 5),	/* Lower T - 128KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0, SR_BP2 | SR_BP1         , 6),	/* Lower T - 256KB */
+	SNOR_WP_SP_CMP_LO(                  SR_BP0, 1),		/* Lower T - 8KB */
+	SNOR_WP_SP_CMP_LO(         SR_BP1         , 2),		/* Lower T - 16KB */
+	SNOR_WP_SP_CMP_LO(         SR_BP1 | SR_BP0, 3),		/* Lower T - 32KB */
+	SNOR_WP_SP_CMP_LO(SR_BP2                  , 4),		/* Lower T - 64KB */
+	SNOR_WP_SP_CMP_LO(SR_BP2 |          SR_BP0, 5),		/* Lower T - 128KB */
+	SNOR_WP_SP_CMP_LO(SR_BP2 | SR_BP1         , 6),		/* Lower T - 256KB */
 );
 
-static const struct spi_nor_wp_info en25s20a_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0_TB,     0                               , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB                           , -1),	/* None */
+static const struct spi_nor_wp_info en25s20a_wpr = SNOR_WP_BP(&sr_acc, BP_2_0_TB,
+	SNOR_WP_BP_UP(    0                               , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_TB                           , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2                  , -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 |          SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1         , -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2                  , -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 |          SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2                  , -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 |          SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2                  , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 |          SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1         , -2),	/* All */
 
-	SNOR_WP_BP_UP(BP_2_0_TB,                               SR_BP0, 0),	/* Upper 64KB */
-	SNOR_WP_BP_UP(BP_2_0_TB,                      SR_BP1         , 1),	/* Upper 128KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB,                  SR_BP1 | SR_BP0, 0),	/* Upper T - 64KB */
+	SNOR_WP_BP_UP(                              SR_BP0, 0),		/* Upper 64KB */
+	SNOR_WP_BP_UP(                     SR_BP1         , 1),		/* Upper 128KB */
+	SNOR_WP_BP_CMP_UP(                 SR_BP1 | SR_BP0, 0),		/* Upper T - 64KB */
 
-	SNOR_WP_BP_LO(BP_2_0_TB,     SR_TB |                   SR_BP0, 0),	/* Lower 64KB */
-	SNOR_WP_BP_LO(BP_2_0_TB,     SR_TB |          SR_BP1         , 1),	/* Lower 128KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB, SR_TB |          SR_BP1 | SR_BP0, 0),	/* Lower T - 64KB */
+	SNOR_WP_BP_LO(    SR_TB |                   SR_BP0, 0),		/* Lower 64KB */
+	SNOR_WP_BP_LO(    SR_TB |          SR_BP1         , 1),		/* Lower 128KB */
+	SNOR_WP_BP_CMP_LO(SR_TB |          SR_BP1 | SR_BP0, 0),		/* Lower T - 64KB */
 );
 
-static const struct spi_nor_wp_info en25f40a_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0_TB,     0                               , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB                           , -1),	/* None */
+static const struct spi_nor_wp_info en25f40a_wpr = SNOR_WP_BP(&sr_acc, BP_2_0_TB,
+	SNOR_WP_BP_UP(    0                               , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_TB                           , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1         , -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1         , -2),	/* All */
 
-	SNOR_WP_BP_UP(BP_2_0_TB,                               SR_BP0, 0),	/* Upper 64KB */
-	SNOR_WP_BP_UP(BP_2_0_TB,                      SR_BP1         , 1),	/* Upper 128KB */
-	SNOR_WP_BP_UP(BP_2_0_TB,                      SR_BP1 | SR_BP0, 2),	/* Upper 256KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB,         SR_BP2                  , 1),	/* Upper T - 128KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB,         SR_BP2 |          SR_BP0, 0),	/* Upper T - 64KB */
+	SNOR_WP_BP_UP(                              SR_BP0, 0),		/* Upper 64KB */
+	SNOR_WP_BP_UP(                     SR_BP1         , 1),		/* Upper 128KB */
+	SNOR_WP_BP_UP(                     SR_BP1 | SR_BP0, 2),		/* Upper 256KB */
+	SNOR_WP_BP_CMP_UP(        SR_BP2                  , 1),		/* Upper T - 128KB */
+	SNOR_WP_BP_CMP_UP(        SR_BP2 |          SR_BP0, 0),		/* Upper T - 64KB */
 
-	SNOR_WP_BP_LO(BP_2_0_TB,     SR_TB |                   SR_BP0, 0),	/* Lower 64KB */
-	SNOR_WP_BP_LO(BP_2_0_TB,     SR_TB |          SR_BP1         , 1),	/* Lower 128KB */
-	SNOR_WP_BP_LO(BP_2_0_TB,     SR_TB |          SR_BP1 | SR_BP0, 2),	/* Lower 256KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB, SR_TB | SR_BP2                  , 1),	/* Lower T - 128KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB, SR_TB | SR_BP2 |          SR_BP0, 0),	/* Lower T - 64KB */
+	SNOR_WP_BP_LO(    SR_TB |                   SR_BP0, 0),		/* Lower 64KB */
+	SNOR_WP_BP_LO(    SR_TB |          SR_BP1         , 1),		/* Lower 128KB */
+	SNOR_WP_BP_LO(    SR_TB |          SR_BP1 | SR_BP0, 2),		/* Lower 256KB */
+	SNOR_WP_BP_CMP_LO(SR_TB | SR_BP2                  , 1),		/* Lower T - 128KB */
+	SNOR_WP_BP_CMP_LO(SR_TB | SR_BP2 |          SR_BP0, 0),		/* Lower T - 64KB */
 );
 
-static const struct spi_nor_wp_info en25s40a_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0_TB,     0                               , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB                           , -1),	/* None */
+static const struct spi_nor_wp_info en25s40a_wpr = SNOR_WP_BP(&sr_acc, BP_2_0_TB,
+	SNOR_WP_BP_UP(    0                               , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_TB                           , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 |          SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1         , -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 |          SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 |          SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 |          SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1         , -2),	/* All */
 
-	SNOR_WP_BP_UP(BP_2_0_TB,                               SR_BP0, 0),	/* Upper 64KB */
-	SNOR_WP_BP_UP(BP_2_0_TB,                      SR_BP1         , 1),	/* Upper 128KB */
-	SNOR_WP_BP_UP(BP_2_0_TB,                      SR_BP1 | SR_BP0, 2),	/* Upper 256KB */
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2                  , 3),	/* Upper 512KB */
+	SNOR_WP_BP_UP(                              SR_BP0, 0),		/* Upper 64KB */
+	SNOR_WP_BP_UP(                     SR_BP1         , 1),		/* Upper 128KB */
+	SNOR_WP_BP_UP(                     SR_BP1 | SR_BP0, 2),		/* Upper 256KB */
+	SNOR_WP_BP_UP(            SR_BP2                  , 3),		/* Upper 512KB */
 
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB, SR_TB |                   SR_BP0, 0),	/* Lower T - 64KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB, SR_TB |          SR_BP1         , 1),	/* Lower T - 128KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB, SR_TB |          SR_BP1 | SR_BP0, 2),	/* Lower T - 256KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB, SR_TB | SR_BP2                  , 3),	/* Lower T - 512KB */
+	SNOR_WP_BP_CMP_LO(SR_TB |                   SR_BP0, 0),		/* Lower T - 64KB */
+	SNOR_WP_BP_CMP_LO(SR_TB |          SR_BP1         , 1),		/* Lower T - 128KB */
+	SNOR_WP_BP_CMP_LO(SR_TB |          SR_BP1 | SR_BP0, 2),		/* Lower T - 256KB */
+	SNOR_WP_BP_CMP_LO(SR_TB | SR_BP2                  , 3),		/* Lower T - 512KB */
 );
 
-static const struct spi_nor_wp_info en25q80b_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0_TB,     0                               , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB                           , -1),	/* None */
+static const struct spi_nor_wp_info en25q80b_wpr = SNOR_WP_BP(&sr_acc, BP_2_0_TB,
+	SNOR_WP_BP_UP(    0                               , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_TB                           , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
 
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB,                           SR_BP0, 1),	/* Lower T - 8KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB,                  SR_BP1         , 2),	/* Lower T - 16KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB,                  SR_BP1 | SR_BP0, 3),	/* Lower T - 32KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB,         SR_BP2                  , 4),	/* Lower T - 64KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB,         SR_BP2 |          SR_BP0, 5),	/* Lower T - 128KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB,         SR_BP2 | SR_BP1         , 6),	/* Lower T - 256KB */
+	SNOR_WP_SP_CMP_LO(                          SR_BP0, 1),		/* Lower T - 8KB */
+	SNOR_WP_SP_CMP_LO(                 SR_BP1         , 2),		/* Lower T - 16KB */
+	SNOR_WP_SP_CMP_LO(                 SR_BP1 | SR_BP0, 3),		/* Lower T - 32KB */
+	SNOR_WP_SP_CMP_LO(        SR_BP2                  , 4),		/* Lower T - 64KB */
+	SNOR_WP_SP_CMP_LO(        SR_BP2 |          SR_BP0, 5),		/* Lower T - 128KB */
+	SNOR_WP_SP_CMP_LO(        SR_BP2 | SR_BP1         , 6),		/* Lower T - 256KB */
 
-	SNOR_WP_SP_LO(BP_2_0_TB,     SR_TB |                   SR_BP0, 1),	/* Lower 8KB */
-	SNOR_WP_SP_LO(BP_2_0_TB,     SR_TB |          SR_BP1         , 2),	/* Lower 16KB */
-	SNOR_WP_SP_LO(BP_2_0_TB,     SR_TB |          SR_BP1 | SR_BP0, 3),	/* Lower 32KB */
-	SNOR_WP_SP_LO(BP_2_0_TB,     SR_TB | SR_BP2                  , 4),	/* Lower 64KB */
-	SNOR_WP_SP_LO(BP_2_0_TB,     SR_TB | SR_BP2 |          SR_BP0, 5),	/* Lower 128KB */
-	SNOR_WP_SP_LO(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1         , 6),	/* Lower 256KB */
+	SNOR_WP_SP_LO(    SR_TB |                   SR_BP0, 1),		/* Lower 8KB */
+	SNOR_WP_SP_LO(    SR_TB |          SR_BP1         , 2),		/* Lower 16KB */
+	SNOR_WP_SP_LO(    SR_TB |          SR_BP1 | SR_BP0, 3),		/* Lower 32KB */
+	SNOR_WP_SP_LO(    SR_TB | SR_BP2                  , 4),		/* Lower 64KB */
+	SNOR_WP_SP_LO(    SR_TB | SR_BP2 |          SR_BP0, 5),		/* Lower 128KB */
+	SNOR_WP_SP_LO(    SR_TB | SR_BP2 | SR_BP1         , 6),		/* Lower 256KB */
 );
 
-static const struct spi_nor_wp_info en25q16_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0,     0                       , -1),	/* None */
+static const struct spi_nor_wp_info en25q16_wpr = SNOR_WP_BP(&sr_acc, BP_2_0,
+	SNOR_WP_BP_UP(    0                       , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0,     SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0,     SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP2 | SR_BP1         , -2),	/* All */
 
-	SNOR_WP_BP_CMP_LO(BP_2_0,                   SR_BP0, 0),		/* Lower T - 64KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0,          SR_BP1         , 1),		/* Lower T - 128KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0,          SR_BP1 | SR_BP0, 2),		/* Lower T - 256KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0, SR_BP2                  , 3),		/* Lower T - 512KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0, SR_BP2 |          SR_BP0, 4),		/* Lower T - 1MB */
+	SNOR_WP_BP_CMP_LO(                  SR_BP0, 0),		/* Lower T - 64KB */
+	SNOR_WP_BP_CMP_LO(         SR_BP1         , 1),		/* Lower T - 128KB */
+	SNOR_WP_BP_CMP_LO(         SR_BP1 | SR_BP0, 2),		/* Lower T - 256KB */
+	SNOR_WP_BP_CMP_LO(SR_BP2                  , 3),		/* Lower T - 512KB */
+	SNOR_WP_BP_CMP_LO(SR_BP2 |          SR_BP0, 4),		/* Lower T - 1MB */
 );
 
-static const struct spi_nor_wp_info en25q16a_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0_TB,     0                               , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB                           , -1),	/* None */
+static const struct spi_nor_wp_info en25q16a_wpr = SNOR_WP_BP(&sr_acc, BP_2_0_TB,
+	SNOR_WP_BP_UP(    0                               , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_TB                           , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1         , -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1         , -2),	/* All */
 
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB,                           SR_BP0, 0),	/* Lower T - 64KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB,                  SR_BP1         , 1),	/* Lower T - 128KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB,                  SR_BP1 | SR_BP0, 2),	/* Lower T - 256KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB,         SR_BP2                  , 3),	/* Lower T - 512KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB,         SR_BP2 |          SR_BP0, 4),	/* Lower T - 1MB */
+	SNOR_WP_BP_CMP_LO(                          SR_BP0, 0),		/* Lower T - 64KB */
+	SNOR_WP_BP_CMP_LO(                 SR_BP1         , 1),		/* Lower T - 128KB */
+	SNOR_WP_BP_CMP_LO(                 SR_BP1 | SR_BP0, 2),		/* Lower T - 256KB */
+	SNOR_WP_BP_CMP_LO(        SR_BP2                  , 3),		/* Lower T - 512KB */
+	SNOR_WP_BP_CMP_LO(        SR_BP2 |          SR_BP0, 4),		/* Lower T - 1MB */
 
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB |                   SR_BP0, 0),	/* Upper T - 64KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB |          SR_BP1         , 1),	/* Upper T - 128KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB |          SR_BP1 | SR_BP0, 2),	/* Upper T - 256KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB | SR_BP2                  , 3),	/* Upper T - 512KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB | SR_BP2 |          SR_BP0, 4),	/* Upper T - 1MB */
+	SNOR_WP_BP_CMP_UP(SR_TB |                   SR_BP0, 0),		/* Upper T - 64KB */
+	SNOR_WP_BP_CMP_UP(SR_TB |          SR_BP1         , 1),		/* Upper T - 128KB */
+	SNOR_WP_BP_CMP_UP(SR_TB |          SR_BP1 | SR_BP0, 2),		/* Upper T - 256KB */
+	SNOR_WP_BP_CMP_UP(SR_TB | SR_BP2                  , 3),		/* Upper T - 512KB */
+	SNOR_WP_BP_CMP_UP(SR_TB | SR_BP2 |          SR_BP0, 4),		/* Upper T - 1MB */
 );
 
-static const struct spi_nor_wp_info en25q32b_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0_TB,     0                               , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB                           , -1),	/* None */
+static const struct spi_nor_wp_info en25q32b_wpr = SNOR_WP_BP(&sr_acc, BP_2_0_TB,
+	SNOR_WP_BP_UP(    0                               , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_TB                           , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
 
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB,                           SR_BP0, 0),	/* Lower T - 64KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB,                  SR_BP1         , 1),	/* Lower T - 128KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB,                  SR_BP1 | SR_BP0, 2),	/* Lower T - 256KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB,         SR_BP2                  , 3),	/* Lower T - 512KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB,         SR_BP2 |          SR_BP0, 4),	/* Lower T - 1MB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB,         SR_BP2 | SR_BP1         , 5),	/* Lower T - 2MB */
+	SNOR_WP_BP_CMP_LO(                          SR_BP0, 0),		/* Lower T - 64KB */
+	SNOR_WP_BP_CMP_LO(                 SR_BP1         , 1),		/* Lower T - 128KB */
+	SNOR_WP_BP_CMP_LO(                 SR_BP1 | SR_BP0, 2),		/* Lower T - 256KB */
+	SNOR_WP_BP_CMP_LO(        SR_BP2                  , 3),		/* Lower T - 512KB */
+	SNOR_WP_BP_CMP_LO(        SR_BP2 |          SR_BP0, 4),		/* Lower T - 1MB */
+	SNOR_WP_BP_CMP_LO(        SR_BP2 | SR_BP1         , 5),		/* Lower T - 2MB */
 
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB |                   SR_BP0, 0),	/* Upper T - 64KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB |          SR_BP1         , 1),	/* Upper T - 128KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB |          SR_BP1 | SR_BP0, 2),	/* Upper T - 256KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB | SR_BP2                  , 3),	/* Upper T - 512KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB | SR_BP2 |          SR_BP0, 4),	/* Upper T - 1MB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB, SR_TB | SR_BP2 | SR_BP1         , 5),	/* Upper T - 2MB */
+	SNOR_WP_BP_CMP_UP(SR_TB |                   SR_BP0, 0),		/* Upper T - 64KB */
+	SNOR_WP_BP_CMP_UP(SR_TB |          SR_BP1         , 1),		/* Upper T - 128KB */
+	SNOR_WP_BP_CMP_UP(SR_TB |          SR_BP1 | SR_BP0, 2),		/* Upper T - 256KB */
+	SNOR_WP_BP_CMP_UP(SR_TB | SR_BP2                  , 3),		/* Upper T - 512KB */
+	SNOR_WP_BP_CMP_UP(SR_TB | SR_BP2 |          SR_BP0, 4),		/* Upper T - 1MB */
+	SNOR_WP_BP_CMP_UP(SR_TB | SR_BP2 | SR_BP1         , 5),		/* Upper T - 2MB */
 );
 
-static const struct spi_nor_wp_info en25qa32b_wpr_4bp_tbl0 = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_3_0,     0                                , -1),	/* None */
+static const struct spi_nor_wp_info en25qa32b_wpr_4bp_tbl0 = SNOR_WP_BP(&sr_acc, BP_3_0,
+	SNOR_WP_BP_UP(    0                                , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2                  , -2),	/* All */
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2 |          SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2                  , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2 |          SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2 | SR_BP1         , -2),	/* All */
 
-	SNOR_WP_RP_UP(BP_3_0,                                SR_BP0, 6),	/* Upper 1/64 */
-	SNOR_WP_RP_UP(BP_3_0,                       SR_BP1         , 5),	/* Upper 1/32 */
-	SNOR_WP_RP_UP(BP_3_0,                       SR_BP1 | SR_BP0, 4),	/* Upper 1/16 */
-	SNOR_WP_RP_UP(BP_3_0,              SR_BP2                  , 3),	/* Upper 1/8 */
-	SNOR_WP_RP_UP(BP_3_0,              SR_BP2 |          SR_BP0, 2),	/* Upper 1/4 */
-	SNOR_WP_RP_UP(BP_3_0,              SR_BP2 | SR_BP1         , 1),	/* Upper 1/2 */
-	SNOR_WP_RP_CMP_UP(BP_3_0,          SR_BP2 | SR_BP1 | SR_BP0, 2),	/* Upper T - 1/4 */
-	SNOR_WP_RP_CMP_UP(BP_3_0, SR_BP3                           , 3),	/* Upper T - 1/8 */
-	SNOR_WP_RP_CMP_UP(BP_3_0, SR_BP3 |                   SR_BP0, 4),	/* Upper T - 1/16 */
-	SNOR_WP_RP_CMP_UP(BP_3_0, SR_BP3 |          SR_BP1         , 5),	/* Upper T - 1/32 */
-	SNOR_WP_RP_CMP_UP(BP_3_0, SR_BP3 |          SR_BP1 | SR_BP0, 6),	/* Upper T - 1/64 */
+	SNOR_WP_RP_UP(                               SR_BP0, 6),	/* Upper 1/64 */
+	SNOR_WP_RP_UP(                      SR_BP1         , 5),	/* Upper 1/32 */
+	SNOR_WP_RP_UP(                      SR_BP1 | SR_BP0, 4),	/* Upper 1/16 */
+	SNOR_WP_RP_UP(             SR_BP2                  , 3),	/* Upper 1/8 */
+	SNOR_WP_RP_UP(             SR_BP2 |          SR_BP0, 2),	/* Upper 1/4 */
+	SNOR_WP_RP_UP(             SR_BP2 | SR_BP1         , 1),	/* Upper 1/2 */
+	SNOR_WP_RP_CMP_UP(         SR_BP2 | SR_BP1 | SR_BP0, 2),	/* Upper T - 1/4 */
+	SNOR_WP_RP_CMP_UP(SR_BP3                           , 3),	/* Upper T - 1/8 */
+	SNOR_WP_RP_CMP_UP(SR_BP3 |                   SR_BP0, 4),	/* Upper T - 1/16 */
+	SNOR_WP_RP_CMP_UP(SR_BP3 |          SR_BP1         , 5),	/* Upper T - 1/32 */
+	SNOR_WP_RP_CMP_UP(SR_BP3 |          SR_BP1 | SR_BP0, 6),	/* Upper T - 1/64 */
 );
 
-static const struct spi_nor_wp_info en25qa32b_wpr_4bp_tbl1 = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_3_0,     0                                , -1),	/* None */
+static const struct spi_nor_wp_info en25qa32b_wpr_4bp_tbl1 = SNOR_WP_BP(&sr_acc, BP_3_0,
+	SNOR_WP_BP_UP(    0                                , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2                  , -2),	/* All */
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2 |          SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2                  , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2 |          SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2 | SR_BP1         , -2),	/* All */
 
-	SNOR_WP_RP_LO(BP_3_0,                                SR_BP0, 6),	/* Lower 1/64 */
-	SNOR_WP_RP_LO(BP_3_0,                       SR_BP1         , 5),	/* Lower 1/32 */
-	SNOR_WP_RP_LO(BP_3_0,                       SR_BP1 | SR_BP0, 4),	/* Lower 1/16 */
-	SNOR_WP_RP_LO(BP_3_0,              SR_BP2                  , 3),	/* Lower 1/8 */
-	SNOR_WP_RP_LO(BP_3_0,              SR_BP2 |          SR_BP0, 2),	/* Lower 1/4 */
-	SNOR_WP_RP_LO(BP_3_0,              SR_BP2 | SR_BP1         , 1),	/* Lower 1/2 */
-	SNOR_WP_RP_CMP_LO(BP_3_0,          SR_BP2 | SR_BP1 | SR_BP0, 2),	/* Lower T - 1/4 */
-	SNOR_WP_RP_CMP_LO(BP_3_0, SR_BP3                           , 3),	/* Lower T - 1/8 */
-	SNOR_WP_RP_CMP_LO(BP_3_0, SR_BP3 |                   SR_BP0, 4),	/* Lower T - 1/16 */
-	SNOR_WP_RP_CMP_LO(BP_3_0, SR_BP3 |          SR_BP1         , 5),	/* Lower T - 1/32 */
-	SNOR_WP_RP_CMP_LO(BP_3_0, SR_BP3 |          SR_BP1 | SR_BP0, 6),	/* Lower T - 1/64 */
+	SNOR_WP_RP_LO(                               SR_BP0, 6),	/* Lower 1/64 */
+	SNOR_WP_RP_LO(                      SR_BP1         , 5),	/* Lower 1/32 */
+	SNOR_WP_RP_LO(                      SR_BP1 | SR_BP0, 4),	/* Lower 1/16 */
+	SNOR_WP_RP_LO(             SR_BP2                  , 3),	/* Lower 1/8 */
+	SNOR_WP_RP_LO(             SR_BP2 |          SR_BP0, 2),	/* Lower 1/4 */
+	SNOR_WP_RP_LO(             SR_BP2 | SR_BP1         , 1),	/* Lower 1/2 */
+	SNOR_WP_RP_CMP_LO(         SR_BP2 | SR_BP1 | SR_BP0, 2),	/* Lower T - 1/4 */
+	SNOR_WP_RP_CMP_LO(SR_BP3                           , 3),	/* Lower T - 1/8 */
+	SNOR_WP_RP_CMP_LO(SR_BP3 |                   SR_BP0, 4),	/* Lower T - 1/16 */
+	SNOR_WP_RP_CMP_LO(SR_BP3 |          SR_BP1         , 5),	/* Lower T - 1/32 */
+	SNOR_WP_RP_CMP_LO(SR_BP3 |          SR_BP1 | SR_BP0, 6),	/* Lower T - 1/64 */
 );
 
-static const struct spi_nor_wp_info en25s64_wpr = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0_TB,     0                               , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB                           , -1),	/* None */
+static const struct spi_nor_wp_info en25s64_wpr = SNOR_WP_BP(&sr_acc, BP_2_0_TB,
+	SNOR_WP_BP_UP(    0                               , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_TB                           , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
 
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB,                           SR_BP0, 6),	/* Lower T - 1/64 */
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB,                  SR_BP1         , 5),	/* Lower T - 1/32 */
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB,                  SR_BP1 | SR_BP0, 4),	/* Lower T - 1/16 */
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB,         SR_BP2                  , 3),	/* Lower T - 1/8 */
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB,         SR_BP2 |          SR_BP0, 2),	/* Lower T - 1/4 */
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB,         SR_BP2 | SR_BP1         , 1),	/* Lower T - 1/2 */
+	SNOR_WP_RP_CMP_LO(                          SR_BP0, 6),		/* Lower T - 1/64 */
+	SNOR_WP_RP_CMP_LO(                 SR_BP1         , 5),		/* Lower T - 1/32 */
+	SNOR_WP_RP_CMP_LO(                 SR_BP1 | SR_BP0, 4),		/* Lower T - 1/16 */
+	SNOR_WP_RP_CMP_LO(        SR_BP2                  , 3),		/* Lower T - 1/8 */
+	SNOR_WP_RP_CMP_LO(        SR_BP2 |          SR_BP0, 2),		/* Lower T - 1/4 */
+	SNOR_WP_RP_CMP_LO(        SR_BP2 | SR_BP1         , 1),		/* Lower T - 1/2 */
 
-	SNOR_WP_RP_UP(BP_2_0_TB,     SR_TB |                   SR_BP0, 6),	/* Upper 1/64 */
-	SNOR_WP_RP_UP(BP_2_0_TB,     SR_TB |          SR_BP1         , 5),	/* Upper 1/32 */
-	SNOR_WP_RP_UP(BP_2_0_TB,     SR_TB |          SR_BP1 | SR_BP0, 4),	/* Upper 1/16 */
-	SNOR_WP_RP_UP(BP_2_0_TB,     SR_TB | SR_BP2                  , 3),	/* Upper 1/8 */
-	SNOR_WP_RP_UP(BP_2_0_TB,     SR_TB | SR_BP2 |          SR_BP0, 2),	/* Upper 1/4 */
-	SNOR_WP_RP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1         , 1),	/* Upper 1/2 */
+	SNOR_WP_RP_UP(    SR_TB |                   SR_BP0, 6),		/* Upper 1/64 */
+	SNOR_WP_RP_UP(    SR_TB |          SR_BP1         , 5),		/* Upper 1/32 */
+	SNOR_WP_RP_UP(    SR_TB |          SR_BP1 | SR_BP0, 4),		/* Upper 1/16 */
+	SNOR_WP_RP_UP(    SR_TB | SR_BP2                  , 3),		/* Upper 1/8 */
+	SNOR_WP_RP_UP(    SR_TB | SR_BP2 |          SR_BP0, 2),		/* Upper 1/4 */
+	SNOR_WP_RP_UP(    SR_TB | SR_BP2 | SR_BP1         , 1),		/* Upper 1/2 */
 );
 
-static const struct spi_nor_wp_info en25qa64a_wpr_4bp_tbl0 = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_3_0,     0                                , -1),	/* None */
+static const struct spi_nor_wp_info en25qa64a_wpr_4bp_tbl0 = SNOR_WP_BP(&sr_acc, BP_3_0,
+	SNOR_WP_BP_UP(    0                                , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2 | SR_BP1         , -2),	/* All */
 
-	SNOR_WP_RP_UP(BP_3_0,                                SR_BP0, 7),	/* Upper 1/128 */
-	SNOR_WP_RP_UP(BP_3_0,                       SR_BP1         , 6),	/* Upper 1/64 */
-	SNOR_WP_RP_UP(BP_3_0,                       SR_BP1 | SR_BP0, 5),	/* Upper 1/32 */
-	SNOR_WP_RP_UP(BP_3_0,              SR_BP2                  , 4),	/* Upper 1/16 */
-	SNOR_WP_RP_UP(BP_3_0,              SR_BP2 |          SR_BP0, 3),	/* Upper 1/8 */
-	SNOR_WP_RP_UP(BP_3_0,              SR_BP2 | SR_BP1         , 2),	/* Upper 1/4 */
-	SNOR_WP_RP_UP(BP_3_0,              SR_BP2 | SR_BP1 | SR_BP0, 1),	/* Upper 1/2 */
-	SNOR_WP_RP_CMP_UP(BP_3_0, SR_BP3                           , 2),	/* Upper T - 1/4 */
-	SNOR_WP_RP_CMP_UP(BP_3_0, SR_BP3 |                   SR_BP0, 3),	/* Upper T - 1/8 */
-	SNOR_WP_RP_CMP_UP(BP_3_0, SR_BP3 |          SR_BP1         , 4),	/* Upper T - 1/16 */
-	SNOR_WP_RP_CMP_UP(BP_3_0, SR_BP3 |          SR_BP1 | SR_BP0, 5),	/* Upper T - 1/32 */
-	SNOR_WP_RP_CMP_UP(BP_3_0, SR_BP3 | SR_BP2                  , 6),	/* Upper T - 1/64 */
-	SNOR_WP_RP_CMP_UP(BP_3_0, SR_BP3 | SR_BP2 |          SR_BP0, 7),	/* Upper T - 1/128 */
+	SNOR_WP_RP_UP(                               SR_BP0, 7),	/* Upper 1/128 */
+	SNOR_WP_RP_UP(                      SR_BP1         , 6),	/* Upper 1/64 */
+	SNOR_WP_RP_UP(                      SR_BP1 | SR_BP0, 5),	/* Upper 1/32 */
+	SNOR_WP_RP_UP(             SR_BP2                  , 4),	/* Upper 1/16 */
+	SNOR_WP_RP_UP(             SR_BP2 |          SR_BP0, 3),	/* Upper 1/8 */
+	SNOR_WP_RP_UP(             SR_BP2 | SR_BP1         , 2),	/* Upper 1/4 */
+	SNOR_WP_RP_UP(             SR_BP2 | SR_BP1 | SR_BP0, 1),	/* Upper 1/2 */
+	SNOR_WP_RP_CMP_UP(SR_BP3                           , 2),	/* Upper T - 1/4 */
+	SNOR_WP_RP_CMP_UP(SR_BP3 |                   SR_BP0, 3),	/* Upper T - 1/8 */
+	SNOR_WP_RP_CMP_UP(SR_BP3 |          SR_BP1         , 4),	/* Upper T - 1/16 */
+	SNOR_WP_RP_CMP_UP(SR_BP3 |          SR_BP1 | SR_BP0, 5),	/* Upper T - 1/32 */
+	SNOR_WP_RP_CMP_UP(SR_BP3 | SR_BP2                  , 6),	/* Upper T - 1/64 */
+	SNOR_WP_RP_CMP_UP(SR_BP3 | SR_BP2 |          SR_BP0, 7),	/* Upper T - 1/128 */
 );
 
-static const struct spi_nor_wp_info en25qa64a_wpr_4bp_tbl1 = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_3_0,     0                                , -1),	/* None */
+static const struct spi_nor_wp_info en25qa64a_wpr_4bp_tbl1 = SNOR_WP_BP(&sr_acc, BP_3_0,
+	SNOR_WP_BP_UP(    0                                , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_3_0,     SR_BP3 | SR_BP2 | SR_BP1         , -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_BP3 | SR_BP2 | SR_BP1         , -2),	/* All */
 
-	SNOR_WP_RP_LO(BP_3_0,                                SR_BP0, 7),	/* Lower 1/128 */
-	SNOR_WP_RP_LO(BP_3_0,                       SR_BP1         , 6),	/* Lower 1/64 */
-	SNOR_WP_RP_LO(BP_3_0,                       SR_BP1 | SR_BP0, 5),	/* Lower 1/32 */
-	SNOR_WP_RP_LO(BP_3_0,              SR_BP2                  , 4),	/* Lower 1/16 */
-	SNOR_WP_RP_LO(BP_3_0,              SR_BP2 |          SR_BP0, 3),	/* Lower 1/8 */
-	SNOR_WP_RP_LO(BP_3_0,              SR_BP2 | SR_BP1         , 2),	/* Lower 1/4 */
-	SNOR_WP_RP_LO(BP_3_0,              SR_BP2 | SR_BP1 | SR_BP0, 1),	/* Lower 1/2 */
-	SNOR_WP_RP_CMP_LO(BP_3_0, SR_BP3                           , 2),	/* Lower T - 1/4 */
-	SNOR_WP_RP_CMP_LO(BP_3_0, SR_BP3 |                   SR_BP0, 3),	/* Lower T - 1/8 */
-	SNOR_WP_RP_CMP_LO(BP_3_0, SR_BP3 |          SR_BP1         , 4),	/* Lower T - 1/16 */
-	SNOR_WP_RP_CMP_LO(BP_3_0, SR_BP3 |          SR_BP1 | SR_BP0, 5),	/* Lower T - 1/32 */
-	SNOR_WP_RP_CMP_LO(BP_3_0, SR_BP3 | SR_BP2                  , 6),	/* Lower T - 1/64 */
-	SNOR_WP_RP_CMP_LO(BP_3_0, SR_BP3 | SR_BP2 |          SR_BP0, 7),	/* Lower T - 1/128 */
+	SNOR_WP_RP_LO(                               SR_BP0, 7),	/* Lower 1/128 */
+	SNOR_WP_RP_LO(                      SR_BP1         , 6),	/* Lower 1/64 */
+	SNOR_WP_RP_LO(                      SR_BP1 | SR_BP0, 5),	/* Lower 1/32 */
+	SNOR_WP_RP_LO(             SR_BP2                  , 4),	/* Lower 1/16 */
+	SNOR_WP_RP_LO(             SR_BP2 |          SR_BP0, 3),	/* Lower 1/8 */
+	SNOR_WP_RP_LO(             SR_BP2 | SR_BP1         , 2),	/* Lower 1/4 */
+	SNOR_WP_RP_LO(             SR_BP2 | SR_BP1 | SR_BP0, 1),	/* Lower 1/2 */
+	SNOR_WP_RP_CMP_LO(SR_BP3                           , 2),	/* Lower T - 1/4 */
+	SNOR_WP_RP_CMP_LO(SR_BP3 |                   SR_BP0, 3),	/* Lower T - 1/8 */
+	SNOR_WP_RP_CMP_LO(SR_BP3 |          SR_BP1         , 4),	/* Lower T - 1/16 */
+	SNOR_WP_RP_CMP_LO(SR_BP3 |          SR_BP1 | SR_BP0, 5),	/* Lower T - 1/32 */
+	SNOR_WP_RP_CMP_LO(SR_BP3 | SR_BP2                  , 6),	/* Lower T - 1/64 */
+	SNOR_WP_RP_CMP_LO(SR_BP3 | SR_BP2 |          SR_BP0, 7),	/* Lower T - 1/128 */
 );
 
-static const struct spi_nor_wp_info wpr_3bp_tb_cmp_only_ratio = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0_TB,     0                               , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB                           , -1),	/* None */
+static const struct spi_nor_wp_info wpr_3bp_tb_cmp_only_ratio = SNOR_WP_BP(&sr_acc, BP_2_0_TB,
+	SNOR_WP_BP_UP(    0                               , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_TB                           , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0_TB,             SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB,     SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(            SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
 
-	SNOR_WP_RP_CMP_UP(BP_2_0_TB,                           SR_BP0, 6),	/* Upper T - 1/64 */
-	SNOR_WP_RP_CMP_UP(BP_2_0_TB,                  SR_BP1         , 5),	/* Upper T - 1/32 */
-	SNOR_WP_RP_CMP_UP(BP_2_0_TB,                  SR_BP1 | SR_BP0, 4),	/* Upper T - 1/16 */
-	SNOR_WP_RP_CMP_UP(BP_2_0_TB,         SR_BP2                  , 3),	/* Upper T - 1/8 */
-	SNOR_WP_RP_CMP_UP(BP_2_0_TB,         SR_BP2 |          SR_BP0, 2),	/* Upper T - 1/4 */
-	SNOR_WP_RP_CMP_UP(BP_2_0_TB,         SR_BP2 | SR_BP1         , 1),	/* Upper T - 1/2 */
+	SNOR_WP_RP_CMP_UP(                          SR_BP0, 6),		/* Upper T - 1/64 */
+	SNOR_WP_RP_CMP_UP(                 SR_BP1         , 5),		/* Upper T - 1/32 */
+	SNOR_WP_RP_CMP_UP(                 SR_BP1 | SR_BP0, 4),		/* Upper T - 1/16 */
+	SNOR_WP_RP_CMP_UP(        SR_BP2                  , 3),		/* Upper T - 1/8 */
+	SNOR_WP_RP_CMP_UP(        SR_BP2 |          SR_BP0, 2),		/* Upper T - 1/4 */
+	SNOR_WP_RP_CMP_UP(        SR_BP2 | SR_BP1         , 1),		/* Upper T - 1/2 */
 
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB, SR_TB |                   SR_BP0, 6),	/* Lower T - 1/64 */
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB, SR_TB |          SR_BP1         , 5),	/* Lower T - 1/32 */
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB, SR_TB |          SR_BP1 | SR_BP0, 4),	/* Lower T - 1/16 */
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB, SR_TB | SR_BP2                  , 3),	/* Lower T - 1/8 */
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB, SR_TB | SR_BP2 |          SR_BP0, 2),	/* Lower T - 1/4 */
-	SNOR_WP_RP_CMP_LO(BP_2_0_TB, SR_TB | SR_BP2 | SR_BP1         , 1),	/* Lower T - 1/2 */
+	SNOR_WP_RP_CMP_LO(SR_TB |                   SR_BP0, 6),		/* Lower T - 1/64 */
+	SNOR_WP_RP_CMP_LO(SR_TB |          SR_BP1         , 5),		/* Lower T - 1/32 */
+	SNOR_WP_RP_CMP_LO(SR_TB |          SR_BP1 | SR_BP0, 4),		/* Lower T - 1/16 */
+	SNOR_WP_RP_CMP_LO(SR_TB | SR_BP2                  , 3),		/* Lower T - 1/8 */
+	SNOR_WP_RP_CMP_LO(SR_TB | SR_BP2 |          SR_BP0, 2),		/* Lower T - 1/4 */
+	SNOR_WP_RP_CMP_LO(SR_TB | SR_BP2 | SR_BP1         , 1),		/* Lower T - 1/2 */
 );
 
-static const struct spi_nor_wp_info wpr_3bp_tb_sec_cmp_only = SNOR_WP_BP(&sr_acc,
-	SNOR_WP_BP_UP(BP_2_0_TB_SEC,     0                                        , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0_TB_SEC,              SR_TB                           , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0_TB_SEC,     SR_SEC                                   , -1),	/* None */
-	SNOR_WP_BP_UP(BP_2_0_TB_SEC,     SR_SEC | SR_TB                           , -1),	/* None */
+static const struct spi_nor_wp_info wpr_3bp_tb_sec_cmp_only = SNOR_WP_BP(&sr_acc, BP_2_0_TB_SEC,
+	SNOR_WP_BP_UP(    0                                        , -1),	/* None */
+	SNOR_WP_BP_UP(             SR_TB                           , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_SEC                                   , -1),	/* None */
+	SNOR_WP_BP_UP(    SR_SEC | SR_TB                           , -1),	/* None */
 
-	SNOR_WP_BP_UP(BP_2_0_TB_SEC,                      SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB_SEC,              SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB_SEC,     SR_SEC |         SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(BP_2_0_TB_SEC,     SR_SEC | SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(                     SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(             SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_SEC |         SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_BP_UP(    SR_SEC | SR_TB | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
 
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB_SEC,                                    SR_BP0, 0),		/* Upper T - 64KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB_SEC,                           SR_BP1         , 1),		/* Upper T - 128KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB_SEC,                           SR_BP1 | SR_BP0, 2),		/* Upper T - 256KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB_SEC,                  SR_BP2                  , 3),		/* Upper T - 512KB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB_SEC,                  SR_BP2 |          SR_BP0, 4),		/* Upper T - 1MB */
-	SNOR_WP_BP_CMP_UP(BP_2_0_TB_SEC,                  SR_BP2 | SR_BP1         , 5),		/* Upper T - 2MB */
+	SNOR_WP_BP_CMP_UP(                                   SR_BP0, 0),	/* Upper T - 64KB */
+	SNOR_WP_BP_CMP_UP(                          SR_BP1         , 1),	/* Upper T - 128KB */
+	SNOR_WP_BP_CMP_UP(                          SR_BP1 | SR_BP0, 2),	/* Upper T - 256KB */
+	SNOR_WP_BP_CMP_UP(                 SR_BP2                  , 3),	/* Upper T - 512KB */
+	SNOR_WP_BP_CMP_UP(                 SR_BP2 |          SR_BP0, 4),	/* Upper T - 1MB */
+	SNOR_WP_BP_CMP_UP(                 SR_BP2 | SR_BP1         , 5),	/* Upper T - 2MB */
 
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB_SEC,          SR_TB |                   SR_BP0, 0),		/* Lower T - 64KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB_SEC,          SR_TB |          SR_BP1         , 1),		/* Lower T - 128KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB_SEC,          SR_TB |          SR_BP1 | SR_BP0, 2),		/* Lower T - 256KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB_SEC,          SR_TB | SR_BP2                  , 3),		/* Lower T - 512KB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB_SEC,          SR_TB | SR_BP2 |          SR_BP0, 4),		/* Lower T - 1MB */
-	SNOR_WP_BP_CMP_LO(BP_2_0_TB_SEC,          SR_TB | SR_BP2 | SR_BP1         , 5),		/* Lower T - 2MB */
+	SNOR_WP_BP_CMP_LO(         SR_TB |                   SR_BP0, 0),	/* Lower T - 64KB */
+	SNOR_WP_BP_CMP_LO(         SR_TB |          SR_BP1         , 1),	/* Lower T - 128KB */
+	SNOR_WP_BP_CMP_LO(         SR_TB |          SR_BP1 | SR_BP0, 2),	/* Lower T - 256KB */
+	SNOR_WP_BP_CMP_LO(         SR_TB | SR_BP2                  , 3),	/* Lower T - 512KB */
+	SNOR_WP_BP_CMP_LO(         SR_TB | SR_BP2 |          SR_BP0, 4),	/* Lower T - 1MB */
+	SNOR_WP_BP_CMP_LO(         SR_TB | SR_BP2 | SR_BP1         , 5),	/* Lower T - 2MB */
 
-	SNOR_WP_SP_CMP_UP(BP_2_0_TB_SEC, SR_SEC |                           SR_BP0, 0),		/* Upper T - 4KB */
-	SNOR_WP_SP_CMP_UP(BP_2_0_TB_SEC, SR_SEC |                  SR_BP1         , 1),		/* Upper T - 8KB */
-	SNOR_WP_SP_CMP_UP(BP_2_0_TB_SEC, SR_SEC |                  SR_BP1 | SR_BP0, 2),		/* Upper T - 16KB */
-	SNOR_WP_SP_CMP_UP(BP_2_0_TB_SEC, SR_SEC |         SR_BP2                  , 3),		/* Upper T - 32KB */
-	SNOR_WP_SP_CMP_UP(BP_2_0_TB_SEC, SR_SEC |         SR_BP2 |          SR_BP0, 3),		/* Upper T - 32KB */
-	SNOR_WP_SP_CMP_UP(BP_2_0_TB_SEC, SR_SEC |         SR_BP2 | SR_BP1         , 3),		/* Upper T - 32KB */
+	SNOR_WP_SP_CMP_UP(SR_SEC |                           SR_BP0, 0),	/* Upper T - 4KB */
+	SNOR_WP_SP_CMP_UP(SR_SEC |                  SR_BP1         , 1),	/* Upper T - 8KB */
+	SNOR_WP_SP_CMP_UP(SR_SEC |                  SR_BP1 | SR_BP0, 2),	/* Upper T - 16KB */
+	SNOR_WP_SP_CMP_UP(SR_SEC |         SR_BP2                  , 3),	/* Upper T - 32KB */
+	SNOR_WP_SP_CMP_UP(SR_SEC |         SR_BP2 |          SR_BP0, 3),	/* Upper T - 32KB */
+	SNOR_WP_SP_CMP_UP(SR_SEC |         SR_BP2 | SR_BP1         , 3),	/* Upper T - 32KB */
 
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB_SEC, SR_SEC | SR_TB |                   SR_BP0, 0),		/* Lower T - 4KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB_SEC, SR_SEC | SR_TB |          SR_BP1         , 1),		/* Lower T - 8KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB_SEC, SR_SEC | SR_TB |          SR_BP1 | SR_BP0, 2),		/* Lower T - 16KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB_SEC, SR_SEC | SR_TB | SR_BP2                  , 3),		/* Lower T - 32KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB_SEC, SR_SEC | SR_TB | SR_BP2 |          SR_BP0, 3),		/* Lower T - 32KB */
-	SNOR_WP_SP_CMP_LO(BP_2_0_TB_SEC, SR_SEC | SR_TB | SR_BP2 | SR_BP1         , 3),		/* Lower T - 32KB */
+	SNOR_WP_SP_CMP_LO(SR_SEC | SR_TB |                   SR_BP0, 0),	/* Lower T - 4KB */
+	SNOR_WP_SP_CMP_LO(SR_SEC | SR_TB |          SR_BP1         , 1),	/* Lower T - 8KB */
+	SNOR_WP_SP_CMP_LO(SR_SEC | SR_TB |          SR_BP1 | SR_BP0, 2),	/* Lower T - 16KB */
+	SNOR_WP_SP_CMP_LO(SR_SEC | SR_TB | SR_BP2                  , 3),	/* Lower T - 32KB */
+	SNOR_WP_SP_CMP_LO(SR_SEC | SR_TB | SR_BP2 |          SR_BP0, 3),	/* Lower T - 32KB */
+	SNOR_WP_SP_CMP_LO(SR_SEC | SR_TB | SR_BP2 | SR_BP1         , 3),	/* Lower T - 32KB */
 );
 
 static ufprog_status en25f10_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,

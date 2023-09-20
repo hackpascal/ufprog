@@ -22,8 +22,7 @@ enum snor_wp_range_type {
 };
 
 struct spi_nor_wp_range {
-	uint16_t sr_mask;
-	uint16_t sr_val;
+	uint32_t sr_val;
 
 	enum snor_wp_range_type type;
 	bool lower;
@@ -36,42 +35,43 @@ struct spi_nor_wp_range {
 	};
 };
 
-#define SNOR_WP_BP_BLK(_mask, _val, _lower, _cmp, _lshift)						\
-	{ .sr_mask = (_mask), .sr_val = (_val), .lower = (_lower), .cmp = (_cmp), .shift = (_lshift),	\
+#define SNOR_WP_BP_BLK(_val, _lower, _cmp, _lshift)					\
+	{ .sr_val = (_val), .lower = (_lower), .cmp = (_cmp), .shift = (_lshift),	\
 	  .type = SNOR_WPR_BLOCK }
 
-#define SNOR_WP_BP_LO(_mask, _val, _lshift)		SNOR_WP_BP_BLK(_mask, _val, true, false, _lshift)
-#define SNOR_WP_BP_UP(_mask, _val, _lshift)		SNOR_WP_BP_BLK(_mask, _val, false, false, _lshift)
-#define SNOR_WP_BP_CMP_LO(_mask, _val, _lshift)		SNOR_WP_BP_BLK(_mask, _val, false, true, _lshift)
-#define SNOR_WP_BP_CMP_UP(_mask, _val, _lshift)		SNOR_WP_BP_BLK(_mask, _val, true, true, _lshift)
+#define SNOR_WP_BP_LO(_val, _lshift)		SNOR_WP_BP_BLK(_val, true, false, _lshift)
+#define SNOR_WP_BP_UP(_val, _lshift)		SNOR_WP_BP_BLK(_val, false, false, _lshift)
+#define SNOR_WP_BP_CMP_LO(_val, _lshift)	SNOR_WP_BP_BLK(_val, false, true, _lshift)
+#define SNOR_WP_BP_CMP_UP(_val, _lshift)	SNOR_WP_BP_BLK(_val, true, true, _lshift)
 
-#define SNOR_WP_BP_SEC(_mask, _val, _lower, _cmp, _lshift)						\
-	{ .sr_mask = (_mask), .sr_val = (_val), .lower = (_lower), .cmp = (_cmp), .shift = (_lshift),	\
+#define SNOR_WP_BP_SEC(_val, _lower, _cmp, _lshift)					\
+	{ .sr_val = (_val), .lower = (_lower), .cmp = (_cmp), .shift = (_lshift),	\
 	  .type = SNOR_WPR_SECTOR }
 
-#define SNOR_WP_SP_LO(_mask, _val, _lshift)		SNOR_WP_BP_SEC(_mask, _val, true, false, _lshift)
-#define SNOR_WP_SP_UP(_mask, _val, _lshift)		SNOR_WP_BP_SEC(_mask, _val, false, false, _lshift)
-#define SNOR_WP_SP_CMP_LO(_mask, _val, _lshift)		SNOR_WP_BP_SEC(_mask, _val, false, true, _lshift)
-#define SNOR_WP_SP_CMP_UP(_mask, _val, _lshift)		SNOR_WP_BP_SEC(_mask, _val, true, true, _lshift)
+#define SNOR_WP_SP_LO(_val, _lshift)		SNOR_WP_BP_SEC(_val, true, false, _lshift)
+#define SNOR_WP_SP_UP(_val, _lshift)		SNOR_WP_BP_SEC(_val, false, false, _lshift)
+#define SNOR_WP_SP_CMP_LO(_val, _lshift)	SNOR_WP_BP_SEC(_val, false, true, _lshift)
+#define SNOR_WP_SP_CMP_UP(_val, _lshift)	SNOR_WP_BP_SEC(_val, true, true, _lshift)
 
-#define SNOR_WP_BP_RATIO(_mask, _val, _lower, _cmp, _rshift)						\
-	{ .sr_mask = (_mask), .sr_val = (_val), .lower = (_lower), .cmp = (_cmp), .shift = (_rshift),	\
+#define SNOR_WP_BP_RATIO(_val, _lower, _cmp, _rshift)					\
+	{ .sr_val = (_val), .lower = (_lower), .cmp = (_cmp), .shift = (_rshift),	\
 	  .type = SNOR_WPR_RATIO }
 
-#define SNOR_WP_RP_LO(_mask, _val, _rshift)		SNOR_WP_BP_RATIO(_mask, _val, true, false, _rshift)
-#define SNOR_WP_RP_UP(_mask, _val, _rshift)		SNOR_WP_BP_RATIO(_mask, _val, false, false, _rshift)
-#define SNOR_WP_RP_CMP_LO(_mask, _val, _rshift)		SNOR_WP_BP_RATIO(_mask, _val, false, true, _rshift)
-#define SNOR_WP_RP_CMP_UP(_mask, _val, _rshift)		SNOR_WP_BP_RATIO(_mask, _val, true, true, _rshift)
+#define SNOR_WP_RP_LO(_val, _rshift)		SNOR_WP_BP_RATIO(_val, true, false, _rshift)
+#define SNOR_WP_RP_UP(_val, _rshift)		SNOR_WP_BP_RATIO(_val, false, false, _rshift)
+#define SNOR_WP_RP_CMP_LO(_val, _rshift)	SNOR_WP_BP_RATIO(_val, false, true, _rshift)
+#define SNOR_WP_RP_CMP_UP(_val, _rshift)	SNOR_WP_BP_RATIO(_val, true, true, _rshift)
 
 struct spi_nor_wp_info {
 	const struct spi_nor_reg_access *access;
 
 	uint32_t num;
+	uint32_t sr_mask;
 	struct spi_nor_wp_range ranges[];
 };
 
-#define SNOR_WP_BP(_access, ...)									\
-	{ .access = (_access), .ranges = { __VA_ARGS__ },						\
+#define SNOR_WP_BP(_access, _mask, ...)									\
+	{ .access = (_access), .sr_mask = (_mask), .ranges = { __VA_ARGS__ },				\
 	  .num = sizeof((struct spi_nor_wp_range[]){ __VA_ARGS__ }) / sizeof(struct spi_nor_wp_range) }
 
 extern const struct spi_nor_wp_info wpr_2bp_all;
