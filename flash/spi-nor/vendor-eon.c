@@ -1169,7 +1169,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_ERASE_INFO(&en25p05_erase_opcodes),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&en25p05_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("EN25F05", SNOR_ID(0x1c, 0x31, 0x10), SZ_64K,

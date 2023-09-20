@@ -135,7 +135,7 @@ static const struct part_io_opcodes_item builtin_io_opcodes[] = {
 };
 
 static const struct part_wp_item builtin_wp_items[] = {
-	{ "2bp", &wpr_2bp },
+	{ "2bp-all", &wpr_2bp_all },
 	{ "2bp-tb", &wpr_2bp_tb },
 	{ "3bp-tb", &wpr_3bp_tb },
 	{ "3bp-tb-ratio", &wpr_3bp_tb_ratio },

@@ -457,7 +457,7 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&w25x_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("W25X05C", SNOR_ID(0xef, 0x30, 0x10), SZ_64K,
@@ -467,7 +467,7 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&w25xc_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("W25X10", SNOR_ID(0xef, 0x30, 0x11), SZ_128K,

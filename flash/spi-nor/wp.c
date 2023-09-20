@@ -32,7 +32,7 @@
 #define BP_3_0_TB				(SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0)
 #define BP_3_0_TB_CMP				(SR_CMP | SR_TB4 | SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0)
 
-const struct spi_nor_wp_info wpr_2bp = SNOR_WP_BP(&sr_acc,
+const struct spi_nor_wp_info wpr_2bp_all = SNOR_WP_BP(&sr_acc,
 	SNOR_WP_BP_UP(BP_1_0, 0              , -1),	/* None */
 	SNOR_WP_BP_UP(BP_1_0, SR_BP1 | SR_BP0, -2),	/* All */
 	SNOR_WP_BP_UP(BP_1_0,          SR_BP0, -2),	/* All */

@@ -531,7 +531,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(85),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("MX25L512E", SNOR_ID(0xc2, 0x20, 0x10), SZ_64K, /* SFDP 1.0 */
@@ -540,7 +540,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("MX25V512", SNOR_ID(0xc2, 0x20, 0x10), SZ_64K,
@@ -550,7 +550,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("MX25V512E", SNOR_ID(0xc2, 0x20, 0x10), SZ_64K,
@@ -559,7 +559,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(75), SNOR_DUAL_MAX_SPEED_MHZ(70),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("MX25V5126F", SNOR_ID(0xc2, 0x20, 0x10), SZ_64K,
@@ -579,7 +579,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(45),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("MX25V512F", SNOR_ID(0xc2, 0x23, 0x10), SZ_64K, /* SFDP 1.6 */
@@ -596,7 +596,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(70), SNOR_QUAD_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("MX25R512F", SNOR_ID(0xc2, 0x28, 0x10), SZ_64K, /* SFDP 1.0 */
@@ -671,7 +671,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(45),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("MX25V1035F", SNOR_ID(0xc2, 0x23, 0x11), SZ_128K, /* SFDP 1.6 */
@@ -688,7 +688,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(70), SNOR_QUAD_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("MX25R1035F", SNOR_ID(0xc2, 0x28, 0x11), SZ_128K, /* SFDP 1.0 */
@@ -729,7 +729,7 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(75), SNOR_DUAL_MAX_SPEED_MHZ(70),
 		  SNOR_REGS(&mx25x_2bp_regs),
-		  SNOR_WP_RANGES(&wpr_2bp),
+		  SNOR_WP_RANGES(&wpr_2bp_all),
 	),
 
 	SNOR_PART("MX25L2026C", SNOR_ID(0xc2, 0x20, 0x12), SZ_256K,
