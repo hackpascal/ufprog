@@ -9,58 +9,68 @@
 #ifndef _UFPROG_SPI_NOR_WP_H_
 #define _UFPROG_SPI_NOR_WP_H_
 
+#include <ufprog/bits.h>
+#include <ufprog/sizes.h>
 #include "regs.h"
 
-enum snor_wp_range_type {
-	SNOR_WPR_BLOCK,
-	SNOR_WPR_SECTOR,
-	SNOR_WPR_RATIO,
-	SNOR_WPR_BLOCK_MULTI,
-	SNOR_WPR_SECTOR_MULTI,
+#define SNOR_WPF_LOWER			BIT(0)	/* Lower part */
+#define SNOR_WPF_CMP			BIT(1)	/* Complementary range */
+#define SNOR_WPF_CMP_FULL		BIT(2)	/* Complementary range is full if original range is also full */
 
-	__MAX_SNOR_WPR_TYPR
+enum snor_wp_range_scale_type {
+	SNOR_WPR_NONE,		/* No protection */
+	SNOR_WPR_ALL,		/* Full protection */
+	SNOR_WPR_LSHIFT,	/* Granularity left shift */
+	SNOR_WPR_RSHIFT,	/* Chip size right shift */
+	SNOR_WPR_MULTI,		/* Granularity multiplication */
+
+	__MAX_SNOR_WPR_SCALE_TYPE
 };
 
 struct spi_nor_wp_range {
 	uint32_t sr_val;
 
-	enum snor_wp_range_type type;
-	bool lower;
-	bool cmp;
-	bool whole_cmp;
-
-	union {
-		int shift;
-		int multi;
-	};
+	enum snor_wp_range_scale_type type;
+	uint32_t granularity;
+	uint32_t scale;
+	uint32_t flags;
 };
 
-#define SNOR_WP_BP_BLK(_val, _lower, _cmp, _lshift)					\
-	{ .sr_val = (_val), .lower = (_lower), .cmp = (_cmp), .shift = (_lshift),	\
-	  .type = SNOR_WPR_BLOCK }
+#define SNOR_WP_NONE(_val)			{ .sr_val = (_val), .type = SNOR_WPR_NONE }
+#define SNOR_WP_ALL(_val)			{ .sr_val = (_val), .type = SNOR_WPR_ALL }
 
-#define SNOR_WP_BP_LO(_val, _lshift)		SNOR_WP_BP_BLK(_val, true, false, _lshift)
-#define SNOR_WP_BP_UP(_val, _lshift)		SNOR_WP_BP_BLK(_val, false, false, _lshift)
-#define SNOR_WP_BP_CMP_LO(_val, _lshift)	SNOR_WP_BP_BLK(_val, false, true, _lshift)
-#define SNOR_WP_BP_CMP_UP(_val, _lshift)	SNOR_WP_BP_BLK(_val, true, true, _lshift)
+#define SNOR_WP_BP_BLK(_val, _lshift, _flags)	\
+	{ .sr_val = (_val), .scale = (_lshift), .granularity = SZ_64K, .type = SNOR_WPR_LSHIFT, .flags = (_flags) }
 
-#define SNOR_WP_BP_SEC(_val, _lower, _cmp, _lshift)					\
-	{ .sr_val = (_val), .lower = (_lower), .cmp = (_cmp), .shift = (_lshift),	\
-	  .type = SNOR_WPR_SECTOR }
+#define SNOR_WP_BP_LO(_val, _lshift)		SNOR_WP_BP_BLK(_val, _lshift, SNOR_WPF_LOWER)
+#define SNOR_WP_BP_UP(_val, _lshift)		SNOR_WP_BP_BLK(_val, _lshift, 0)
+#define SNOR_WP_BP_CMP_LO(_val, _lshift)	SNOR_WP_BP_BLK(_val, _lshift, SNOR_WPF_CMP)
+#define SNOR_WP_BP_CMP_UP(_val, _lshift)	SNOR_WP_BP_BLK(_val, _lshift, SNOR_WPF_LOWER | SNOR_WPF_CMP)
+#define SNOR_WP_BP_CMPF_LO(_val, _lshift)	SNOR_WP_BP_BLK(_val, _lshift, SNOR_WPF_CMP | SNOR_WPF_CMP_FULL)
+#define SNOR_WP_BP_CMPF_UP(_val, _lshift)	SNOR_WP_BP_BLK(_val, _lshift, SNOR_WPF_LOWER | SNOR_WPF_CMP | \
+									      SNOR_WPF_CMP_FULL)
 
-#define SNOR_WP_SP_LO(_val, _lshift)		SNOR_WP_BP_SEC(_val, true, false, _lshift)
-#define SNOR_WP_SP_UP(_val, _lshift)		SNOR_WP_BP_SEC(_val, false, false, _lshift)
-#define SNOR_WP_SP_CMP_LO(_val, _lshift)	SNOR_WP_BP_SEC(_val, false, true, _lshift)
-#define SNOR_WP_SP_CMP_UP(_val, _lshift)	SNOR_WP_BP_SEC(_val, true, true, _lshift)
+#define SNOR_WP_BP_SEC(_val, _lshift, _flags)	\
+	{ .sr_val = (_val), .scale = (_lshift), .granularity = SZ_4K, .type = SNOR_WPR_LSHIFT, .flags = (_flags) }
 
-#define SNOR_WP_BP_RATIO(_val, _lower, _cmp, _rshift)					\
-	{ .sr_val = (_val), .lower = (_lower), .cmp = (_cmp), .shift = (_rshift),	\
-	  .type = SNOR_WPR_RATIO }
+#define SNOR_WP_SP_LO(_val, _lshift)		SNOR_WP_BP_SEC(_val, _lshift, SNOR_WPF_LOWER)
+#define SNOR_WP_SP_UP(_val, _lshift)		SNOR_WP_BP_SEC(_val, _lshift, 0)
+#define SNOR_WP_SP_CMP_LO(_val, _lshift)	SNOR_WP_BP_SEC(_val, _lshift, SNOR_WPF_CMP)
+#define SNOR_WP_SP_CMP_UP(_val, _lshift)	SNOR_WP_BP_SEC(_val, _lshift, SNOR_WPF_LOWER | SNOR_WPF_CMP)
+#define SNOR_WP_SP_CMPF_LO(_val, _lshift)	SNOR_WP_BP_SEC(_val, _lshift, SNOR_WPF_CMP | SNOR_WPF_CMP_FULL)
+#define SNOR_WP_SP_CMPF_UP(_val, _lshift)	SNOR_WP_BP_SEC(_val, _lshift, SNOR_WPF_LOWER | SNOR_WPF_CMP | \
+									      SNOR_WPF_CMP_FULL)
 
-#define SNOR_WP_RP_LO(_val, _rshift)		SNOR_WP_BP_RATIO(_val, true, false, _rshift)
-#define SNOR_WP_RP_UP(_val, _rshift)		SNOR_WP_BP_RATIO(_val, false, false, _rshift)
-#define SNOR_WP_RP_CMP_LO(_val, _rshift)	SNOR_WP_BP_RATIO(_val, false, true, _rshift)
-#define SNOR_WP_RP_CMP_UP(_val, _rshift)	SNOR_WP_BP_RATIO(_val, true, true, _rshift)
+#define SNOR_WP_BP_RATIO(_val, _lshift, _flags)	\
+	{ .sr_val = (_val), .scale = (_lshift), .type = SNOR_WPR_RSHIFT, .flags = (_flags) }
+
+#define SNOR_WP_RP_LO(_val, _rshift)		SNOR_WP_BP_RATIO(_val, _rshift, SNOR_WPF_LOWER)
+#define SNOR_WP_RP_UP(_val, _rshift)		SNOR_WP_BP_RATIO(_val, _rshift, 0)
+#define SNOR_WP_RP_CMP_LO(_val, _rshift)	SNOR_WP_BP_RATIO(_val, _rshift, SNOR_WPF_CMP)
+#define SNOR_WP_RP_CMP_UP(_val, _rshift)	SNOR_WP_BP_RATIO(_val, _rshift, SNOR_WPF_LOWER | SNOR_WPF_CMP)
+#define SNOR_WP_RP_CMPF_LO(_val, _rshift)	SNOR_WP_BP_RATIO(_val, _rshift, SNOR_WPF_CMP | SNOR_WPF_CMP_FULL)
+#define SNOR_WP_RP_CMPF_UP(_val, _rshift)	SNOR_WP_BP_RATIO(_val, _rshift, SNOR_WPF_LOWER | SNOR_WPF_CMP | \
+									      SNOR_WPF_CMP_FULL)
 
 struct spi_nor_wp_info {
 	const struct spi_nor_reg_access *access;

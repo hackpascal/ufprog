@@ -267,8 +267,8 @@ static const struct snor_reg_info xtx_sr1_cr_sr3_lc1_adp_regs = SNOR_REG_INFO(&w
 									      &xtx_lc1_adp_drv56_hold_rst_sr3);
 
 static const struct spi_nor_wp_info xtx_wpr_3bp_lo_cmp_sec = SNOR_WP_BP(&sr_acc, BP_2_0,
-	SNOR_WP_BP_UP(0                       , -1),	/* None */
-	SNOR_WP_BP_UP(SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_NONE(     0                          ),	/* None */
+	SNOR_WP_ALL(      SR_BP2 | SR_BP1 | SR_BP0   ),	/* All */
 
 	SNOR_WP_SP_CMP_LO(                  SR_BP0, 1),	/* Lower T - 8KB */
 	SNOR_WP_SP_CMP_LO(         SR_BP1         , 2),	/* Lower T - 16KB */
@@ -279,11 +279,11 @@ static const struct spi_nor_wp_info xtx_wpr_3bp_lo_cmp_sec = SNOR_WP_BP(&sr_acc,
 );
 
 const struct spi_nor_wp_info xtx_wpr_4bp_cmp_as_tb = SNOR_WP_BP(&srcr_acc, BP_3_0_CMP_AS_TB,
-	SNOR_WP_BP_UP(0                                         , -1),	/* None */
-	SNOR_WP_BP_UP(SR_CMP                                    , -1),	/* None */
+	SNOR_WP_NONE( 0                                            ),	/* None */
+	SNOR_WP_NONE( SR_CMP                                       ),	/* None */
 
-	SNOR_WP_BP_UP(         SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
-	SNOR_WP_BP_UP(SR_CMP | SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0, -2),	/* All */
+	SNOR_WP_ALL(           SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0   ),	/* All */
+	SNOR_WP_ALL(  SR_CMP | SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0   ),	/* All */
 
 	SNOR_WP_BP_UP(                                    SR_BP0, 0),	/* Upper 64KB */
 	SNOR_WP_BP_UP(                           SR_BP1         , 1),	/* Upper 128KB */
