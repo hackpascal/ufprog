@@ -282,7 +282,7 @@ static ufprog_status spi_nor_write_reg_desc(struct spi_nor *snor, const struct s
 				STATUS_CHECK_RET(spi_nor_volatile_write_enable(snor));
 		} else {
 			STATUS_CHECK_RET(spi_nor_write_enable(snor));
-			poll = true;
+			poll = !(desc->flags & SNOR_REGACC_F_NO_POLL);
 			wrdis = true;
 		}
 	}
