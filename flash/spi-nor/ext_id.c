@@ -110,8 +110,9 @@ static const struct spi_nor_part_flag_enum_info part_4b_flags[] = {
 	{ 1, "wren-b7h-e9h" },
 	{ 2, "ear" },
 	{ 3, "bank" },
-	{ 4, "opcode" },
-	{ 5, "always" },
+	{ 4, "nvcr" },
+	{ 5, "opcode" },
+	{ 6, "always" },
 };
 
 static const struct spi_nor_part_flag_enum_info part_soft_reset_flags[] = {

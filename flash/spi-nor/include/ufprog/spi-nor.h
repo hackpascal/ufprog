@@ -32,6 +32,9 @@ EXTERN_C_BEGIN
 #define BANK_SEL_S				0
 #define BANK_SEL_M				BITS(6, BANK_SEL_S)
 
+/* Non-volatile Configuration Register fields */
+#define NVCR_3B_ADDR				BIT(0)
+
 struct spi_nor;
 struct spi_nor_reg_access;
 

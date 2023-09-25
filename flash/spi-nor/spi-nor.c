@@ -515,6 +515,23 @@ static ufprog_status spi_nor_enable_4b_addressing_bank(struct spi_nor *snor)
 	return UFP_OK;
 }
 
+static ufprog_status spi_nor_enable_4b_addressing_nvcr(struct spi_nor *snor)
+{
+	uint32_t val;
+
+	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &nvcr_acc, NVCR_3B_ADDR, 0, false));
+
+	/* Do verify the bit */
+	STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, &nvcr_acc, &val));
+
+	if (val & NVCR_3B_ADDR) {
+		logm_err("NVCR value validation failed\n");
+		return UFP_FAIL;
+	}
+
+	return UFP_OK;
+}
+
 ufprog_status spi_nor_disable_4b_addressing_e9h(struct spi_nor *snor)
 {
 	ufprog_status ret;
@@ -544,6 +561,23 @@ static ufprog_status spi_nor_disable_4b_addressing_bank(struct spi_nor *snor)
 
 	if (val) {
 		logm_err("Bank register value validation failed\n");
+		return UFP_FAIL;
+	}
+
+	return UFP_OK;
+}
+
+static ufprog_status spi_nor_disable_4b_addressing_nvcr(struct spi_nor *snor)
+{
+	uint32_t val;
+
+	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &nvcr_acc, 0, NVCR_3B_ADDR, false));
+
+	/* Do verify the bit */
+	STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, &nvcr_acc, &val));
+
+	if (!(val & NVCR_3B_ADDR)) {
+		logm_err("NVCR value validation failed\n");
 		return UFP_FAIL;
 	}
 
@@ -1024,9 +1058,9 @@ static bool spi_nor_setup_opcode(struct spi_nor *snor, const struct spi_nor_flas
 		}
 	}
 
-	if ((part->a4b_flags & (SNOR_4B_F_B7H_E9H | SNOR_4B_F_WREN_B7H_E9H | SNOR_4B_F_BANK)) ||
+	if ((part->a4b_flags & (SNOR_4B_F_B7H_E9H | SNOR_4B_F_WREN_B7H_E9H | SNOR_4B_F_BANK | SNOR_4B_F_NVCR)) ||
 	    (!part->a4b_flags && (part->a4b_en_type == A4B_EN_B7H || part->a4b_en_type == A4B_EN_WREN_B7H ||
-	     part->a4b_en_type == A4B_EN_BANK))) {
+	     part->a4b_en_type == A4B_EN_BANK || part->a4b_en_type == A4B_EN_NVCR))) {
 		if ((part->a4b_flags & SNOR_4B_F_B7H_E9H) ||
 			(!part->a4b_flags && part->a4b_en_type == A4B_EN_B7H))
 			snor->ext_param.ops.a4b_en = spi_nor_enable_4b_addressing_b7h;
@@ -1036,6 +1070,9 @@ static bool spi_nor_setup_opcode(struct spi_nor *snor, const struct spi_nor_flas
 		else if ((part->a4b_flags & SNOR_4B_F_BANK) ||
 				(!part->a4b_flags && part->a4b_en_type == A4B_EN_BANK))
 			snor->ext_param.ops.a4b_en = spi_nor_enable_4b_addressing_bank;
+		else if ((part->a4b_flags & SNOR_4B_F_NVCR) ||
+			 (!part->a4b_flags && part->a4b_en_type == A4B_EN_NVCR))
+			snor->ext_param.ops.a4b_en = spi_nor_enable_4b_addressing_nvcr;
 
 		spi_nor_get_3b_opcodes(part, &opcodes);
 
@@ -1052,6 +1089,9 @@ static bool spi_nor_setup_opcode(struct spi_nor *snor, const struct spi_nor_flas
 			else if ((part->a4b_flags & SNOR_4B_F_BANK) ||
 				 (!part->a4b_flags && part->a4b_dis_type == A4B_DIS_BANK))
 				snor->ext_param.ops.a4b_dis = spi_nor_disable_4b_addressing_bank;
+			else if ((part->a4b_flags & SNOR_4B_F_NVCR) ||
+				 (!part->a4b_flags && part->a4b_dis_type == A4B_DIS_NVCR))
+				snor->ext_param.ops.a4b_dis = spi_nor_disable_4b_addressing_nvcr;
 			/*
 			 * // Do not support this now
 			 * else if (!part->a4b_flags && part->a4b_dis_type == A4B_DIS_66H_99H)

@@ -296,14 +296,14 @@ static ufprog_status spi_nor_parse_sfdp_fill(struct spi_nor *snor, struct spi_no
 			if ((val & DW16_ENTER_4B_BANK) && (val2 & DW16_EXIT_4B_BANK))
 				flags |= SNOR_4B_F_BANK;
 
+			if ((val & DW16_ENTER_4B_NVCR) && (val2 & DW16_EXIT_4B_NVCR))
+				flags |= SNOR_4B_F_NVCR;
+
 			if (val & DW16_ENTER_4B_OPCODE)
 				flags |= SNOR_4B_F_OPCODE;
 
 			if (val & DW16_ENTER_4B_ALWAYS)
 				flags |= SNOR_4B_F_ALWAYS;
-
-			if (((val & DW16_ENTER_4B_NVCR) || (val2 & DW16_EXIT_4B_NVCR)) && !flags)
-				logm_warn("Enabling/Disabling 4-byte addressing using NVCR is not supported\n");
 
 			bp->p.a4b_flags = flags;
 
@@ -316,6 +316,8 @@ static ufprog_status spi_nor_parse_sfdp_fill(struct spi_nor *snor, struct spi_no
 					bp->p.a4b_en_type = A4B_EN_EAR;
 				else if (val & DW16_ENTER_4B_BANK)
 					bp->p.a4b_en_type = A4B_EN_BANK;
+				else if (val & DW16_ENTER_4B_NVCR)
+					bp->p.a4b_en_type = A4B_EN_NVCR;
 				else
 					bp->p.a4b_en_type = A4B_EN_NONE;
 
@@ -327,6 +329,8 @@ static ufprog_status spi_nor_parse_sfdp_fill(struct spi_nor *snor, struct spi_no
 					bp->p.a4b_dis_type = A4B_DIS_EAR;
 				else if (val2 & DW16_EXIT_4B_BANK)
 					bp->p.a4b_dis_type = A4B_DIS_BANK;
+				else if (val2 & DW16_EXIT_4B_NVCR)
+					bp->p.a4b_dis_type = A4B_DIS_NVCR;
 				else if (val2 & DW16_EXIT_4B_SOFT_RESET)
 					bp->p.a4b_dis_type = A4B_DIS_66H_99H;
 				else

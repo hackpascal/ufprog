@@ -149,8 +149,9 @@ enum snor_4b_dis_type {
 #define SNOR_4B_F_WREN_B7H_E9H			BIT(1)
 #define SNOR_4B_F_EAR				BIT(2)
 #define SNOR_4B_F_BANK				BIT(3)
-#define SNOR_4B_F_OPCODE			BIT(4)
-#define SNOR_4B_F_ALWAYS			BIT(5)
+#define SNOR_4B_F_NVCR				BIT(4)
+#define SNOR_4B_F_OPCODE			BIT(5)
+#define SNOR_4B_F_ALWAYS			BIT(6)
 
 #define SNOR_4B_FLAGS(_flags)			.a4b_flags = (_flags)
 
