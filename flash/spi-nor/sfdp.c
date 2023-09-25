@@ -258,6 +258,8 @@ static ufprog_status spi_nor_parse_sfdp_fill(struct spi_nor *snor, struct spi_no
 			bp->p.qpi_dis_type = QPI_DIS_FFH;
 		else if (val & DW15_4S_4S_4S_DIS_SEQ_F5H)
 			bp->p.qpi_dis_type = QPI_DIS_F5H;
+		else if (val & DW15_4S_4S_4S_DIS_SEQ_66H_99H)
+			bp->p.qpi_dis_type = QPI_DIS_66H_99H;
 		else if (val)
 			logm_notice("QPI disable type defined in SFDP is not supported\n");
 
