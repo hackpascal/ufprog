@@ -102,6 +102,7 @@ enum snor_quad_en_type {
 
 enum snor_qpi_en_type {
 	QPI_EN_NONE,
+	QPI_EN_VENDOR,
 	QPI_EN_QER_38H,
 	QPI_EN_38H,
 	QPI_EN_35H,
@@ -110,6 +111,7 @@ enum snor_qpi_en_type {
 
 enum snor_qpi_dis_type {
 	QPI_DIS_NONE,
+	QPI_DIS_VENDOR,
 	QPI_DIS_FFH,
 	QPI_DIS_F5H,
 	QPI_DIS_66H_99H,
@@ -119,6 +121,7 @@ enum snor_qpi_dis_type {
 	.qpi_en_type = (QPI_EN_##_en_type),		\
 	.qpi_dis_type = (QPI_DIS_##_dis_type)
 
+#define SNOR_QPI_VENDOR				SNOR_QPI(VENDOR, VENDOR)
 #define SNOR_QPI_QER_38H_FFH			SNOR_QPI(QER_38H, FFH)
 #define SNOR_QPI_38H_FFH			SNOR_QPI(38H, FFH)
 #define SNOR_QPI_35H_F5H			SNOR_QPI(35H, F5H)

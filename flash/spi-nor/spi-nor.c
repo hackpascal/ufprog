@@ -1308,6 +1308,9 @@ static bool spi_nor_setup_multi_io(struct spi_nor *snor, const struct spi_nor_fl
 		snor->ext_param.ops.qpi_en = NULL;
 		break;
 
+	case QPI_EN_VENDOR:
+		break;
+
 	case QPI_EN_QER_38H:
 		snor->ext_param.ops.qpi_en = spi_nor_enable_qpi_38h_qer;
 		break;
@@ -1339,6 +1342,9 @@ static bool spi_nor_setup_multi_io(struct spi_nor *snor, const struct spi_nor_fl
 		}
 
 		snor->ext_param.ops.qpi_dis = NULL;
+		break;
+
+	case QPI_DIS_VENDOR:
 		break;
 
 	case QPI_DIS_FFH:

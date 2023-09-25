@@ -73,6 +73,7 @@ static const struct spi_nor_part_flag_enum_info part_qe_types[] = {
 
 static const struct spi_nor_part_flag_enum_info part_qpi_en_types[] = {
 	{ QPI_EN_NONE, "none" },
+	{ QPI_EN_VENDOR, "vendor" },
 	{ QPI_EN_QER_38H, "qer-38h" },
 	{ QPI_EN_38H, "38h" },
 	{ QPI_EN_35H, "35h" },
@@ -81,6 +82,7 @@ static const struct spi_nor_part_flag_enum_info part_qpi_en_types[] = {
 
 static const struct spi_nor_part_flag_enum_info part_qpi_dis_types[] = {
 	{ QPI_DIS_NONE, "none" },
+	{ QPI_DIS_VENDOR, "vendor" },
 	{ QPI_DIS_FFH, "ffh" },
 	{ QPI_DIS_F5H, "f5h" },
 	{ QPI_DIS_66H_99H, "66h-99h" },
