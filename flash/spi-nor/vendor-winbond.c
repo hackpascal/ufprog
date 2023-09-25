@@ -17,6 +17,13 @@
 
 #define WINBOND_UID_LEN				8
 
+/* Winbond vendor flags */
+#define WINBOND_F_MULTI_DIE				BIT(0)
+
+static const struct spi_nor_part_flag_enum_info winbond_vendor_flag_info[] = {
+	{ 0, "multi-die" },
+};
+
 static const struct spi_nor_otp_info w25q_otp_3 = {
 	.start_index = 1,
 	.count = 3,
@@ -1299,6 +1306,7 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 
 	SNOR_PART("W25Q01JV", SNOR_ID(0xef, 0x40, 0x21), SZ_128M,
 		  SNOR_FLAGS(SNOR_F_UNIQUE_ID | SNOR_F_GLOBAL_UNLOCK),
+		  SNOR_VENDOR_FLAGS(WINBOND_F_MULTI_DIE),
 		  SNOR_SPI_MAX_SPEED_MHZ(103), SNOR_DUAL_MAX_SPEED_MHZ(80), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
@@ -1307,6 +1315,7 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 
 	SNOR_PART("W25Q01JV-DTR", SNOR_ID(0xef, 0x70, 0x21), SZ_128M,
 		  SNOR_FLAGS(SNOR_F_UNIQUE_ID | SNOR_F_GLOBAL_UNLOCK),
+		  SNOR_VENDOR_FLAGS(WINBOND_F_MULTI_DIE),
 		  SNOR_SPI_MAX_SPEED_MHZ(103), SNOR_DUAL_MAX_SPEED_MHZ(90), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
@@ -1315,6 +1324,7 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 
 	SNOR_PART("W25Q01NW", SNOR_ID(0xef, 0x60, 0x21), SZ_128M,
 		  SNOR_FLAGS(SNOR_F_UNIQUE_ID | SNOR_F_GLOBAL_UNLOCK),
+		  SNOR_VENDOR_FLAGS(WINBOND_F_MULTI_DIE),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
@@ -1323,6 +1333,7 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 
 	SNOR_PART("W25Q01NW-DTR", SNOR_ID(0xef, 0x80, 0x21), SZ_128M,
 		  SNOR_FLAGS(SNOR_F_UNIQUE_ID | SNOR_F_GLOBAL_UNLOCK),
+		  SNOR_VENDOR_FLAGS(WINBOND_F_MULTI_DIE),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
@@ -1331,6 +1342,7 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 
 	SNOR_PART("W25Q02JV-DTR", SNOR_ID(0xef, 0x70, 0x22), SZ_256M,
 		  SNOR_FLAGS(SNOR_F_UNIQUE_ID | SNOR_F_GLOBAL_UNLOCK),
+		  SNOR_VENDOR_FLAGS(WINBOND_F_MULTI_DIE),
 		  SNOR_SPI_MAX_SPEED_MHZ(103), SNOR_DUAL_MAX_SPEED_MHZ(90), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
@@ -1339,6 +1351,7 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 
 	SNOR_PART("W25Q02NW-DTR", SNOR_ID(0xef, 0x80, 0x22), SZ_256M,
 		  SNOR_FLAGS(SNOR_F_UNIQUE_ID | SNOR_F_GLOBAL_UNLOCK),
+		  SNOR_VENDOR_FLAGS(WINBOND_F_MULTI_DIE),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
@@ -1416,6 +1429,9 @@ static ufprog_status winbond_part_fixup(struct spi_nor *snor, struct spi_nor_ven
 			bp->p.flags &= ~SNOR_F_GLOBAL_UNLOCK;
 	}
 
+	if (bp->p.vendor_flags & WINBOND_F_MULTI_DIE)
+		snor->state.die_read_granularity = SZ_64M;
+
 	if (bp->p.regs == &w25x_regs || bp->p.regs == &w25xc_regs || bp->p.regs == &w25q_2_regs ||
 	    bp->p.regs == &w25q_3_regs || bp->p.regs == &w25q_4b_3_regs) {
 		snor->state.reg.cr = &cr_acc;
@@ -1481,4 +1497,6 @@ const struct spi_nor_vendor vendor_winbond = {
 	.nparts = ARRAY_SIZE(winbond_parts),
 	.default_part_ops = &winbond_ops,
 	.default_part_fixups = &winbond_fixups,
+	.vendor_flag_names = winbond_vendor_flag_info,
+	.num_vendor_flag_names = ARRAY_SIZE(winbond_vendor_flag_info),
 };
