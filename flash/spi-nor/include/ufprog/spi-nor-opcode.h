@@ -23,6 +23,7 @@
 #define SNOR_CMD_READ_FLAGR			0x70
 #define SNOR_CMD_READ_NVCR			0xb5
 #define SNOR_CMD_READ_VCR			0x85
+#define SNOR_CMD_READ_EVCR			0x65
 
 /* Write registers */
 #define SNOR_CMD_WRITE_SR			0x01
@@ -32,6 +33,7 @@
 #define SNOR_CMD_WRITE_EAR			0xc5
 #define SNOR_CMD_WRITE_NVCR			0xb1
 #define SNOR_CMD_WRITE_VCR			0x81
+#define SNOR_CMD_WRITE_EVCR			0x61
 
 /* Read */
 #define SNOR_CMD_READ				0x03

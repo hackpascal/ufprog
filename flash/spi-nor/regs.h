@@ -55,6 +55,12 @@ struct spi_nor_reg_access {
 	  .desc[0] = { .ndata = 1, .read_opcode = (_read_opcode), .write_opcode = (_write_opcode), },	\
 	}
 
+#define SNOR_REG_ACC_XVCR(_read_opcode, _write_opcode, _ndata)						\
+	{ .type = SNOR_REG_NORMAL, .num = 1,								\
+	  .desc[0] = { .ndata = (_ndata), .read_opcode = (_read_opcode),				\
+		        .write_opcode = (_write_opcode), .flags = SNOR_REGACC_F_NO_POLL, },		\
+	}
+
 #define SNOR_REG_ACC_SRCR(_read_opcode, _read_opcode2, _write_opcode)					\
 	{ .type = SNOR_REG_READ_MULTI_WRITE_ONCE, .num = 2,						\
 	  .desc[0] = { .ndata = 1, .read_opcode = (_read_opcode), .write_opcode = (_write_opcode), },	\
@@ -113,6 +119,9 @@ extern const struct spi_nor_reg_access srcr_acc;
 extern const struct spi_nor_reg_access ear_acc;
 extern const struct spi_nor_reg_access br_acc;
 extern const struct spi_nor_reg_access scur_acc;
+extern const struct spi_nor_reg_access nvcr_acc;
+extern const struct spi_nor_reg_access vcr_acc;
+extern const struct spi_nor_reg_access evcr_acc;
 
 extern const struct snor_reg_info w25q_no_lb_regs;
 extern const struct snor_reg_info w25q_regs;

@@ -19,6 +19,9 @@ const struct spi_nor_reg_access srcr_acc = SNOR_REG_ACC_SRCR(SNOR_CMD_READ_SR, S
 const struct spi_nor_reg_access ear_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_READ_EAR, SNOR_CMD_WRITE_EAR);
 const struct spi_nor_reg_access br_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_READ_BANK, SNOR_CMD_WRITE_BANK);
 const struct spi_nor_reg_access scur_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_READ_SCUR, SNOR_CMD_WRITE_SCUR);
+const struct spi_nor_reg_access nvcr_acc = SNOR_REG_ACC_XVCR(SNOR_CMD_READ_NVCR, SNOR_CMD_WRITE_NVCR, 2);
+const struct spi_nor_reg_access vcr_acc = SNOR_REG_ACC_XVCR(SNOR_CMD_READ_VCR, SNOR_CMD_WRITE_VCR, 1);
+const struct spi_nor_reg_access evcr_acc = SNOR_REG_ACC_XVCR(SNOR_CMD_READ_EVCR, SNOR_CMD_WRITE_EVCR, 1);
 
 static const struct spi_nor_reg_field_item w25q_sr_no_lb_fields[] = {
 	SNOR_REG_FIELD(2, 1, "BP0", "Block Protect Bit 0"),
