@@ -108,6 +108,7 @@ struct spi_nor_state {
 
 	uint32_t curr_die;
 	uint32_t curr_high_addr;
+	uint32_t die_read_granularity;
 
 	uint32_t speed_low;
 	uint32_t speed_high;

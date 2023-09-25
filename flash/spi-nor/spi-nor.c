@@ -2235,6 +2235,7 @@ ufprog_status spi_nor_wait_busy(struct spi_nor *snor, uint32_t wait_ms)
 ufprog_status UFPROG_API ufprog_spi_nor_read_no_check(struct spi_nor *snor, uint64_t addr, size_t len, void *data)
 {
 	ufprog_status ret = UFP_OK;
+	uint64_t chklen;
 
 	struct ufprog_spi_mem_op op = SPI_MEM_OP(
 		SPI_MEM_OP_CMD(snor->state.read_opcode, spi_mem_io_info_cmd_bw(snor->state.read_io_info)),
@@ -2249,6 +2250,12 @@ ufprog_status UFPROG_API ufprog_spi_nor_read_no_check(struct spi_nor *snor, uint
 	STATUS_CHECK_RET(spi_nor_set_high_speed(snor));
 
 	while (len) {
+		if (snor->state.die_read_granularity) {
+			chklen = snor->state.die_read_granularity - op.addr.val % snor->state.die_read_granularity;
+			if (op.data.len > chklen)
+				op.data.len = chklen;
+		}
+
 		STATUS_CHECK_GOTO_RET(spi_nor_setup_addr(snor, &op.addr.val), ret, out);
 		STATUS_CHECK_GOTO_RET(ufprog_spi_mem_adjust_op_size(snor->spi, &op), ret, out);
 		STATUS_CHECK_GOTO_RET(ufprog_spi_mem_exec_op(snor->spi, &op), ret, out);
