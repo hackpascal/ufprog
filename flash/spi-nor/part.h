@@ -105,6 +105,7 @@ enum snor_qpi_en_type {
 	QPI_EN_QER_38H,
 	QPI_EN_38H,
 	QPI_EN_35H,
+	QPI_EN_VECR_BIT7_CLR,
 };
 
 enum snor_qpi_dis_type {

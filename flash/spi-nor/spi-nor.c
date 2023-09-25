@@ -459,6 +459,11 @@ static ufprog_status spi_nor_enable_qpi_38h_qer(struct spi_nor *snor)
 	return spi_nor_enable_qpi_38h(snor);
 }
 
+static ufprog_status spi_nor_enable_qpi_vecr_clr_bit7(struct spi_nor *snor)
+{
+	return spi_nor_update_reg_acc(snor, &evcr_acc, BIT(7), 0, false);
+}
+
 ufprog_status spi_nor_disable_qpi_ffh(struct spi_nor *snor)
 {
 	ufprog_status ret;
@@ -1313,6 +1318,10 @@ static bool spi_nor_setup_multi_io(struct spi_nor *snor, const struct spi_nor_fl
 
 	case QPI_EN_35H:
 		snor->ext_param.ops.qpi_en = spi_nor_enable_qpi_35h;
+		break;
+
+	case QPI_EN_VECR_BIT7_CLR:
+		snor->ext_param.ops.qpi_en = spi_nor_enable_qpi_vecr_clr_bit7;
 		break;
 
 	default:

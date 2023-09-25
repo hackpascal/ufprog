@@ -76,6 +76,7 @@ static const struct spi_nor_part_flag_enum_info part_qpi_en_types[] = {
 	{ QPI_EN_QER_38H, "qer-38h" },
 	{ QPI_EN_38H, "38h" },
 	{ QPI_EN_35H, "35h" },
+	{ QPI_EN_VECR_BIT7_CLR, "vecr-bit7-clr" },
 };
 
 static const struct spi_nor_part_flag_enum_info part_qpi_dis_types[] = {
