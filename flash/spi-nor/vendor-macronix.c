@@ -88,7 +88,7 @@ static const struct spi_nor_part_flag_enum_info macronix_vendor_flag_info[] = {
 #define MXIC_REG_ACC_CR2(_addr)											\
 	{ .type = SNOR_REG_NORMAL, .num = 1,									\
 	  .desc[0] = { .read_opcode = SNOR_CMD_MXIC_READ_CR2, .write_opcode = SNOR_CMD_MXIC_WRITE_CR2,		\
-		       .ndata = 1, .addr = (_addr), .naddr = 4, .flags = SNOR_REGACC_F_ADDR_4B_MODE, },		\
+		       .ndata = 1, .addr = (_addr), .naddr = 4, },						\
 	}
 
 static const struct spi_nor_reg_access mxic_cr2_0_acc = MXIC_REG_ACC_CR2(0);
