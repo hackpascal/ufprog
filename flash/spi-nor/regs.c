@@ -223,8 +223,9 @@ ufprog_status UFPROG_API ufprog_spi_nor_read_reg(struct spi_nor *snor, const str
 static ufprog_status spi_nor_write_reg_desc(struct spi_nor *snor, const struct spi_nor_reg_desc *desc, uint32_t val,
 					    uint32_t ndata, bool volatile_write)
 {
+	bool poll = false, wrdis = false;
+	ufprog_status ret = UFP_OK;
 	uint8_t data[sizeof(val)];
-	bool poll = false;
 	struct ufprog_spi_mem_op op = SPI_MEM_OP(
 		SPI_MEM_OP_CMD(desc->write_opcode, snor->state.cmd_buswidth_curr),
 		SPI_MEM_OP_ADDR(desc->naddr, desc->addr, snor->state.cmd_buswidth_curr),
@@ -276,20 +277,25 @@ static ufprog_status spi_nor_write_reg_desc(struct spi_nor *snor, const struct s
 	}
 
 	if (!(desc->flags & SNOR_REGACC_F_NO_WREN)) {
-		if (desc->flags & SNOR_REGACC_F_VOLATILE_WREN_50H) {
-			STATUS_CHECK_RET(spi_nor_volatile_write_enable(snor));
+		if (volatile_write) {
+			if (desc->flags & SNOR_REGACC_F_VOLATILE_WREN_50H)
+				STATUS_CHECK_RET(spi_nor_volatile_write_enable(snor));
 		} else {
 			STATUS_CHECK_RET(spi_nor_write_enable(snor));
 			poll = true;
+			wrdis = true;
 		}
 	}
 
 	STATUS_CHECK_RET(ufprog_spi_mem_exec_op(snor->spi, &op));
 
 	if (poll)
-		return spi_nor_wait_busy(snor, SNOR_WRITE_NV_REG_TIMEOUT_MS);
+		ret = spi_nor_wait_busy(snor, SNOR_WRITE_NV_REG_TIMEOUT_MS);
 
-	return UFP_OK;
+	if (wrdis)
+		spi_nor_write_disable(snor);
+
+	return ret;
 }
 
 ufprog_status spi_nor_write_reg_acc(struct spi_nor *snor, const struct spi_nor_reg_access *access, uint32_t val,
