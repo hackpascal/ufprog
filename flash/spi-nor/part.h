@@ -89,6 +89,7 @@ enum snor_quad_en_type {
 	QE_SR2_BIT1,
 	QE_SR2_BIT1_WR_SR1,
 	QE_SR2_BIT7,
+	QE_NVCR_BIT4,
 };
 
 #define SNOR_QUAD_EN(_type)			.qe_type = (QE_##_type)
@@ -97,6 +98,7 @@ enum snor_quad_en_type {
 #define SNOR_QE_SR2_BIT1			SNOR_QUAD_EN(SR2_BIT1)
 #define SNOR_QE_SR2_BIT1_WR_SR1			SNOR_QUAD_EN(SR2_BIT1_WR_SR1)
 #define SNOR_QE_SR2_BIT7			SNOR_QUAD_EN(SR2_BIT7)
+#define SNOR_QE_NVCR_BIT4			SNOR_QUAD_EN(NVCR_BIT4)
 
 enum snor_qpi_en_type {
 	QPI_EN_NONE,

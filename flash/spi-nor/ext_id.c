@@ -68,6 +68,7 @@ static const struct spi_nor_part_flag_enum_info part_qe_types[] = {
 	{ QE_SR2_BIT1, "sr2-bit1" },
 	{ QE_SR2_BIT1_WR_SR1, "sr2-bit1-wr-sr1" },
 	{ QE_SR2_BIT7, "sr2-bit7" },
+	{ QE_NVCR_BIT4, "nvcr-bit4" },
 };
 
 static const struct spi_nor_part_flag_enum_info part_qpi_en_types[] = {

@@ -272,6 +272,8 @@ static ufprog_status spi_nor_parse_sfdp_fill(struct spi_nor *snor, struct spi_no
 			bp->p.qe_type = QE_SR2_BIT7;
 		else if (val == DW15_QE_REQ_SR2_BIT1)
 			bp->p.qe_type = QE_SR2_BIT1;
+		else if (dw & BFPT_DW15_HOLD_WP_DISABLE)
+			bp->p.qe_type = QE_NVCR_BIT4;
 	}
 
 	if (snor->sfdp.bfpt_dw_num >= 16) {

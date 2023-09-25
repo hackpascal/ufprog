@@ -376,6 +376,12 @@ static ufprog_status spi_nor_quad_enable_sr2_bit7(struct spi_nor *snor)
 	return spi_nor_quad_enable_any(snor, &cr_acc, 7);
 }
 
+static ufprog_status spi_nor_quad_enable_nvcr_bit4(struct spi_nor *snor)
+{
+	/* Use extended volatile configuration register to avoid modifying the non-volatile one */
+	return spi_nor_quad_enable_any(snor, &evcr_acc, 4);
+}
+
 static ufprog_status spi_nor_chip_soft_reset_drive_4io_fh(struct spi_nor *snor, uint32_t clocks)
 {
 	ufprog_status ret;
@@ -1271,6 +1277,10 @@ static bool spi_nor_setup_quad_enable(struct spi_nor *snor, const struct spi_nor
 
 	case QE_SR2_BIT7:
 		snor->ext_param.ops.quad_enable = spi_nor_quad_enable_sr2_bit7;
+		return true;
+
+	case QE_NVCR_BIT4:
+		snor->ext_param.ops.quad_enable = spi_nor_quad_enable_nvcr_bit4;
 		return true;
 
 	default:
