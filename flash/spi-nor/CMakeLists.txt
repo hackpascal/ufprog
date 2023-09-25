@@ -21,6 +21,7 @@ set(ufprog_spi_nor_vendor_src
 	vendor-intel.c
 	vendor-issi.c
 	vendor-macronix.c
+	vendor-micron.c
 	vendor-sst.c
 	vendor-winbond.c
 	vendor-xmc.c
