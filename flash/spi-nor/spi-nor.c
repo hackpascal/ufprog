@@ -1808,6 +1808,9 @@ static ufprog_status spi_nor_pre_init(struct spi_nor *snor)
 	snor->state.speed_low = SNOR_SPEED_LOW;
 	snor->state.speed_high = SNOR_SPEED_LOW;
 
+	snor->state.reg.sr_r = &sr_acc;
+	snor->state.reg.sr_w = &sr_acc;
+
 	STATUS_CHECK_RET(ufprog_spi_set_cs_pol(snor->spi, 0));
 
 	ret = ufprog_spi_set_mode(snor->spi, SPI_MODE_0);
@@ -1826,9 +1829,6 @@ static ufprog_status spi_nor_init(struct spi_nor *snor, struct spi_nor_vendor_pa
 				  struct spi_nor_flash_part_blank *bp)
 {
 	const struct spi_nor_vendor *vendor;
-
-	snor->state.reg.sr_r = &sr_acc;
-	snor->state.reg.sr_w = &sr_acc;
 
 	if (vp->part && vp->part->fixups && vp->part->fixups->pre_param_setup)
 		STATUS_CHECK_RET(vp->part->fixups->pre_param_setup(snor, vp, bp));
