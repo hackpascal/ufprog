@@ -53,10 +53,11 @@ Pull requests are welcome.
 * ISSI
 * Macronix
 * Microchip/SST
+* Micron
 * Winbond
 * XMC
 * XTX
-* TBD: Micron/Spansion/...
+* TBD: Spansion/Atmel/FudanMicro/Puya/Zbit/Zetta...
 
 ## Supported SPI-NAND flashes
 * Alliance Memory
