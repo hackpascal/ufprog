@@ -607,9 +607,15 @@ static ufprog_status spi_nor_disable_4b_addressing_nvcr(struct spi_nor *snor)
 
 static ufprog_status spi_nor_write_addr_high_byte_ear(struct spi_nor *snor, uint8_t addr_byte)
 {
+	ufprog_status ret;
 	uint32_t val;
 
-	STATUS_CHECK_RET(spi_nor_write_reg_acc(snor, &ear_acc, addr_byte, true));
+	STATUS_CHECK_RET(spi_nor_write_enable(snor));
+	ret = spi_nor_write_reg_acc(snor, &ear_acc, addr_byte, true);
+	spi_nor_write_disable(snor);
+
+	if (ret)
+		return ret;
 
 	/* Do verify the bit */
 	STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, &ear_acc, &val));
