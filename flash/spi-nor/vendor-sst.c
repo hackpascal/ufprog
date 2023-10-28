@@ -30,6 +30,7 @@ static const struct spi_nor_reg_access sst_qpi_read_sr_acc = {
 	.type = SNOR_REG_NORMAL,
 	.num = 1,
 	.desc[0] = {
+		.flags = SNOR_REGACC_F_SR,
 		.read_opcode = SNOR_CMD_READ_SR,
 		.write_opcode = SNOR_CMD_WRITE_SR,
 		.ndummy_read = 1,

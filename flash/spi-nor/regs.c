@@ -12,7 +12,7 @@
 #include "core.h"
 #include "regs.h"
 
-const struct spi_nor_reg_access sr_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_READ_SR, SNOR_CMD_WRITE_SR);
+const struct spi_nor_reg_access sr_acc = SNOR_REG_ACC_NORMAL_SR(SNOR_CMD_READ_SR, SNOR_CMD_WRITE_SR);
 const struct spi_nor_reg_access cr_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_READ_CR, SNOR_CMD_WRITE_CR);
 const struct spi_nor_reg_access sr3_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_READ_SR3, SNOR_CMD_WRITE_SR3);
 const struct spi_nor_reg_access srcr_acc = SNOR_REG_ACC_SRCR(SNOR_CMD_READ_SR, SNOR_CMD_READ_CR, SNOR_CMD_WRITE_SR);
@@ -226,7 +226,7 @@ ufprog_status UFPROG_API ufprog_spi_nor_read_reg(struct spi_nor *snor, const str
 static ufprog_status spi_nor_write_reg_desc(struct spi_nor *snor, const struct spi_nor_reg_desc *desc, uint32_t val,
 					    uint32_t ndata, bool volatile_write)
 {
-	bool poll = false, wrdis = false;
+	bool poll = false, wren = false;
 	ufprog_status ret = UFP_OK;
 	uint8_t data[sizeof(val)];
 	struct ufprog_spi_mem_op op = SPI_MEM_OP(
@@ -279,23 +279,40 @@ static ufprog_status spi_nor_write_reg_desc(struct spi_nor *snor, const struct s
 			data[3] = (val >> 24) & 0xff;
 	}
 
-	if (!(desc->flags & SNOR_REGACC_F_NO_WREN)) {
-		if (volatile_write) {
-			if (desc->flags & SNOR_REGACC_F_VOLATILE_WREN_50H)
+	if (volatile_write && !(desc->flags & SNOR_REGACC_F_VOLATILE_NO_WREN)) {
+		if (desc->flags & SNOR_REGACC_F_SR) {
+			if (snor->param.flags & SNOR_F_SR_VOLATILE_WREN_50H)
+				STATUS_CHECK_RET(spi_nor_volatile_write_enable(snor));
+			else if (snor->param.flags & (SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE))
+				wren = true;
+		} else if (desc->flags & SNOR_REGACC_F_VOLATILE_WREN_50H) {
+			STATUS_CHECK_RET(spi_nor_volatile_write_enable(snor));
+		} else if (desc->flags & SNOR_REGACC_F_HAS_VOLATILE_WR_OPCODE) {
+			op.cmd.opcode = desc->write_opcode_volatile;
+		}
+	} else if (!volatile_write && !(desc->flags & SNOR_REGACC_F_NO_WREN)) {
+		if (desc->flags & SNOR_REGACC_F_SR) {
+			if (snor->param.flags & (SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE))
+				wren = true;
+			else if (snor->param.flags & SNOR_F_SR_VOLATILE_WREN_50H)
 				STATUS_CHECK_RET(spi_nor_volatile_write_enable(snor));
 		} else {
-			STATUS_CHECK_RET(spi_nor_write_enable(snor));
-			poll = !(desc->flags & SNOR_REGACC_F_NO_POLL);
-			wrdis = true;
+			wren = true;
 		}
 	}
 
-	STATUS_CHECK_RET(ufprog_spi_mem_exec_op(snor->spi, &op));
+	if (wren) {
+		STATUS_CHECK_RET(spi_nor_write_enable(snor));
+		poll = !(desc->flags & SNOR_REGACC_F_NO_POLL);
+	}
+
+	STATUS_CHECK_GOTO_RET(ufprog_spi_mem_exec_op(snor->spi, &op), ret, out);
 
 	if (poll)
-		ret = spi_nor_wait_busy(snor, SNOR_WRITE_NV_REG_TIMEOUT_MS);
+		ret = spi_nor_wait_busy(snor, snor->state.max_nvcr_pp_time_ms);
 
-	if (wrdis)
+out:
+	if (wren)
 		spi_nor_write_disable(snor);
 
 	return ret;

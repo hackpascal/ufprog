@@ -14,11 +14,13 @@
 #define SNOR_MAX_REG_DESC				4
 
 #define SNOR_REGACC_F_BIG_ENDIAN			BIT(0)
-#define SNOR_REGACC_F_NO_WREN				BIT(1)
-#define SNOR_REGACC_F_VOLATILE_WREN_50H			BIT(2)
-#define SNOR_REGACC_F_HAS_VOLATILE_WR_OPCODE		BIT(3)
-#define SNOR_REGACC_F_ADDR_4B_MODE			BIT(4)
-#define SNOR_REGACC_F_NO_POLL				BIT(5)
+#define SNOR_REGACC_F_SR				BIT(1)
+#define SNOR_REGACC_F_NO_WREN				BIT(2)
+#define SNOR_REGACC_F_VOLATILE_NO_WREN			BIT(3)
+#define SNOR_REGACC_F_VOLATILE_WREN_50H			BIT(4)
+#define SNOR_REGACC_F_HAS_VOLATILE_WR_OPCODE		BIT(5)
+#define SNOR_REGACC_F_ADDR_4B_MODE			BIT(6)
+#define SNOR_REGACC_F_NO_POLL				BIT(7)
 
 enum snor_reg_access_type {
 	SNOR_REG_NORMAL,
@@ -55,6 +57,12 @@ struct spi_nor_reg_access {
 	  .desc[0] = { .ndata = 1, .read_opcode = (_read_opcode), .write_opcode = (_write_opcode), },	\
 	}
 
+#define SNOR_REG_ACC_NORMAL_SR(_read_opcode, _write_opcode)						\
+	{ .type = SNOR_REG_NORMAL, .num = 1,								\
+	  .desc[0] = { .ndata = 1, .read_opcode = (_read_opcode), .write_opcode = (_write_opcode),	\
+		       .flags = SNOR_REGACC_F_SR },							\
+	}
+
 #define SNOR_REG_ACC_XVCR(_read_opcode, _write_opcode, _ndata)						\
 	{ .type = SNOR_REG_NORMAL, .num = 1,								\
 	  .desc[0] = { .ndata = (_ndata), .read_opcode = (_read_opcode),				\
@@ -63,7 +71,8 @@ struct spi_nor_reg_access {
 
 #define SNOR_REG_ACC_SRCR(_read_opcode, _read_opcode2, _write_opcode)					\
 	{ .type = SNOR_REG_READ_MULTI_WRITE_ONCE, .num = 2,						\
-	  .desc[0] = { .ndata = 1, .read_opcode = (_read_opcode), .write_opcode = (_write_opcode), },	\
+	  .desc[0] = { .ndata = 1, .read_opcode = (_read_opcode), .write_opcode = (_write_opcode),	\
+		       .flags = SNOR_REGACC_F_SR },							\
 	  .desc[1] = { .ndata = 1, .read_opcode = (_read_opcode2), },					\
 	}
 

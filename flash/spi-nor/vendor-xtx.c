@@ -50,11 +50,13 @@ static const struct spi_nor_reg_access xtx_srcr_acc = {
 	.desc[0] = {
 		.read_opcode = SNOR_CMD_READ_SR,
 		.write_opcode = SNOR_CMD_WRITE_SR,
+		.flags = SNOR_REGACC_F_SR,
 		.ndata = 1,
 	},
 	.desc[1] = {
 		.read_opcode = SNOR_CMD_READ_CR,
 		.write_opcode = SNOR_CMD_WRITE_CR,
+		.flags = SNOR_REGACC_F_SR,
 		.ndata = 1,
 	},
 };

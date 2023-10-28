@@ -105,6 +105,7 @@ static struct spi_nor_reg_access mx25rxf_srcr_acc = {
 		.ndata = 1,
 		.read_opcode = SNOR_CMD_READ_SR,
 		.write_opcode = SNOR_CMD_WRITE_SR,
+		.flags = SNOR_REGACC_F_SR,
 	},
 	.desc[1] = {
 		.ndata = 2,
