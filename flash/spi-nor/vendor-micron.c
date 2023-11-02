@@ -888,10 +888,6 @@ static ufprog_status micron_qpi_dis(struct spi_nor *snor)
 	return spi_nor_update_reg_acc(snor, &evcr_acc, 0, MT_EVCR_QPI_DIS | MT_EVCR_DPI_DIS, false);
 }
 
-static const uint8_t dc_10_1_1_4[] = { 8, 10 };
-static const uint8_t dc_14_1_1_4[] = { 8, 10, 12, 14 };
-static const uint8_t dc_14_166_1_1_4[] = { 12, 14 };
-
 static const uint8_t dc_10_2_2_2[] = { 8 };
 static const uint8_t dc_14_2_2_2[] = { 8, 12 };
 static const uint8_t dc_14_166_2_2_2[] = { 12 };
@@ -911,30 +907,11 @@ static ufprog_status micron_part_select_dummy_cycles(struct spi_nor *snor, struc
 	bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
 	bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 0;
 
-	/* Test for 1-1-4 */
-	if (bp->p.vendor_flags & MT_F_DC_10_VCR) {
-		dcs = dc_10_1_1_4;
-		ndcs = ARRAY_SIZE(dc_10_1_1_4);
-	} else {
-		if (bp->p.max_speed_spi_mhz > 133) {
-			dcs = dc_14_166_1_1_4;
-			ndcs = ARRAY_SIZE(dc_14_166_1_1_4);
-		} else {
-			dcs = dc_14_1_1_4;
-			ndcs = ARRAY_SIZE(dc_14_1_1_4);
-		}
-	}
-
+	/* No test for 1-1-4 */
+	bp->read_opcodes_3b[SPI_MEM_IO_1_1_4].ndummy = 8;
 	bp->read_opcodes_3b[SPI_MEM_IO_1_1_4].nmode = 0;
 
-	for (i = 0; i < ndcs; i++) {
-		bp->read_opcodes_3b[SPI_MEM_IO_1_1_4].ndummy = dcs[i];
-
-		if (spi_nor_test_io_opcode(snor, bp->read_opcodes_3b, SPI_MEM_IO_1_1_4, 3, SPI_DATA_IN))
-			break;
-	}
-
-	/* Test for 2-2-2/1-2-2/1-1-2 */
+	/* Test for 2-2-2/1-2-2 */
 	if (bp->p.vendor_flags & MT_F_DC_10_VCR) {
 		dcs = dc_10_2_2_2;
 		ndcs = ARRAY_SIZE(dc_10_2_2_2);
@@ -948,16 +925,8 @@ static ufprog_status micron_part_select_dummy_cycles(struct spi_nor *snor, struc
 		}
 	}
 
-	bp->read_opcodes_3b[SPI_MEM_IO_1_1_2].nmode = 0;
 	bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].nmode = 0;
 	bp->read_opcodes_3b[SPI_MEM_IO_2_2_2].nmode = 0;
-
-	for (i = 0; i < ndcs; i++) {
-		bp->read_opcodes_3b[SPI_MEM_IO_1_1_2].ndummy = dcs[i];
-
-		if (spi_nor_test_io_opcode(snor, bp->read_opcodes_3b, SPI_MEM_IO_1_1_2, 3, SPI_DATA_IN))
-			break;
-	}
 
 	for (i = 0; i < ndcs; i++) {
 		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].ndummy = dcs[i];
@@ -972,6 +941,10 @@ static ufprog_status micron_part_select_dummy_cycles(struct spi_nor *snor, struc
 		if (spi_nor_test_io_opcode(snor, bp->read_opcodes_3b, SPI_MEM_IO_2_2_2, 3, SPI_DATA_IN))
 			break;
 	}
+
+	/* No test for 1-1-2 */
+	bp->read_opcodes_3b[SPI_MEM_IO_1_1_2].ndummy = 8;
+	bp->read_opcodes_3b[SPI_MEM_IO_1_1_2].nmode = 0;
 
 	/* No test for 1-1-1 */
 	bp->read_opcodes_3b[SPI_MEM_IO_1_1_1].ndummy = 8;
