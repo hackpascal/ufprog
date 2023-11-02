@@ -459,7 +459,7 @@ static ufprog_status serial_port_write_once(serial_port dev, const void *data, s
 		tv.tv_sec = dev->timeout_ms / 1000;
 		tv.tv_usec = (dev->timeout_ms % 1000) * 1000;
 
-		rc = select(dev->fd + 1, &wrfs, NULL, NULL, &tv);
+		rc = select(dev->fd + 1, NULL, &wrfs, NULL, &tv);
 		if (rc < 0) {
 			err = errno;
 			log_err("select() failed with %d: %s\n", err, strerror(err));
