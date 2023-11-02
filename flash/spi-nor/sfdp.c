@@ -790,6 +790,7 @@ bool spi_nor_probe_sfdp(struct spi_nor *snor, const struct spi_nor_vendor *vendo
 parse_sfdp:
 	STATUS_CHECK_RET(spi_nor_read_full_sfdp(snor, sfdp_hdr.nph + 1));
 
+	memcpy(&snor->sfdp.hdr, &sfdp_hdr, sizeof(sfdp_hdr));
 	logm_dbg("SFDP %u.%u found\n", sfdp_hdr.major_ver, sfdp_hdr.minor_ver);
 
 	spi_nor_parse_sfdp_init(snor);

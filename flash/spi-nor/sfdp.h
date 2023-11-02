@@ -19,6 +19,8 @@ struct spi_nor_sfdp {
 	void *data;
 	uint32_t size;
 
+	struct sfdp_header hdr;
+
 	struct sfdp_param_header *bfpt_hdr;
 	uint32_t *bfpt;
 	uint32_t bfpt_dw_num;
