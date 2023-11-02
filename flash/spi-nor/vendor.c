@@ -195,6 +195,9 @@ uint32_t spi_nor_vendor_list_parts(const struct spi_nor_vendor *vendor, const ch
 				continue;
 		}
 
+		if (part->flags & SNOR_F_NO_OP)
+			continue;
+
 		if (!no_meta || (no_meta && !(part->flags & SNOR_F_META))) {
 			if (list) {
 				list[count].vendor = vendor->name;
