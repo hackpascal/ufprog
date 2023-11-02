@@ -837,7 +837,7 @@ static void spi_nor_smpt_adjust_erasesizes_mask(struct spi_nor *snor, uint32_t *
 
 	for (i = 0; i < SPI_NOR_MAX_ERASE_INFO; i++) {
 		if (!snor->param.erase_info.info[i].size)
-			*mask &= !BIT(i);
+			*mask &= ~BIT(i);
 	}
 }
 
