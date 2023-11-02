@@ -259,7 +259,7 @@ static int do_snor_probe(void *priv, int argc, char *argv[])
 
 			for (j = 0; j < SPI_NOR_MAX_ERASE_INFO; j++) {
 				if (inst->info.erase_regions[i].erasesizes_mask & BIT(j))
-					os_printf("%uKB ", inst->info.erasesizes[i] >> 10);
+					os_printf("%uKB ", inst->info.erasesizes[j] >> 10);
 			}
 
 			os_printf(")\n");
