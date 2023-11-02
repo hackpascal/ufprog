@@ -1835,7 +1835,8 @@ static ufprog_status spi_nor_init(struct spi_nor *snor, struct spi_nor_vendor_pa
 
 	vendor = vp->vendor_init ? vp->vendor_init : vp->vendor;
 
-	if (vendor && vendor->default_part_fixups && vendor->default_part_fixups->pre_param_setup)
+	if (vendor && vendor->default_part_fixups && vendor->default_part_fixups->pre_param_setup &&
+	    !(bp->p.flags & SNOR_F_BYPASS_VENDOR_FIXUPS))
 		STATUS_CHECK_RET(vendor->default_part_fixups->pre_param_setup(snor, NULL, bp));
 
 	STATUS_CHECK_RET(spi_nor_setup_param(snor, vendor, &bp->p));
@@ -1843,7 +1844,8 @@ static ufprog_status spi_nor_init(struct spi_nor *snor, struct spi_nor_vendor_pa
 	if (vp->part && vp->part->fixups && vp->part->fixups->post_param_setup)
 		STATUS_CHECK_RET(vp->part->fixups->post_param_setup(snor, bp));
 
-	if (vendor && vendor->default_part_fixups && vendor->default_part_fixups->post_param_setup)
+	if (vendor && vendor->default_part_fixups && vendor->default_part_fixups->post_param_setup &&
+	    !(bp->p.flags & SNOR_F_BYPASS_VENDOR_FIXUPS))
 		STATUS_CHECK_RET(vendor->default_part_fixups->post_param_setup(snor, bp));
 
 	STATUS_CHECK_RET(spi_nor_setup_param_final(snor, vp->vendor, &bp->p));
@@ -1851,7 +1853,8 @@ static ufprog_status spi_nor_init(struct spi_nor *snor, struct spi_nor_vendor_pa
 	if (vp->part && vp->part->fixups && vp->part->fixups->pre_chip_setup)
 		STATUS_CHECK_RET(vp->part->fixups->pre_chip_setup(snor));
 
-	if (vendor && vendor->default_part_fixups && vendor->default_part_fixups->pre_chip_setup)
+	if (vendor && vendor->default_part_fixups && vendor->default_part_fixups->pre_chip_setup &&
+	    !(bp->p.flags & SNOR_F_BYPASS_VENDOR_FIXUPS))
 		STATUS_CHECK_RET(vendor->default_part_fixups->pre_chip_setup(snor));
 
 	memset(snor->param.vendor, 0, sizeof(snor->param.vendor));
