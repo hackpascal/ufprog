@@ -340,6 +340,7 @@ bool spi_nor_id_match(const uint8_t *id1, const uint8_t *id2, const uint8_t *mas
 const struct spi_nor_flash_part *spi_nor_find_part(const struct spi_nor_flash_part *parts, size_t count,
 						   const uint8_t *id);
 const struct spi_nor_flash_part *spi_nor_find_part_by_name(const struct spi_nor_flash_part *parts, size_t count,
-							   const char *model);
+							   const char *model,
+							   const struct spi_nor_vendor **ret_alias_vendor);
 
 #endif /* _UFPROG_SPI_NOR_PART_H_ */

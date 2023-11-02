@@ -73,8 +73,8 @@ const struct spi_nor_vendor *spi_nor_find_vendor_by_id(const char *id);
 bool spi_nor_find_vendor_part(const uint8_t *id, struct spi_nor_vendor_part *retvp);
 bool spi_nor_find_vendor_part_by_name(const char *model, struct spi_nor_vendor_part *retvp);
 
-const struct spi_nor_flash_part *spi_nor_vendor_find_part_by_name(const char *model,
-								  const struct spi_nor_vendor *vendor);
+bool spi_nor_vendor_find_part_by_name(const char *model, const struct spi_nor_vendor *vendor,
+				      struct spi_nor_vendor_part *retvp);
 
 uint32_t spi_nor_vendor_list_parts(const struct spi_nor_vendor *vendor, const char *match_part,
 				   const struct spi_nor_id *match_id, struct spi_nor_probe_part *list, bool no_meta);

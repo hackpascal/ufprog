@@ -215,12 +215,16 @@ const struct spi_nor_flash_part *spi_nor_find_part(const struct spi_nor_flash_pa
 }
 
 const struct spi_nor_flash_part *spi_nor_find_part_by_name(const struct spi_nor_flash_part *parts, size_t count,
-							   const char *model)
+							   const char *model,
+							   const struct spi_nor_vendor **ret_alias_vendor)
 {
 	size_t i, j;
 
 	if (!parts || !count)
 		return NULL;
+
+	if (ret_alias_vendor)
+		*(ret_alias_vendor) = NULL;
 
 	for (i = 0; i < count; i++) {
 		if (!strcasecmp(parts[i].model, model))
@@ -230,8 +234,11 @@ const struct spi_nor_flash_part *spi_nor_find_part_by_name(const struct spi_nor_
 			continue;
 
 		for (j = 0; j < parts[i].alias->num; j++) {
-			if (!strcasecmp(parts[i].alias->items[j].model, model))
+			if (!strcasecmp(parts[i].alias->items[j].model, model)) {
+				if (ret_alias_vendor)
+					*(ret_alias_vendor) = parts[i].alias->items[j].vendor;
 				return &parts[i];
+			}
 		}
 	}
 

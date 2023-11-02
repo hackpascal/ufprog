@@ -1955,6 +1955,7 @@ ufprog_status UFPROG_API ufprog_spi_nor_part_init(struct spi_nor *snor, const ch
 						  ufprog_bool forced_init)
 {
 	struct spi_nor_vendor_part vp, vpreq = { 0 };
+	const struct spi_nor_vendor *vendor = NULL;
 	struct spi_nor_flash_part_blank bp;
 	bool nosfdp = false;
 	ufprog_status ret;
@@ -1970,17 +1971,18 @@ ufprog_status UFPROG_API ufprog_spi_nor_part_init(struct spi_nor *snor, const ch
 
 	/* Find the requested vendor */
 	if (vendorid) {
-		vpreq.vendor = spi_nor_find_vendor_by_id(vendorid);
+		vendor = spi_nor_find_vendor_by_id(vendorid);
 		logm_err("Requested vendor name does not exist\n");
 		return UFP_NOT_EXIST;
 	}
 
 	/* Find the requested part */
-	if (!vpreq.vendor) {
+	if (!vendor) {
 		if (!spi_nor_find_vendor_part_by_name(part, &vpreq))
 			vpreq.part = NULL;
 	} else {
-		vpreq.part = spi_nor_vendor_find_part_by_name(part, vpreq.vendor);
+		if (!spi_nor_vendor_find_part_by_name(part, vendor, &vpreq))
+			vpreq.part = NULL;
 	}
 
 	if (!vpreq.part) {

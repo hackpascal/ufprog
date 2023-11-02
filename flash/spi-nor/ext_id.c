@@ -854,11 +854,11 @@ static int UFPROG_API spi_nor_ext_vendor_parts_cb(void *priv, const char *key, s
 {
 	struct ext_parts_info *pi = priv;
 	struct spi_nor_flash_part *part = &pi->parts[pi->nparts];
-	const struct spi_nor_flash_part *chkpart;
 	const struct spi_nor_io_opcode *opcodes;
 	struct spi_nor_flash_part_alias *alias;
 	const struct spi_nor_erase_info *ei;
 	struct spi_nor_wp_info *wp_ranges;
+	struct spi_nor_vendor_part vp;
 	struct spi_nor_otp_info *otp;
 	uint32_t val, io_caps;
 	bool needs_free;
@@ -871,16 +871,14 @@ static int UFPROG_API spi_nor_ext_vendor_parts_cb(void *priv, const char *key, s
 	}
 
 	if (pi->builtin_vendor) {
-		chkpart = spi_nor_vendor_find_part_by_name(key, pi->builtin_vendor);
-		if (chkpart) {
+		if (spi_nor_vendor_find_part_by_name(key, pi->builtin_vendor, &vp)) {
 			logm_err("Part '%s' already exists in built-in part list\n", key);
 			pi->ret = UFP_ALREADY_EXIST;
 			return 1;
 		}
 	}
 
-	chkpart = spi_nor_vendor_find_part_by_name(key, pi->vendor);
-	if (chkpart) {
+	if (spi_nor_vendor_find_part_by_name(key, pi->vendor, &vp)) {
 		logm_err("Part '%s' already exists in part list\n", key);
 		pi->ret = UFP_ALREADY_EXIST;
 		return 1;
