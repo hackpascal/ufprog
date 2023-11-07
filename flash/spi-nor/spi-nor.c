@@ -1831,8 +1831,8 @@ static ufprog_status spi_nor_init(struct spi_nor *snor, struct spi_nor_vendor_pa
 {
 	const struct spi_nor_vendor *vendor;
 
-	if (vp->part && vp->part->fixups && vp->part->fixups->pre_param_setup)
-		STATUS_CHECK_RET(vp->part->fixups->pre_param_setup(snor, vp, bp));
+	if (bp->p.fixups && bp->p.fixups->pre_param_setup)
+		STATUS_CHECK_RET(bp->p.fixups->pre_param_setup(snor, vp, bp));
 
 	vendor = vp->vendor_init ? vp->vendor_init : vp->vendor;
 
@@ -1842,17 +1842,17 @@ static ufprog_status spi_nor_init(struct spi_nor *snor, struct spi_nor_vendor_pa
 
 	STATUS_CHECK_RET(spi_nor_setup_param(snor, vendor, &bp->p));
 
-	if (vp->part && vp->part->fixups && vp->part->fixups->post_param_setup)
-		STATUS_CHECK_RET(vp->part->fixups->post_param_setup(snor, bp));
+	if (bp->p.fixups && bp->p.fixups->post_param_setup)
+		STATUS_CHECK_RET(bp->p.fixups->post_param_setup(snor, bp));
 
 	if (vendor && vendor->default_part_fixups && vendor->default_part_fixups->post_param_setup &&
 	    !(bp->p.flags & SNOR_F_BYPASS_VENDOR_FIXUPS))
 		STATUS_CHECK_RET(vendor->default_part_fixups->post_param_setup(snor, bp));
 
-	STATUS_CHECK_RET(spi_nor_setup_param_final(snor, vp->vendor, &bp->p));
+	STATUS_CHECK_RET(spi_nor_setup_param_final(snor, vendor, &bp->p));
 
-	if (vp->part && vp->part->fixups && vp->part->fixups->pre_chip_setup)
-		STATUS_CHECK_RET(vp->part->fixups->pre_chip_setup(snor));
+	if (bp->p.fixups && bp->p.fixups->pre_chip_setup)
+		STATUS_CHECK_RET(bp->p.fixups->pre_chip_setup(snor));
 
 	if (vendor && vendor->default_part_fixups && vendor->default_part_fixups->pre_chip_setup &&
 	    !(bp->p.flags & SNOR_F_BYPASS_VENDOR_FIXUPS))
@@ -2139,24 +2139,29 @@ ufprog_status spi_nor_reprobe_part(struct spi_nor *snor, struct spi_nor_vendor_p
 		return UFP_FAIL;
 	}
 
+	memcpy(vp, &nvp, sizeof(nvp));
+
 	logm_dbg("Reprobing as %s\n", part);
 
 	/* Keep original JEDEC ID */
 	memcpy(&id, &bp->p.id, sizeof(id));
 
-	spi_nor_prepare_blank_part(bp, nvp.part);
+	spi_nor_prepare_blank_part(bp, vp->part);
 
 	/* Restore JEDEC ID */
 	memcpy(&bp->p.id, &id, sizeof(id));
 
-	if (!vendor)
-		vendor = nvp.vendor;
+	if (!vendor) {
+		vendor = vp->vendor_init;
+		if (!vendor)
+			vendor = vp->vendor;
+	}
 
 	if (spi_nor_probe_sfdp(snor, vendor, bp))
 		spi_nor_locate_sfdp_vendor(snor, snor->param.id.id[0], true);
 
-	if (nvp.part->fixups && nvp.part->fixups->pre_param_setup)
-		STATUS_CHECK_RET(nvp.part->fixups->pre_param_setup(snor, vp, bp));
+	if (vp->part->fixups && vp->part->fixups->pre_param_setup)
+		STATUS_CHECK_RET(vp->part->fixups->pre_param_setup(snor, vp, bp));
 
 	return UFP_OK;
 }
