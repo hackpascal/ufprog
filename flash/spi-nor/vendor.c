@@ -355,7 +355,7 @@ uint32_t spi_nor_vendor_list_parts(const struct spi_nor_vendor *vendor, const ch
 uint32_t spi_nor_list_parts(const char *vendorid, const char *match_part, const struct spi_nor_id *match_id,
 			    struct spi_nor_probe_part *list)
 {
-	const struct spi_nor_vendor *vendor;
+	const struct spi_nor_vendor *vendor, *builtin_vendor;
 	uint32_t i, n, count = 0;
 
 	if (vendorid && *vendorid) {
@@ -363,7 +363,24 @@ uint32_t spi_nor_list_parts(const char *vendorid, const char *match_part, const 
 		if (!vendor)
 			return 0;
 
-		return spi_nor_vendor_list_parts(vendor, match_part, match_id, list, true);
+		n = spi_nor_vendor_list_parts(vendor, match_part, match_id, list, true);
+
+		if (list)
+			list += n;
+
+		count += n;
+
+		builtin_vendor = spi_nor_find_builtin_vendor_by_id(vendorid);
+		if (builtin_vendor && builtin_vendor != vendor) {
+			n = spi_nor_vendor_list_parts(builtin_vendor, match_part, match_id, list, true);
+
+			if (list)
+				list += n;
+
+			count += n;
+		}
+
+		return count;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(vendors); i++) {
