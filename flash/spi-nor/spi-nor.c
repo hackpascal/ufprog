@@ -508,7 +508,7 @@ static ufprog_status spi_nor_enable_4b_addressing_b7h_wren(struct spi_nor *snor)
 
 	STATUS_CHECK_RET(spi_nor_write_enable(snor));
 	STATUS_CHECK_RET(spi_nor_enable_4b_addressing_b7h(snor));
-	ret = spi_nor_wait_busy(snor, SNOR_WRITE_NV_REG_TIMEOUT_MS);
+	ret = spi_nor_wait_busy(snor, snor->state.max_nvcr_pp_time_ms);
 	spi_nor_write_disable(snor);
 
 	return ret;
@@ -565,7 +565,7 @@ static ufprog_status spi_nor_disable_4b_addressing_e9h_wren(struct spi_nor *snor
 
 	STATUS_CHECK_RET(spi_nor_write_enable(snor));
 	STATUS_CHECK_RET(spi_nor_disable_4b_addressing_e9h(snor));
-	ret = spi_nor_wait_busy(snor, SNOR_WRITE_NV_REG_TIMEOUT_MS);
+	ret = spi_nor_wait_busy(snor, snor->state.max_nvcr_pp_time_ms);
 	spi_nor_write_disable(snor);
 
 	return ret;
@@ -1810,6 +1810,8 @@ static ufprog_status spi_nor_pre_init(struct spi_nor *snor)
 
 	snor->state.reg.sr_r = &sr_acc;
 	snor->state.reg.sr_w = &sr_acc;
+
+	snor->state.max_nvcr_pp_time_ms = SNOR_WRITE_NV_REG_TIMEOUT_MS;
 
 	STATUS_CHECK_RET(ufprog_spi_set_cs_pol(snor->spi, 0));
 

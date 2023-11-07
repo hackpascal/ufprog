@@ -125,6 +125,8 @@ struct spi_nor_state {
 	uint8_t pp_opcode;
 	uint32_t pp_io_info;
 
+	uint32_t max_nvcr_pp_time_ms;
+
 	bool qe_set;
 	bool a4b_mode;
 
