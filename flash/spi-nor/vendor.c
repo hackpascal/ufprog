@@ -93,12 +93,18 @@ bool spi_nor_find_vendor_part(const uint8_t *id, struct spi_nor_vendor_part *ret
 	uint32_t i;
 
 	retvp->vendor = NULL;
+	retvp->vendor_init = NULL;
 	retvp->part = NULL;
 
 	for (i = 0; i < ARRAY_SIZE(vendors); i++) {
 		part = spi_nor_find_part(vendors[i]->parts, vendors[i]->nparts, id);
 		if (part) {
-			retvp->vendor = vendors[i];
+			if (part->display_vendor) {
+				retvp->vendor = part->display_vendor;
+				retvp->vendor_init = vendors[i];
+			} else {
+				retvp->vendor = vendors[i];
+			}
 			retvp->part = part;
 			return true;
 		}
@@ -107,7 +113,12 @@ bool spi_nor_find_vendor_part(const uint8_t *id, struct spi_nor_vendor_part *ret
 	for (i = 0; i < num_ext_vendors; i++) {
 		part = spi_nor_find_part(ext_vendors[i].parts, ext_vendors[i].nparts, id);
 		if (part) {
-			retvp->vendor = &ext_vendors[i];
+			if (part->display_vendor) {
+				retvp->vendor = part->display_vendor;
+				retvp->vendor_init = &ext_vendors[i];
+			} else {
+				retvp->vendor = &ext_vendors[i];
+			}
 			retvp->part = part;
 			return true;
 		}
@@ -132,6 +143,9 @@ bool spi_nor_find_vendor_part_by_name(const char *model, struct spi_nor_vendor_p
 			if (vendor) {
 				retvp->vendor = vendor;
 				retvp->vendor_init = vendors[i];
+			} else  if (part->display_vendor) {
+				retvp->vendor = part->display_vendor;
+				retvp->vendor_init = vendors[i];
 			} else {
 				retvp->vendor = vendors[i];
 			}
@@ -145,6 +159,9 @@ bool spi_nor_find_vendor_part_by_name(const char *model, struct spi_nor_vendor_p
 		if (part) {
 			if (vendor) {
 				retvp->vendor = vendor;
+				retvp->vendor_init = &ext_vendors[i];
+			} else if (part->display_vendor) {
+				retvp->vendor = part->display_vendor;
 				retvp->vendor_init = &ext_vendors[i];
 			} else {
 				retvp->vendor = &ext_vendors[i];
@@ -164,13 +181,22 @@ bool spi_nor_vendor_find_part_by_name(const char *model, const struct spi_nor_ve
 	const struct spi_nor_flash_part *part;
 	uint32_t i;
 
-	retvp->vendor = vendor;
+	retvp->vendor = NULL;
 	retvp->vendor_init = NULL;
 	retvp->part = NULL;
 
 	if (vendor) {
 		part = spi_nor_find_part_by_name(vendor->parts, vendor->nparts, model, &alias_vendor);
 		if (part && (!alias_vendor || vendor == alias_vendor)) {
+			if (alias_vendor) {
+				retvp->vendor = alias_vendor;
+				retvp->vendor_init = vendor;
+			} else if (part->display_vendor) {
+				retvp->vendor = part->display_vendor;
+				retvp->vendor_init = vendor;
+			} else {
+				retvp->vendor = vendor;
+			}
 			retvp->part = part;
 			return true;
 		}
@@ -180,7 +206,12 @@ bool spi_nor_vendor_find_part_by_name(const char *model, const struct spi_nor_ve
 		part = spi_nor_find_part_by_name(vendors[i]->parts, vendors[i]->nparts, model, &alias_vendor);
 		if (part) {
 			if (!vendor) {
-				retvp->vendor = vendors[i];
+				if (alias_vendor) {
+					retvp->vendor = alias_vendor;
+					retvp->vendor_init = vendors[i];
+				} else {
+					retvp->vendor = vendors[i];
+				}
 				retvp->part = part;
 				return true;
 			}
@@ -197,10 +228,17 @@ bool spi_nor_vendor_find_part_by_name(const char *model, const struct spi_nor_ve
 					return true;
 				}
 			} else {
-				if (!strcasecmp(vendor->id, vendors[i]->id)) {
-					retvp->vendor = vendors[i];
+				if (part->display_vendor) {
+					retvp->vendor = part->display_vendor;
+					retvp->vendor_init = vendors[i];
 					retvp->part = part;
 					return true;
+				} else {
+					if (!strcasecmp(vendor->id, vendors[i]->id)) {
+						retvp->vendor = vendors[i];
+						retvp->part = part;
+						return true;
+					}
 				}
 			}
 		}
@@ -210,7 +248,12 @@ bool spi_nor_vendor_find_part_by_name(const char *model, const struct spi_nor_ve
 		part = spi_nor_find_part_by_name(ext_vendors[i].parts, ext_vendors[i].nparts, model, &alias_vendor);
 		if (part) {
 			if (!vendor) {
-				retvp->vendor = &ext_vendors[i];
+				if (alias_vendor) {
+					retvp->vendor = alias_vendor;
+					retvp->vendor_init = &ext_vendors[i];
+				} else {
+					retvp->vendor = &ext_vendors[i];
+				}
 				retvp->part = part;
 				return true;
 			}
@@ -227,10 +270,17 @@ bool spi_nor_vendor_find_part_by_name(const char *model, const struct spi_nor_ve
 					return true;
 				}
 			} else {
-				if (!strcasecmp(vendor->id, ext_vendors[i].id)) {
-					retvp->vendor = &ext_vendors[i];
+				if (part->display_vendor) {
+					retvp->vendor = part->display_vendor;
+					retvp->vendor_init = &ext_vendors[i];
 					retvp->part = part;
 					return true;
+				} else {
+					if (!strcasecmp(vendor->id, ext_vendors[i].id)) {
+						retvp->vendor = &ext_vendors[i];
+						retvp->part = part;
+						return true;
+					}
 				}
 			}
 		}
@@ -271,6 +321,9 @@ uint32_t spi_nor_vendor_list_parts(const struct spi_nor_vendor *vendor, const ch
 
 		if (!no_meta || (no_meta && !(part->flags & SNOR_F_META))) {
 			if (list) {
+				if (part->display_vendor)
+					list[count].vendor = part->display_vendor->name;
+				else
 				list[count].vendor = vendor->name;
 				list[count].name = part->model;
 			}

@@ -248,9 +248,12 @@ struct spi_nor_flash_part_alias {
 
 #define SNOR_ALIAS(_alias)			.alias = (_alias)
 
+#define SNOR_DISPLAY_VENDOR(_vendor)		.display_vendor = (_vendor)
+
 struct spi_nor_flash_part {
 	const char *model;
 	const struct spi_nor_flash_part_alias *alias;
+	const struct spi_nor_vendor *display_vendor;
 	struct spi_nor_id id;
 	const uint8_t *id_mask;
 	uint32_t flags;
