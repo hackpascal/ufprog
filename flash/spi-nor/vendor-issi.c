@@ -2755,6 +2755,21 @@ static ufprog_status issi_part_fixup(struct spi_nor *snor, struct spi_nor_vendor
 			bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
 			bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = 8;
 			bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 0;
+
+			if (bp->p.size > SZ_16M) {
+				bp->read_opcodes_4b[SPI_MEM_IO_1_1_1].ndummy = bp->read_opcodes_3b[SPI_MEM_IO_1_1_1].ndummy;
+				bp->read_opcodes_4b[SPI_MEM_IO_1_1_1].nmode = bp->read_opcodes_3b[SPI_MEM_IO_1_1_1].nmode;
+				bp->read_opcodes_4b[SPI_MEM_IO_1_1_2].ndummy = bp->read_opcodes_3b[SPI_MEM_IO_1_1_2].ndummy;
+				bp->read_opcodes_4b[SPI_MEM_IO_1_1_2].nmode = bp->read_opcodes_3b[SPI_MEM_IO_1_1_2].nmode;
+				bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].ndummy = bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].ndummy;
+				bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].nmode = bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].nmode;
+				bp->read_opcodes_4b[SPI_MEM_IO_1_1_4].ndummy = bp->read_opcodes_3b[SPI_MEM_IO_1_1_4].ndummy;
+				bp->read_opcodes_4b[SPI_MEM_IO_1_1_4].nmode = bp->read_opcodes_3b[SPI_MEM_IO_1_1_4].nmode;
+				bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].ndummy = bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy;
+				bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].nmode = bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode;
+				bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].ndummy = bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy;
+				bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].nmode = bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode;
+			}
 		}
 	}
 
