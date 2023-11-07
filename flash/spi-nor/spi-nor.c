@@ -327,8 +327,7 @@ ufprog_status spi_nor_write_disable(struct spi_nor *snor)
 	return UFP_OK;
 }
 
-static ufprog_status spi_nor_quad_enable_any(struct spi_nor *snor, const struct spi_nor_reg_access *regacc,
-					     uint32_t bit)
+ufprog_status spi_nor_quad_enable_any(struct spi_nor *snor, const struct spi_nor_reg_access *regacc, uint32_t bit)
 {
 	uint32_t val, bitmask;
 

@@ -171,6 +171,8 @@ ufprog_status spi_nor_disable_qpi_66h_99h(struct spi_nor *snor);
 ufprog_status spi_nor_enable_4b_addressing_b7h(struct spi_nor *snor);
 ufprog_status spi_nor_disable_4b_addressing_e9h(struct spi_nor *snor);
 
+ufprog_status spi_nor_quad_enable_any(struct spi_nor *snor, const struct spi_nor_reg_access *regacc, uint32_t bit);
+
 ufprog_status spi_nor_quad_enable(struct spi_nor *snor);
 ufprog_status spi_nor_setup_addr(struct spi_nor *snor, uint64_t *addr);
 ufprog_status spi_nor_4b_addressing_control(struct spi_nor *snor, bool enable);
