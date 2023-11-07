@@ -96,27 +96,12 @@ static const struct snor_reg_info w25q_4b_3_regs = SNOR_REG_INFO(&w25q_sr1, &w25
 static ufprog_status w25q16xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					  struct spi_nor_flash_part_blank *bp)
 {
-	char model_ver = 'B';
-
 	if (snor->sfdp.bfpt) {
-		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-			model_ver = 'J';
-			bp->p.qe_type = QE_SR2_BIT1;
-			bp->p.max_speed_spi_mhz = 104;
-			bp->p.pp_io_caps |= BIT_SPI_MEM_IO_1_1_4;
-			bp->p.read_io_caps |= BIT_SPI_MEM_IO_X4;
-			bp->p.flags |= SNOR_F_SR_VOLATILE_WREN_50H;
-			bp->p.regs = &w25q_2_regs;
-		}
+		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q16JV");
 	}
 
-	if (model_ver == 'B')
-		bp->p.regs = &w25q_regs;
-
-	bp->p.model = bp->model;
-	snprintf(bp->model, sizeof(bp->model), "W25Q16%cV", model_ver);
-
-	return UFP_OK;
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q16BV");
 }
 
 static const struct spi_nor_flash_part_fixup w25q16xv_fixups = {
@@ -126,37 +111,14 @@ static const struct spi_nor_flash_part_fixup w25q16xv_fixups = {
 static ufprog_status w25q16xw_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					  struct spi_nor_flash_part_blank *bp)
 {
-	char model_ver = 'D';
-
 	if (snor->sfdp.bfpt) {
-		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B) {
-			model_ver = 'J';
-			bp->p.max_speed_spi_mhz = 104;
-		} else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-			model_ver = 'F';
-			bp->p.qpi_en_type = QPI_EN_QER_38H;
-			bp->p.qpi_dis_type = QPI_DIS_FFH;
-			bp->p.read_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-			bp->p.pp_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		}
-
-		bp->p.qe_type = QE_SR2_BIT1;
-		bp->p.regs = &w25q_3_regs;
-		bp->p.otp = &w25q_otp_3;
-		bp->p.flags |= SNOR_F_GLOBAL_UNLOCK;
-	} else {
-		bp->p.qpi_en_type = QPI_EN_QER_38H;
-		bp->p.qpi_dis_type = QPI_DIS_FFH;
-		bp->p.read_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		bp->p.pp_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		bp->p.regs = &w25q_4lb_regs;
-		bp->p.otp = &w25q_otp_4;
+		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q16JW");
+		else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q16FW");
 	}
 
-	bp->p.model = bp->model;
-	snprintf(bp->model, sizeof(bp->model), "W25Q16%cW", model_ver);
-
-	return UFP_OK;
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q16DW");
 }
 
 static const struct spi_nor_flash_part_fixup w25q16xw_fixups = {
@@ -166,40 +128,19 @@ static const struct spi_nor_flash_part_fixup w25q16xw_fixups = {
 static ufprog_status w25q32xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					  struct spi_nor_flash_part_blank *bp)
 {
-	char model_ver = 'B';
 	uint32_t dw;
 
 	if (snor->sfdp.bfpt) {
 		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-			model_ver = 'J';
-			bp->p.qe_type = QE_SR2_BIT1;
-			bp->p.max_speed_spi_mhz = 104;
-			bp->p.pp_io_caps |= BIT_SPI_MEM_IO_1_1_4;
-			bp->p.read_io_caps |= BIT_SPI_MEM_IO_X4;
-			bp->p.regs = &w25q_3_regs;
-			bp->p.flags |= SNOR_F_GLOBAL_UNLOCK;
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q32JV");
 		} else {
 			dw = sfdp_dw(snor->sfdp.bfpt, 5);
-			if (dw & BFPT_DW5_SUPPORT_4S_4S_4S_FAST_READ) {
-				model_ver = 'F';
-				bp->p.qe_type = QE_SR2_BIT1;
-				bp->p.qpi_en_type = QPI_EN_QER_38H;
-				bp->p.qpi_dis_type = QPI_DIS_FFH;
-				bp->p.read_io_caps |= BIT_SPI_MEM_IO_X4 | BIT_SPI_MEM_IO_4_4_4;
-				bp->p.pp_io_caps |= BIT_SPI_MEM_IO_1_1_4 | BIT_SPI_MEM_IO_4_4_4;
-				bp->p.regs = &w25q_3_regs;
-				bp->p.flags |= SNOR_F_GLOBAL_UNLOCK;
-			}
+			if (dw & BFPT_DW5_SUPPORT_4S_4S_4S_FAST_READ)
+				return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q32FV");
 		}
 	}
 
-	if (model_ver == 'B')
-		bp->p.regs = &w25q_regs;
-
-	bp->p.model = bp->model;
-	snprintf(bp->model, sizeof(bp->model), "W25Q32%cV", model_ver);
-
-	return UFP_OK;
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q32BV");
 }
 
 static const struct spi_nor_flash_part_fixup w25q32xv_fixups = {
@@ -209,37 +150,14 @@ static const struct spi_nor_flash_part_fixup w25q32xv_fixups = {
 static ufprog_status w25q32xw_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					  struct spi_nor_flash_part_blank *bp)
 {
-	char model_ver = 'D';
-
 	if (snor->sfdp.bfpt) {
-		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B) {
-			model_ver = 'J';
-		} else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-			model_ver = 'F';
-			bp->p.qpi_en_type = QPI_EN_QER_38H;
-			bp->p.qpi_dis_type = QPI_DIS_FFH;
-			bp->p.read_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-			bp->p.pp_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		}
-
-		bp->p.qe_type = QE_SR2_BIT1;
-		bp->p.max_speed_quad_mhz = 0;
-		bp->p.regs = &w25q_3_regs;
-		bp->p.otp = &w25q_otp_3;
-		bp->p.flags |= SNOR_F_GLOBAL_UNLOCK;
-	} else {
-		bp->p.qpi_en_type = QPI_EN_QER_38H;
-		bp->p.qpi_dis_type = QPI_DIS_FFH;
-		bp->p.read_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		bp->p.pp_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		bp->p.regs = &w25q_4lb_regs;
-		bp->p.otp = &w25q_otp_4;
+		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q32JW");
+		else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q32FW");
 	}
 
-	bp->p.model = bp->model;
-	snprintf(bp->model, sizeof(bp->model), "W25Q32%cW", model_ver);
-
-	return UFP_OK;
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q32DW");
 }
 
 static const struct spi_nor_flash_part_fixup w25q32xw_fixups = {
@@ -249,45 +167,21 @@ static const struct spi_nor_flash_part_fixup w25q32xw_fixups = {
 static ufprog_status w25q64xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					  struct spi_nor_flash_part_blank *bp)
 {
-	char model_ver = 'B';
 	uint32_t dw;
 
 	if (snor->sfdp.bfpt) {
 		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-			model_ver = 'J';
-			bp->p.qe_type = QE_SR2_BIT1;
-			bp->p.max_speed_spi_mhz = 104;
-			bp->p.regs = &w25q_3_regs;
-			bp->p.flags |= SNOR_F_GLOBAL_UNLOCK;
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q64JV");
 		} else {
 			dw = sfdp_dw(snor->sfdp.bfpt, 5);
-			if (dw & BFPT_DW5_SUPPORT_4S_4S_4S_FAST_READ) {
-				model_ver = 'F';
-				bp->p.qpi_en_type = QPI_EN_QER_38H;
-				bp->p.qpi_dis_type = QPI_DIS_FFH;
-				bp->p.read_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-				bp->p.pp_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-			} else {
-				model_ver = 'C';
-			}
-
-			bp->p.regs = &w25q_regs;
+			if (dw & BFPT_DW5_SUPPORT_4S_4S_4S_FAST_READ)
+				return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q64FV");
+			else
+				return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q64CV");
 		}
-
-		bp->p.read_io_caps |= BIT_SPI_MEM_IO_X4;
-		bp->p.pp_io_caps |= BIT_SPI_MEM_IO_1_1_4;
-		bp->p.flags |= SNOR_F_SR_VOLATILE_WREN_50H;
-		bp->p.otp = &w25q_otp_3;
-		bp->p.wp_ranges = &wpr_3bp_tb_sec_cmp_ratio;
-	} else {
-		bp->p.regs = &w25q_no_lb_regs;
-		bp->p.wp_ranges = &wpr_3bp_tb_sec_ratio;
 	}
 
-	bp->p.model = bp->model;
-	snprintf(bp->model, sizeof(bp->model), "W25Q64%cV", model_ver);
-
-	return UFP_OK;
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q64BV");
 }
 
 static const struct spi_nor_flash_part_fixup w25q64xv_fixups = {
@@ -297,39 +191,14 @@ static const struct spi_nor_flash_part_fixup w25q64xv_fixups = {
 static ufprog_status w25q64xw_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					  struct spi_nor_flash_part_blank *bp)
 {
-	char model_ver = 'D';
-
 	if (snor->sfdp.bfpt) {
-		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B) {
-			model_ver = 'J';
-		} else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-			model_ver = 'F';
-			bp->p.qpi_en_type = QPI_EN_QER_38H;
-			bp->p.qpi_dis_type = QPI_DIS_FFH;
-			bp->p.read_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-			bp->p.pp_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		}
-
-		bp->p.qe_type = QE_SR2_BIT1;
-		bp->p.max_speed_quad_mhz = 0;
-		bp->p.regs = &w25q_3_regs;
-		bp->p.otp = &w25q_otp_3;
-		bp->p.wp_ranges = &wpr_3bp_tb_sec_cmp_ratio;
-		bp->p.flags |= SNOR_F_GLOBAL_UNLOCK;
-	} else {
-		bp->p.qpi_en_type = QPI_EN_QER_38H;
-		bp->p.qpi_dis_type = QPI_DIS_FFH;
-		bp->p.read_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		bp->p.pp_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		bp->p.regs = &w25q_4lb_regs;
-		bp->p.otp = &w25q_otp_4;
-		bp->p.wp_ranges = &wpr_3bp_tb_sec_ratio;
+		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q64JW");
+		else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q64FW");
 	}
 
-	bp->p.model = bp->model;
-	snprintf(bp->model, sizeof(bp->model), "W25Q64%cW", model_ver);
-
-	return UFP_OK;
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q64DW");
 }
 
 static const struct spi_nor_flash_part_fixup w25q64xw_fixups = {
@@ -339,41 +208,19 @@ static const struct spi_nor_flash_part_fixup w25q64xw_fixups = {
 static ufprog_status w25q128xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					   struct spi_nor_flash_part_blank *bp)
 {
-	char model_ver = 'B';
 	uint32_t dw;
 
 	if (snor->sfdp.bfpt) {
 		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-			model_ver = 'J';
-			bp->p.max_speed_quad_mhz = 0;
-			bp->p.read_io_caps |= BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4;
-			bp->p.pp_io_caps |= BIT_SPI_MEM_IO_1_1_4;
-			bp->p.qe_type = QE_SR2_BIT1;
-			bp->p.regs = &w25q_3_regs;
-			bp->p.flags |= SNOR_F_GLOBAL_UNLOCK;
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q128JV");
 		} else {
 			dw = sfdp_dw(snor->sfdp.bfpt, 5);
-			if (dw & BFPT_DW5_SUPPORT_4S_4S_4S_FAST_READ) {
-				model_ver = 'F';
-				bp->p.max_speed_quad_mhz = 0;
-				bp->p.qe_type = QE_SR2_BIT1;
-				bp->p.qpi_en_type = QPI_EN_QER_38H;
-				bp->p.qpi_dis_type = QPI_DIS_FFH;
-				bp->p.read_io_caps |= BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI;
-				bp->p.pp_io_caps |= BIT_SPI_MEM_IO_1_1_4 | BIT_SPI_MEM_IO_4_4_4;
-				bp->p.regs = &w25q_3_regs;
-				bp->p.flags |= SNOR_F_GLOBAL_UNLOCK;
-			}
+			if (dw & BFPT_DW5_SUPPORT_4S_4S_4S_FAST_READ)
+				return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q128FV");
 		}
 	}
 
-	if (model_ver == 'B')
-		bp->p.regs = &w25q_regs;
-
-	bp->p.model = bp->model;
-	snprintf(bp->model, sizeof(bp->model), "W25Q128%cV", model_ver);
-
-	return UFP_OK;
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q128BV");
 }
 
 static const struct spi_nor_flash_part_fixup w25q128xv_fixups = {
@@ -383,37 +230,13 @@ static const struct spi_nor_flash_part_fixup w25q128xv_fixups = {
 static ufprog_status w25q128xw_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					   struct spi_nor_flash_part_blank *bp)
 {
-	char model_ver = 'D';
-
 	if (snor->sfdp.bfpt) {
-		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B) {
-			model_ver = 'J';
-		} else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-			model_ver = 'F';
-			bp->p.qpi_en_type = QPI_EN_QER_38H;
-			bp->p.qpi_dis_type = QPI_DIS_FFH;
-			bp->p.read_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-			bp->p.pp_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		}
-
-		bp->p.qe_type = QE_SR2_BIT1;
-		bp->p.max_speed_quad_mhz = 0;
-		bp->p.regs = &w25q_3_regs;
-		bp->p.otp = &w25q_otp_3;
-		bp->p.flags |= SNOR_F_GLOBAL_UNLOCK;
-	} else {
-		bp->p.qpi_en_type = QPI_EN_QER_38H;
-		bp->p.qpi_dis_type = QPI_DIS_FFH;
-		bp->p.read_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		bp->p.pp_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		bp->p.regs = &w25q_4lb_regs;
-		bp->p.otp = &w25q_otp_4;
-}
-
-	bp->p.model = bp->model;
-	snprintf(bp->model, sizeof(bp->model), "W25Q128%cW", model_ver);
-
-	return UFP_OK;
+		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q128JW");
+		else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q128FW");
+	}
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q128DW");
 }
 
 static const struct spi_nor_flash_part_fixup w25q128xw_fixups = {
@@ -423,31 +246,20 @@ static const struct spi_nor_flash_part_fixup w25q128xw_fixups = {
 static ufprog_status w25q256xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					   struct spi_nor_flash_part_blank *bp)
 {
-	char model_ver = 'B';
 	uint32_t dw;
 
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
 	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-		model_ver = 'J';
-		bp->p.a4b_flags |= SNOR_4B_F_OPCODE;
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q256JV");
 	} else {
 		dw = sfdp_dw(snor->sfdp.bfpt, 5);
-		if (dw & BFPT_DW5_SUPPORT_4S_4S_4S_FAST_READ) {
-			model_ver = 'F';
-			bp->p.flags |= SNOR_F_SFDP_4B_MODE;
-			bp->p.qpi_en_type = QPI_EN_QER_38H;
-			bp->p.qpi_dis_type = QPI_DIS_FFH;
-			bp->p.read_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-			bp->p.pp_io_caps |= BIT_SPI_MEM_IO_4_4_4;
-		}
+		if (dw & BFPT_DW5_SUPPORT_4S_4S_4S_FAST_READ)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q256FV");
 	}
 
-	bp->p.model = bp->model;
-	snprintf(bp->model, sizeof(bp->model), "W25Q256%cV", model_ver);
-
-	return UFP_OK;
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q256BV");
 }
 
 static const struct spi_nor_flash_part_fixup w25q256xv_fixups = {

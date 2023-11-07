@@ -792,27 +792,10 @@ static ufprog_status gd_read_uid_len(struct spi_nor *snor, void *data, uint32_t 
 static ufprog_status gd25lx05_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					  struct spi_nor_flash_part_blank *bp)
 {
-	bp->p.model = bp->model;
+	if (snor->sfdp.bfpt)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "GD25LE05C");
 
-	if (snor->sfdp.bfpt) {
-		snprintf(bp->model, sizeof(bp->model), "GD25LE05C");
-
-		bp->p.qe_type = QE_SR2_BIT1_WR_SR1;
-		bp->p.max_speed_spi_mhz = 90;
-		bp->p.pp_io_caps |= BIT_SPI_MEM_IO_1_1_4;
-		bp->p.read_io_caps |= BIT_SPI_MEM_IO_1_2_2 | BIT_SPI_MEM_IO_X4;
-		bp->p.soft_reset_flags = SNOR_SOFT_RESET_OPCODE_66H_99H;
-		bp->p.flags |= SNOR_F_SR_VOLATILE_WREN_50H;
-		bp->p.regs = &w25q_regs;
-		bp->p.wp_ranges = &wpr_3bp_tb_sec_cmp;
-		bp->p.otp = &gd25_otp_3_512b;
-	} else {
-		snprintf(bp->model, sizeof(bp->model), "GD25LD05C");
-		bp->p.regs = &gd25dxc_regs;
-		bp->p.wp_ranges = &gd25dxc_wpr;
-	}
-
-	return UFP_OK;
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "GD25LD05C");
 }
 
 static const struct spi_nor_flash_part_fixup gd25lx05_fixups = {
@@ -822,27 +805,10 @@ static const struct spi_nor_flash_part_fixup gd25lx05_fixups = {
 static ufprog_status gd25lx10_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					  struct spi_nor_flash_part_blank *bp)
 {
-	bp->p.model = bp->model;
+	if (snor->sfdp.bfpt)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "GD25LE10C");
 
-	if (snor->sfdp.bfpt) {
-		snprintf(bp->model, sizeof(bp->model), "GD25LE10C");
-
-		bp->p.qe_type = QE_SR2_BIT1_WR_SR1;
-		bp->p.max_speed_spi_mhz = 90;
-		bp->p.pp_io_caps |= BIT_SPI_MEM_IO_1_1_4;
-		bp->p.read_io_caps |= BIT_SPI_MEM_IO_1_2_2 | BIT_SPI_MEM_IO_X4;
-		bp->p.soft_reset_flags = SNOR_SOFT_RESET_OPCODE_66H_99H;
-		bp->p.flags |= SNOR_F_SR_VOLATILE_WREN_50H;
-		bp->p.regs = &w25q_regs;
-		bp->p.wp_ranges = &wpr_3bp_tb_sec_cmp;
-		bp->p.otp = &gd25_otp_3_512b;
-	} else {
-		snprintf(bp->model, sizeof(bp->model), "GD25LD10C");
-		bp->p.regs = &gd25dxc_regs;
-		bp->p.wp_ranges = &gd25dxc_wpr;
-	}
-
-	return UFP_OK;
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "GD25LD10C");
 }
 
 static const struct spi_nor_flash_part_fixup gd25lx10_fixups = {

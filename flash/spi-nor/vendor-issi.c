@@ -701,14 +701,10 @@ static ufprog_status is25lx025_fixup_model(struct spi_nor *snor, struct spi_nor_
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
-	bp->p.model = bp->model;
-
-	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-		snprintf(bp->model, sizeof(bp->model), "IS25LQ025B");
-	} else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B) {
-		snprintf(bp->model, sizeof(bp->model), "IS25LP025E");
-		bp->p.vendor_flags &= ~ISSI_F_OTP_NO_ERASE;
-	}
+	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25LQ025B");
+	else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25LP025E");
 
 	return UFP_OK;
 }
@@ -723,14 +719,10 @@ static ufprog_status is25lx512_fixup_model(struct spi_nor *snor, struct spi_nor_
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
-	bp->p.model = bp->model;
-
-	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-		snprintf(bp->model, sizeof(bp->model), "IS25LQ512B");
-	} else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B) {
-		snprintf(bp->model, sizeof(bp->model), "IS25LP512E");
-		bp->p.vendor_flags &= ~ISSI_F_OTP_NO_ERASE;
-	}
+	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25LQ512B");
+	else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25LP512E");
 
 	return UFP_OK;
 }
@@ -757,23 +749,21 @@ static ufprog_status pm25lq512b_erase_op_fixup(struct spi_nor *snor, struct spi_
 	return UFP_OK;
 }
 
+static const struct spi_nor_flash_part_fixup pm25lq512b_fixups = {
+	.pre_param_setup = pm25lq512b_erase_op_fixup,
+};
+
 static ufprog_status is25cd512_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					   struct spi_nor_flash_part_blank *bp)
 {
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
-	STATUS_CHECK_RET(spi_nor_reprobe_part(snor, vp, bp, NULL, "PM25LQ512B"));
-
-	return pm25lq512b_erase_op_fixup(snor, vp, bp);
+	return spi_nor_reprobe_part(snor, vp, bp, NULL, "PM25LQ512B");
 }
 
 static const struct spi_nor_flash_part_fixup is25cd512_fixups = {
 	.pre_param_setup = is25cd512_fixup_model,
-};
-
-static const struct spi_nor_flash_part_fixup pm25lq512b_fixups = {
-	.pre_param_setup = pm25lq512b_erase_op_fixup,
 };
 
 static ufprog_status is25lx010_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
@@ -782,14 +772,10 @@ static ufprog_status is25lx010_fixup_model(struct spi_nor *snor, struct spi_nor_
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
-	bp->p.model = bp->model;
-
-	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-		snprintf(bp->model, sizeof(bp->model), "IS25LQ010B");
-	} else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B) {
-		snprintf(bp->model, sizeof(bp->model), "IS25LP010E");
-		bp->p.vendor_flags &= ~ISSI_F_OTP_NO_ERASE;
-	}
+	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25LQ010B");
+	else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25LP010E");
 
 	return UFP_OK;
 }
@@ -817,14 +803,10 @@ static ufprog_status is25lx020_fixup_model(struct spi_nor *snor, struct spi_nor_
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
-	bp->p.model = bp->model;
-
-	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-		snprintf(bp->model, sizeof(bp->model), "IS25LQ020B");
-	} else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B) {
-		snprintf(bp->model, sizeof(bp->model), "IS25LP020E");
-		bp->p.vendor_flags &= ~ISSI_F_OTP_NO_ERASE;
-	}
+	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25LQ020B");
+	else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25LP020E");
 
 	return UFP_OK;
 }
@@ -852,15 +834,10 @@ static ufprog_status is25wp080x_fixup_model(struct spi_nor *snor, struct spi_nor
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
-	bp->p.model = bp->model;
-
-	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
-		snprintf(bp->model, sizeof(bp->model), "IS25WP080");
-		bp->p.regs = &is25xpxd_16pins_regs;
-	} else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B) {
-		snprintf(bp->model, sizeof(bp->model), "IS25WP080D");
-		bp->p.regs = &is25xpxd_regs;
-	}
+	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25WP080");
+	else if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25WP080D");
 
 	return UFP_OK;
 }
@@ -894,15 +871,8 @@ static ufprog_status is25lp128x_fixup_model(struct spi_nor *snor, struct spi_nor
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
-	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B && bp->p.page_size == 512) {
-		bp->p.model = bp->model;
-		snprintf(bp->model, sizeof(bp->model), "IS25LE128EK");
-		bp->p.vendor_flags |= ISSI_F_ECC;
-		bp->p.max_speed_spi_mhz = 166;
-		bp->p.max_speed_quad_mhz = 151;
-		bp->p.regs = &is25xe128e_regs;
-		is25xp256ek_wpr_4bp_tbs_select(snor, vp, bp);
-	}
+	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B && bp->p.page_size == 512)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25LE128EK");
 
 	return UFP_OK;
 }
@@ -917,15 +887,8 @@ static ufprog_status is25wp128x_fixup_model(struct spi_nor *snor, struct spi_nor
 	if (!snor->sfdp.bfpt)
 		return UFP_OK;
 
-	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B && bp->p.page_size == 512) {
-		bp->p.model = bp->model;
-		snprintf(bp->model, sizeof(bp->model), "IS25WE128EK");
-		bp->p.vendor_flags |= ISSI_F_ECC;
-		bp->p.max_speed_spi_mhz = 166;
-		bp->p.max_speed_quad_mhz = 151;
-		bp->p.regs = &is25xe128e_regs;
-		is25xp256ek_wpr_4bp_tbs_select(snor, vp, bp);
-	}
+	if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_B && bp->p.page_size == 512)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25WE128EK");
 
 	return UFP_OK;
 }

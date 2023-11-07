@@ -200,9 +200,10 @@ static const struct spi_nor_flash_part_fixup xm25xu32c_fixups = {
 static ufprog_status xm25qh64a_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					   struct spi_nor_flash_part_blank *bp)
 {
-	STATUS_CHECK_RET(spi_nor_reprobe_part(snor, vp, bp, &vendor_eon, "EN25QH64A"));
+	STATUS_CHECK_RET(spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH64A"));
 
-	vp->vendor_init = &vendor_eon;
+	vp->vendor_init = vp->vendor;
+	vp->vendor = &vendor_xmc;
 
 	bp->p.model = bp->model;
 	snprintf(bp->model, sizeof(bp->model), "XM25QH64A");
@@ -234,9 +235,10 @@ static const struct spi_nor_flash_part_fixup xm25xu64c_fixups = {
 static ufprog_status xm25qh128a_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					    struct spi_nor_flash_part_blank *bp)
 {
-	STATUS_CHECK_RET(spi_nor_reprobe_part(snor, vp, bp, &vendor_eon, "EN25QH128A"));
+	STATUS_CHECK_RET(spi_nor_reprobe_part(snor, vp, bp, NULL, "EN25QH128A"));
 
-	vp->vendor_init = &vendor_eon;
+	vp->vendor_init = vp->vendor;
+	vp->vendor = &vendor_xmc;
 
 	bp->p.model = bp->model;
 	snprintf(bp->model, sizeof(bp->model), "XM25QH128A");
@@ -268,9 +270,10 @@ static const struct spi_nor_flash_part_fixup xm25xu128c_fixups = {
 static ufprog_status xm25qh256b_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					    struct spi_nor_flash_part_blank *bp)
 {
-	STATUS_CHECK_RET(spi_nor_reprobe_part(snor, vp, bp, &vendor_issi, "IS25LP256D"));
+	STATUS_CHECK_RET(spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25LP256D"));
 
-	vp->vendor_init = &vendor_issi;
+	vp->vendor_init = vp->vendor;
+	vp->vendor = &vendor_xmc;
 
 	bp->p.model = bp->model;
 	snprintf(bp->model, sizeof(bp->model), "XM25QH256B");
@@ -285,9 +288,10 @@ static const struct spi_nor_flash_part_fixup xm25qh256b_fixups = {
 static ufprog_status xm25qu256b_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					    struct spi_nor_flash_part_blank *bp)
 {
-	STATUS_CHECK_RET(spi_nor_reprobe_part(snor, vp, bp, &vendor_issi, "IS25WP256D"));
+	STATUS_CHECK_RET(spi_nor_reprobe_part(snor, vp, bp, NULL, "IS25WP256D"));
 
-	vp->vendor_init = &vendor_issi;
+	vp->vendor_init = vp->vendor;
+	vp->vendor = &vendor_xmc;
 
 	bp->p.model = bp->model;
 	snprintf(bp->model, sizeof(bp->model), "XM25QU256B");
