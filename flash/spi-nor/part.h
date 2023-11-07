@@ -45,6 +45,8 @@ struct spi_nor_flash_part_blank;
 #define SNOR_ID(...)	{ .id = { __VA_ARGS__ }, .len = sizeof((uint8_t[]){ __VA_ARGS__ }) }
 #define SNOR_ID_NONE	{ .id = { 0 }, .len = 0 }
 
+#define SNOR_ID_MASK(_mask)			.id_mask = _mask
+
 struct spi_nor_erase_sector_info {
 	uint8_t opcode;
 	uint32_t size;
@@ -250,6 +252,7 @@ struct spi_nor_flash_part {
 	const char *model;
 	const struct spi_nor_flash_part_alias *alias;
 	struct spi_nor_id id;
+	const uint8_t *id_mask;
 	uint32_t flags;
 	uint32_t vendor_flags;
 
@@ -331,6 +334,8 @@ extern const struct spi_nor_reg_field_values reg_field_values_enabled_disabled_r
 
 void spi_nor_prepare_blank_part(struct spi_nor_flash_part_blank *bp, const struct spi_nor_flash_part *refpart);
 void spi_nor_blank_part_fill_default_opcodes(struct spi_nor_flash_part_blank *bp);
+
+bool spi_nor_id_match(const uint8_t *id1, const uint8_t *id2, const uint8_t *mask, uint32_t len);
 
 const struct spi_nor_flash_part *spi_nor_find_part(const struct spi_nor_flash_part *parts, size_t count,
 						   const uint8_t *id);

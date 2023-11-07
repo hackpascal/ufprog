@@ -186,7 +186,8 @@ uint32_t spi_nor_vendor_list_parts(const struct spi_nor_vendor *vendor, const ch
 		part = &vendor->parts[i];
 
 		if (match_id) {
-			if (match_id->len != part->id.len || memcmp(match_id->id, part->id.id, part->id.len))
+			if (match_id->len != part->id.len ||
+			    !spi_nor_id_match(match_id->id, part->id.id, part->id_mask, part->id.len))
 				continue;
 		}
 

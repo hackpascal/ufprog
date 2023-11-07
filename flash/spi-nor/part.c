@@ -183,6 +183,21 @@ void spi_nor_blank_part_fill_default_opcodes(struct spi_nor_flash_part_blank *bp
 	}
 }
 
+bool spi_nor_id_match(const uint8_t *id1, const uint8_t *id2, const uint8_t *mask, uint32_t len)
+{
+	uint32_t i;
+
+	if (!mask)
+		return !memcmp(id1, id2, len);
+
+	for (i = 0; i < len; i++) {
+		if ((id1[i] & mask[i]) != (id2[i] & mask[i]))
+			return false;
+	}
+
+	return true;
+}
+
 const struct spi_nor_flash_part *spi_nor_find_part(const struct spi_nor_flash_part *parts, size_t count,
 						   const uint8_t *id)
 {
@@ -192,7 +207,7 @@ const struct spi_nor_flash_part *spi_nor_find_part(const struct spi_nor_flash_pa
 		return NULL;
 
 	for (i = 0; i < count; i++) {
-		if (parts[i].id.len && !memcmp(parts[i].id.id, id, parts[i].id.len))
+		if (parts[i].id.len && spi_nor_id_match(parts[i].id.id, id, parts[i].id_mask, parts[i].id.len))
 			return &parts[i];
 	}
 

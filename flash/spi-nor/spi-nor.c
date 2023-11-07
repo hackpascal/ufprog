@@ -1996,8 +1996,9 @@ ufprog_status UFPROG_API ufprog_spi_nor_part_init(struct spi_nor *snor, const ch
 
 	/* Check if ID matches */
 	if (spi_nor_probe_jedec_id(snor, &vp)) {
-		if ((vp.part->id.len != vpreq.part->id.len ||
-		     memcmp(vp.part->id.id, vpreq.part->id.id, vp.part->id.len))) {
+		if (vp.part->id.len != vpreq.part->id.len || (
+		    !spi_nor_id_match(vp.part->id.id, vpreq.part->id.id, vp.part->id_mask, vp.part->id.len) &&
+		    !spi_nor_id_match(vp.part->id.id, vpreq.part->id.id, vpreq.part->id_mask, vp.part->id.len))) {
 			if (!forced_init) {
 				logm_err("Requested part JEDEC ID mismatch\n");
 				ret = UFP_FLASH_PART_MISMATCH;
