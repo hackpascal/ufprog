@@ -1246,10 +1246,10 @@ setup_io_opcodes:
 	if (spi_mem_io_cmd_bw(read_io_type) == spi_mem_io_cmd_bw(pp_io_type)) {
 		bw = spi_mem_io_cmd_bw(read_io_type);
 
-		if (bw == 4 && (snor->param.flags & SNOR_F_FULL_QPI_OPCODES)) {
+		if (bw == 4 && (part->flags & SNOR_F_FULL_QPI_OPCODES)) {
 			snor->state.cmd_buswidth = 4;
 			logm_notice("The flash will be working in QPI mode\n");
-		} else if (bw == 2 && (snor->param.flags & SNOR_F_FULL_DPI_OPCODES)) {
+		} else if (bw == 2 && (part->flags & SNOR_F_FULL_DPI_OPCODES)) {
 			snor->state.cmd_buswidth = 2;
 			logm_notice("The flash will be working in DPI mode\n");
 		}
