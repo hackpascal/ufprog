@@ -54,10 +54,11 @@ Pull requests are welcome.
 * Macronix
 * Microchip/SST
 * Micron
+* Spansion/Cypress/Infineon
 * Winbond
 * XMC
 * XTX
-* TBD: Spansion/Atmel/FudanMicro/Puya/Zbit/Zetta...
+* TBD: Atmel/FudanMicro/Puya/Zbit/Zetta...
 
 ## Supported SPI-NAND flashes
 * Alliance Memory
