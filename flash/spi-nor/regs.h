@@ -21,6 +21,8 @@
 #define SNOR_REGACC_F_HAS_VOLATILE_WR_OPCODE		BIT(5)
 #define SNOR_REGACC_F_ADDR_4B_MODE			BIT(6)
 #define SNOR_REGACC_F_NO_POLL				BIT(7)
+#define SNOR_REGACC_F_NO_WRDIS				BIT(8)
+#define SNOR_REGACC_F_DATA_ACC_TIMING			BIT(9)
 
 enum snor_reg_access_type {
 	SNOR_REG_NORMAL,

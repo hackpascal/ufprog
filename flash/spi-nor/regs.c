@@ -137,8 +137,18 @@ static ufprog_status spi_nor_read_reg_desc(struct spi_nor *snor, const struct sp
 	if (desc->flags & SNOR_REGACC_F_ADDR_4B_MODE)
 		op.addr.len = snor->state.a4b_mode ? 4 : 3;
 
+	if (desc->flags & SNOR_REGACC_F_DATA_ACC_TIMING) {
+		if (spi_mem_io_info_cmd_bw(snor->state.read_io_info) == snor->state.cmd_buswidth_curr)
+			op.dummy.len = snor->state.read_ndummy;
+		else
+			op.dummy.len = 1; /* We have to use 1 here */
+	}
+
 	if (!ufprog_spi_mem_supports_op(snor->spi, &op))
 		return UFP_UNSUPPORTED;
+
+	if (desc->flags & SNOR_REGACC_F_DATA_ACC_TIMING)
+		STATUS_CHECK_RET(spi_nor_set_low_speed(snor));
 
 	ret = ufprog_spi_mem_exec_op(snor->spi, &op);
 	if (ret) {
@@ -306,13 +316,16 @@ static ufprog_status spi_nor_write_reg_desc(struct spi_nor *snor, const struct s
 		poll = !(desc->flags & SNOR_REGACC_F_NO_POLL);
 	}
 
+	if (desc->flags & SNOR_REGACC_F_DATA_ACC_TIMING)
+		STATUS_CHECK_GOTO_RET(spi_nor_set_low_speed(snor), ret, out);
+
 	STATUS_CHECK_GOTO_RET(ufprog_spi_mem_exec_op(snor->spi, &op), ret, out);
 
 	if (poll)
 		ret = spi_nor_wait_busy(snor, snor->state.max_nvcr_pp_time_ms);
 
 out:
-	if (wren)
+	if (wren && !(desc->flags & SNOR_REGACC_F_NO_WRDIS))
 		spi_nor_write_disable(snor);
 
 	return ret;
