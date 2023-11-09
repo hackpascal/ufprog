@@ -17,6 +17,7 @@ struct spi_nor_flash_part_blank;
 
 struct spi_nor_sfdp {
 	void *data;
+	void *data_copy;
 	uint32_t size;
 
 	struct sfdp_header hdr;
@@ -43,10 +44,16 @@ static inline uint32_t sfdp_dw(const uint32_t *dw, uint32_t idx)
 	return le32toh(dw[idx - 1]);
 }
 
+static inline void sfdp_set_dw(uint32_t *dw, uint32_t idx, uint32_t val)
+{
+	dw[idx - 1] = htole32(val);
+}
+
 ufprog_status spi_nor_read_sfdp(struct spi_nor *snor, uint8_t buswidth, uint32_t addr, uint32_t len, void *data);
 
 bool spi_nor_probe_sfdp(struct spi_nor *snor, const struct spi_nor_vendor *vendor, struct spi_nor_flash_part_blank *bp);
 bool spi_nor_parse_sfdp_smpt(struct spi_nor *snor);
 bool spi_nor_locate_sfdp_vendor(struct spi_nor *snor, uint8_t mfr_id, bool match_jedec_msb);
+bool spi_nor_sfdp_make_copy(struct spi_nor *snor);
 
 #endif /* _UFPROG_SPI_NOR_SFDP_INTERNAL_H_ */

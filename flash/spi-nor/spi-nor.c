@@ -62,6 +62,9 @@ ufprog_status UFPROG_API ufprog_spi_nor_destroy(struct spi_nor *snor)
 	if (snor->sfdp.data)
 		free(snor->sfdp.data);
 
+	if (snor->sfdp.data_copy)
+		free(snor->sfdp.data_copy);
+
 	if (snor->wp_regions)
 		free(snor->wp_regions);
 
@@ -1857,6 +1860,9 @@ static void spi_nor_reset_param(struct spi_nor *snor)
 
 	if (snor->sfdp.data)
 		free(snor->sfdp.data);
+
+	if (snor->sfdp.data_copy)
+		free(snor->sfdp.data_copy);
 
 	if (snor->wp_regions) {
 		free(snor->wp_regions);

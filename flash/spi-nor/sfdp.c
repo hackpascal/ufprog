@@ -986,3 +986,61 @@ bool spi_nor_locate_sfdp_vendor(struct spi_nor *snor, uint8_t mfr_id, bool match
 
 	return false;
 }
+
+bool spi_nor_sfdp_make_copy(struct spi_nor *snor)
+{
+	if (snor->sfdp.data_copy)
+		return true;
+
+	snor->sfdp.data_copy = malloc(snor->sfdp.size);
+	if (!snor->sfdp.data_copy)
+		return false;
+
+	memcpy(snor->sfdp.data_copy, snor->sfdp.data, snor->sfdp.size);
+
+	if (snor->sfdp.bfpt_hdr) {
+		snor->sfdp.bfpt_hdr = (struct sfdp_param_header *)((uintptr_t)snor->sfdp.bfpt_hdr -
+								   (uintptr_t)snor->sfdp.data +
+								   (uintptr_t)snor->sfdp.data_copy);
+	}
+
+	if (snor->sfdp.bfpt) {
+		snor->sfdp.bfpt = (uint32_t *)((uintptr_t)snor->sfdp.bfpt - (uintptr_t)snor->sfdp.data +
+					       (uintptr_t)snor->sfdp.data_copy);
+	}
+
+	if (snor->sfdp.a4bit_hdr) {
+		snor->sfdp.a4bit_hdr = (struct sfdp_param_header *)((uintptr_t)snor->sfdp.a4bit_hdr -
+								    (uintptr_t)snor->sfdp.data +
+								    (uintptr_t)snor->sfdp.data_copy);
+	}
+
+	if (snor->sfdp.a4bit) {
+		snor->sfdp.a4bit = (uint32_t *)((uintptr_t)snor->sfdp.a4bit - (uintptr_t)snor->sfdp.data +
+						(uintptr_t)snor->sfdp.data_copy);
+	}
+
+	if (snor->sfdp.smpt_hdr) {
+		snor->sfdp.smpt_hdr = (struct sfdp_param_header *)((uintptr_t)snor->sfdp.smpt_hdr -
+								   (uintptr_t)snor->sfdp.data +
+								   (uintptr_t)snor->sfdp.data_copy);
+	}
+
+	if (snor->sfdp.smpt) {
+		snor->sfdp.smpt = (uint32_t *)((uintptr_t)snor->sfdp.smpt - (uintptr_t)snor->sfdp.data +
+					       (uintptr_t)snor->sfdp.data_copy);
+	}
+
+	if (snor->sfdp.vendor_hdr) {
+		snor->sfdp.vendor_hdr = (struct sfdp_param_header *)((uintptr_t)snor->sfdp.vendor_hdr -
+								     (uintptr_t)snor->sfdp.data +
+								     (uintptr_t)snor->sfdp.data_copy);
+	}
+
+	if (snor->sfdp.vendor) {
+		snor->sfdp.vendor = (uint32_t *)((uintptr_t)snor->sfdp.vendor - (uintptr_t)snor->sfdp.data +
+						 (uintptr_t)snor->sfdp.data_copy);
+	}
+
+	return true;
+}
