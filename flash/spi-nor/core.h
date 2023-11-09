@@ -191,7 +191,7 @@ bool spi_nor_test_io_opcode(struct spi_nor *snor, const struct spi_nor_io_opcode
 void spi_nor_gen_erase_info(const struct spi_nor_flash_part *part, const struct spi_nor_erase_info *src,
 			    struct spi_nor_erase_info *retei);
 
-void spi_nor_fill_erase_region_erasesizes(struct spi_nor *snor, struct spi_nor_erase_region *erg);
+void spi_nor_fill_erase_region_erasesizes(struct spi_nor *snor, struct spi_nor_erase_region *erg, uint64_t region_size);
 
 ufprog_status spi_nor_reprobe_part(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 				   struct spi_nor_flash_part_blank *bp, const struct spi_nor_vendor *vendor,

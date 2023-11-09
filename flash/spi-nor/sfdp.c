@@ -933,7 +933,8 @@ bool spi_nor_parse_sfdp_smpt(struct spi_nor *snor)
 		snor->ext_param.erase_regions[idx].size = (FIELD_GET(SMPT_MAP_DW2_REGION_SIZE, dw) + 1) * 256;
 		snor->ext_param.erase_regions[idx].erasesizes_mask = dw & SMPT_MAP_DW2_ERASE_TYPE_MASK;
 		spi_nor_smpt_adjust_erasesizes_mask(snor, &snor->ext_param.erase_regions[idx].erasesizes_mask);
-		spi_nor_fill_erase_region_erasesizes(snor, &snor->ext_param.erase_regions[idx]);
+		spi_nor_fill_erase_region_erasesizes(snor, &snor->ext_param.erase_regions[idx],
+						     snor->ext_param.erase_regions[idx].size);
 
 		total_size += snor->ext_param.erase_regions[idx].size;
 

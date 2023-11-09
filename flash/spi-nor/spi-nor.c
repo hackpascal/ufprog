@@ -1267,7 +1267,7 @@ static int spi_nor_erase_info_cmp(void const *a, void const *b)
 	return 0;
 }
 
-void spi_nor_fill_erase_region_erasesizes(struct spi_nor *snor, struct spi_nor_erase_region *erg)
+void spi_nor_fill_erase_region_erasesizes(struct spi_nor *snor, struct spi_nor_erase_region *erg, uint64_t region_size)
 {
 	uint32_t i;
 
@@ -1277,11 +1277,17 @@ void spi_nor_fill_erase_region_erasesizes(struct spi_nor *snor, struct spi_nor_e
 		if (!(erg->erasesizes_mask & BIT(i)))
 			continue;
 
-		if (!erg->min_erasesize || erg->min_erasesize > snor->param.erase_info.info[i].size)
+		if (!erg->min_erasesize || erg->min_erasesize > snor->param.erase_info.info[i].size) {
 			erg->min_erasesize = snor->param.erase_info.info[i].size;
+			if (erg->min_erasesize > region_size)
+				erg->min_erasesize = (uint32_t)region_size;
+		}
 
-		if (snor->param.erase_info.info[i].size > erg->max_erasesize)
+		if (snor->param.erase_info.info[i].size > erg->max_erasesize) {
 			erg->max_erasesize = snor->param.erase_info.info[i].size;
+			if (erg->max_erasesize > region_size)
+				erg->max_erasesize = (uint32_t)region_size;
+		}
 	}
 }
 
@@ -1306,7 +1312,7 @@ static void spi_nor_generate_erase_regions(struct spi_nor *snor)
 		snor->ext_param.erase_regions[0].erasesizes_mask |= BIT(i);
 	}
 
-	spi_nor_fill_erase_region_erasesizes(snor, &snor->ext_param.erase_regions[0]);
+	spi_nor_fill_erase_region_erasesizes(snor, &snor->ext_param.erase_regions[0], snor->param.size);
 }
 
 static void spi_nor_setup_soft_reset(struct spi_nor *snor, const struct spi_nor_flash_part *part)
@@ -2682,17 +2688,24 @@ static ufprog_status spi_nor_erase_block(struct spi_nor *snor, uint64_t addr, co
 	return UFP_OK;
 }
 
-static const struct spi_nor_erase_region *spi_nor_get_erase_region_at(struct spi_nor *snor, uint64_t addr)
+static const struct spi_nor_erase_region *spi_nor_get_erase_region_at(struct spi_nor *snor, uint64_t addr,
+								      uint64_t *ret_region_offset)
 {
 	uint64_t region_offset = 0;
 	uint32_t i;
 
-	if (snor->ext_param.num_erase_regions == 1)
+	if (snor->ext_param.num_erase_regions == 1) {
+		if (ret_region_offset)
+			*ret_region_offset = 0;
 		return &snor->ext_param.erase_regions[0];
+	}
 
 	for (i = 0; i < snor->ext_param.num_erase_regions; i++) {
-		if (addr >= region_offset && addr < region_offset + snor->ext_param.erase_regions[i].size)
+		if (addr >= region_offset && addr < region_offset + snor->ext_param.erase_regions[i].size) {
+			if (ret_region_offset)
+				*ret_region_offset = region_offset;
 			return &snor->ext_param.erase_regions[i];
+		}
 
 		region_offset += snor->ext_param.erase_regions[i].size;
 	}
@@ -2711,13 +2724,14 @@ const struct spi_nor_erase_region *UFPROG_API ufprog_spi_nor_get_erase_region_at
 	if (addr >= snor->param.size)
 		return NULL;
 
-	return spi_nor_get_erase_region_at(snor, addr);
+	return spi_nor_get_erase_region_at(snor, addr, NULL);
 }
 
 ufprog_status UFPROG_API ufprog_spi_nor_get_erase_range(struct spi_nor *snor, uint64_t addr, uint64_t len,
 							uint64_t *retaddr_start, uint64_t *retaddr_end)
 {
 	const struct spi_nor_erase_region *erg;
+	uint64_t region_base, n;
 
 	if (!snor || !retaddr_start || !retaddr_end || !len)
 		return UFP_INVALID_PARAMETER;
@@ -2729,18 +2743,28 @@ ufprog_status UFPROG_API ufprog_spi_nor_get_erase_range(struct spi_nor *snor, ui
 		return UFP_INVALID_PARAMETER;
 
 	/* Calculate start addr */
-	erg = spi_nor_get_erase_region_at(snor, addr);
+	erg = spi_nor_get_erase_region_at(snor, addr, &region_base);
 	if (!erg)
 		return UFP_UNSUPPORTED;
 
-	*retaddr_start = addr & ~((uint64_t)erg->min_erasesize - 1);
+	if (is_power_of_2(erg->min_erasesize)) {
+		*retaddr_start = addr & ~((uint64_t)erg->min_erasesize - 1);
+	} else {
+		n = (addr - region_base) / erg->min_erasesize;
+		*retaddr_start = region_base + n * erg->min_erasesize;
+	}
 
 	/* Calculate end addr */
-	erg = spi_nor_get_erase_region_at(snor, addr + len - 1);
+	erg = spi_nor_get_erase_region_at(snor, addr + len - 1, &region_base);
 	if (!erg)
 		return UFP_UNSUPPORTED;
 
-	*retaddr_end = ((addr + len + erg->min_erasesize - 1) & ~((uint64_t)erg->min_erasesize - 1));
+	if (is_power_of_2(erg->min_erasesize)) {
+		*retaddr_end = ((addr + len + erg->min_erasesize - 1) & ~((uint64_t)erg->min_erasesize - 1));
+	} else {
+		n = (addr + len - region_base) / erg->min_erasesize;
+		*retaddr_end = region_base + n * erg->min_erasesize;
+	}
 
 	return UFP_OK;
 }
@@ -2748,26 +2772,44 @@ ufprog_status UFPROG_API ufprog_spi_nor_get_erase_range(struct spi_nor *snor, ui
 static ufprog_status spi_nor_erase_at(struct spi_nor *snor, uint64_t addr, uint64_t maxlen, uint32_t *ret_eraseszie)
 {
 	const struct spi_nor_erase_sector_info *ei = NULL;
+	uint64_t erase_start, erase_end, region_base, n;
 	const struct spi_nor_erase_region *erg;
 	uint32_t i, erasesize, len_erased = 0;
-	uint64_t erase_start, erase_end;
 	ufprog_status ret = UFP_OK;
 
-	erg = spi_nor_get_erase_region_at(snor, addr);
+	erg = spi_nor_get_erase_region_at(snor, addr, &region_base);
 	if (!erg)
 		return UFP_UNSUPPORTED;
 
-	erase_start = addr & ~((uint64_t)erg->min_erasesize - 1);
-	erase_end = (addr + maxlen) & ~((uint64_t)erg->min_erasesize - 1);
+	if (is_power_of_2(erg->min_erasesize)) {
+		erase_start = addr & ~((uint64_t)erg->min_erasesize - 1);
+		erase_end = (addr + maxlen) & ~((uint64_t)erg->min_erasesize - 1);
+	} else {
+		n = (addr - region_base) / erg->min_erasesize;
+		erase_start = region_base + n * erg->min_erasesize;
+
+		n = (addr + maxlen - region_base) / erg->min_erasesize;
+		erase_end = region_base + n * erg->min_erasesize;
+	}
+
+	if (erase_end > region_base + erg->size)
+		erase_end = region_base + erg->size;
 
 	for (i = 0; i < SPI_NOR_MAX_ERASE_INFO; i++) {
 		if (!(erg->erasesizes_mask & BIT(i)))
 			continue;
 
 		erasesize = snor->param.erase_info.info[i].size;
+		if (erasesize > erg->size)
+			erasesize = (uint32_t)erg->size;
 
-		if (erase_start & (erasesize - 1))
-			continue;
+		if (is_power_of_2(erasesize)) {
+			if (erase_start & (erasesize - 1))
+				continue;
+		} else {
+			if ((erase_start - region_base) % erasesize)
+				continue;
+		}
 
 		if (erase_end - erase_start < erasesize)
 			continue;
@@ -2778,10 +2820,14 @@ static ufprog_status spi_nor_erase_at(struct spi_nor *snor, uint64_t addr, uint6
 
 	if (ei) {
 		ret = spi_nor_erase_block(snor, erase_start, ei);
-		if (ret)
+		if (ret) {
 			logm_err("Failed to erase at 0x%" PRIx64 ", erase size 0x%x\n", erase_start, ei->size);
-		else
-			len_erased = ei->size;
+		} else {
+			if (ei->size > erase_end - erase_start)
+				len_erased = (uint32_t)(erase_end - erase_start);
+			else
+				len_erased = ei->size;
+		}
 	}
 
 	*ret_eraseszie = len_erased;
