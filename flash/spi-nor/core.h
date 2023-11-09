@@ -61,6 +61,10 @@
 		SPI_MEM_OP_DATA_OUT(_len, _data, _bw)		\
 	);
 
+#define SNOR_ERASE_REGION(_region_size, _min_erasesize, _max_erasesize, _eraseop_mask)	\
+	{ .size = (_region_size), .min_erasesize = (_min_erasesize), .max_erasesize = (_max_erasesize), \
+	  .erasesizes_mask = (_eraseop_mask) }
+
 struct spi_nor_param {
 	struct spi_nor_id id;
 
