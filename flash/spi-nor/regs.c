@@ -23,6 +23,19 @@ const struct spi_nor_reg_access nvcr_acc = SNOR_REG_ACC_XVCR(SNOR_CMD_READ_NVCR,
 const struct spi_nor_reg_access vcr_acc = SNOR_REG_ACC_XVCR(SNOR_CMD_READ_VCR, SNOR_CMD_WRITE_VCR, 1);
 const struct spi_nor_reg_access evcr_acc = SNOR_REG_ACC_XVCR(SNOR_CMD_READ_EVCR, SNOR_CMD_WRITE_EVCR, 1);
 
+const struct spi_nor_reg_access cr2v_800003h_acc = {
+	.type = SNOR_REG_NORMAL,
+	.num = 1,
+	.desc[0] = { /* Must poll manually */
+		.flags = SNOR_REGACC_F_ADDR_4B_MODE | SNOR_REGACC_F_DATA_ACC_TIMING | SNOR_REGACC_F_NO_POLL |
+			 SNOR_REGACC_F_NO_WRDIS,
+		.ndata = 1,
+		.addr = 0x800003,
+		.read_opcode = SNOR_CMD_READ_AR,
+		.write_opcode = SNOR_CMD_WRITE_AR,
+	},
+};
+
 static const struct spi_nor_reg_field_item w25q_sr_no_lb_fields[] = {
 	SNOR_REG_FIELD(2, 1, "BP0", "Block Protect Bit 0"),
 	SNOR_REG_FIELD(3, 1, "BP1", "Block Protect Bit 1"),

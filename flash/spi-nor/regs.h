@@ -133,6 +133,7 @@ extern const struct spi_nor_reg_access scur_acc;
 extern const struct spi_nor_reg_access nvcr_acc;
 extern const struct spi_nor_reg_access vcr_acc;
 extern const struct spi_nor_reg_access evcr_acc;
+extern const struct spi_nor_reg_access cr2v_800003h_acc;
 
 extern const struct snor_reg_info w25q_no_lb_regs;
 extern const struct snor_reg_info w25q_regs;

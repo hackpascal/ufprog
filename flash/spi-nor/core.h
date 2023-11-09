@@ -166,6 +166,7 @@ ufprog_status spi_nor_write_disable(struct spi_nor *snor);
 
 ufprog_status spi_nor_disable_qpi_ffh(struct spi_nor *snor);
 ufprog_status spi_nor_disable_qpi_f5h(struct spi_nor *snor);
+ufprog_status spi_nor_disable_qpi_800003h(struct spi_nor *snor);
 ufprog_status spi_nor_disable_qpi_66h_99h(struct spi_nor *snor);
 
 ufprog_status spi_nor_enable_4b_addressing_b7h(struct spi_nor *snor);

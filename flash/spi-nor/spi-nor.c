@@ -451,6 +451,34 @@ static ufprog_status spi_nor_enable_qpi_35h(struct spi_nor *snor)
 	return ret;
 }
 
+static ufprog_status spi_nor_enable_qpi_800003h(struct spi_nor *snor)
+{
+	uint8_t orig_cmd_bw = snor->state.cmd_buswidth_curr;
+	ufprog_status ret;
+	uint32_t val;
+
+	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &cr2v_800003h_acc, 0, BIT(6), false));
+
+	snor->state.cmd_buswidth_curr = 4;
+	STATUS_CHECK_GOTO_RET(spi_nor_wait_busy(snor, snor->state.max_nvcr_pp_time_ms), ret, out);
+
+	STATUS_CHECK_GOTO_RET(spi_nor_read_reg_acc(snor, &cr2v_800003h_acc, &val), ret, out);
+
+	if (!(val & BIT(6))) {
+		logm_err("Failed to set bit 6 of register 800003h for entering QPI mode\n");
+		ret = UFP_FAIL;
+		goto out;
+	}
+
+	return UFP_OK;
+
+out:
+	snor->state.cmd_buswidth_curr = orig_cmd_bw;
+	spi_nor_write_disable(snor);
+
+	return ret;
+}
+
 static ufprog_status spi_nor_enable_qpi_38h_qer(struct spi_nor *snor)
 {
 	STATUS_CHECK_RET(spi_nor_quad_enable(snor));
@@ -481,6 +509,34 @@ ufprog_status spi_nor_disable_qpi_f5h(struct spi_nor *snor)
 	ret = spi_nor_issue_single_opcode(snor, SNOR_CMD_EX_QPI_F5H);
 	if (ret)
 		logm_err("Failed to issue instruction F5h for exiting QPI mode\n");
+
+	return ret;
+}
+
+ufprog_status spi_nor_disable_qpi_800003h(struct spi_nor *snor)
+{
+	uint8_t orig_cmd_bw = snor->state.cmd_buswidth_curr;
+	ufprog_status ret;
+	uint32_t val;
+
+	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &cr2v_800003h_acc, BIT(6), 0, false));
+
+	snor->state.cmd_buswidth_curr = 1;
+	STATUS_CHECK_GOTO_RET(spi_nor_wait_busy(snor, snor->state.max_nvcr_pp_time_ms), ret, out);
+
+	STATUS_CHECK_GOTO_RET(spi_nor_read_reg_acc(snor, &cr2v_800003h_acc, &val), ret, out);
+
+	if (val & BIT(6)) {
+		logm_err("Failed to clear bit 6 of register 800003h for exiting QPI mode\n");
+		ret = UFP_FAIL;
+		goto out;
+	}
+
+	return UFP_OK;
+
+out:
+	snor->state.cmd_buswidth_curr = orig_cmd_bw;
+	spi_nor_write_disable(snor);
 
 	return ret;
 }
@@ -1338,6 +1394,10 @@ static bool spi_nor_setup_multi_io(struct spi_nor *snor, const struct spi_nor_fl
 		snor->ext_param.ops.qpi_en = spi_nor_enable_qpi_35h;
 		break;
 
+	case QPI_EN_800003H:
+		snor->ext_param.ops.qpi_en = spi_nor_enable_qpi_800003h;
+		break;
+
 	case QPI_EN_VECR_BIT7_CLR:
 		snor->ext_param.ops.qpi_en = spi_nor_enable_qpi_vecr_clr_bit7;
 		break;
@@ -1368,6 +1428,10 @@ static bool spi_nor_setup_multi_io(struct spi_nor *snor, const struct spi_nor_fl
 
 	case QPI_DIS_F5H:
 		snor->ext_param.ops.qpi_dis = spi_nor_disable_qpi_f5h;
+		break;
+
+	case QPI_DIS_800003H:
+		snor->ext_param.ops.qpi_dis = spi_nor_disable_qpi_800003h;
 		break;
 
 	case QPI_DIS_66H_99H:
