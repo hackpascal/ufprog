@@ -412,14 +412,17 @@ ufprog_status UFPROG_API ufprog_spi_nor_write_reg(struct spi_nor *snor, const st
 ufprog_status spi_nor_update_reg_acc(struct spi_nor *snor, const struct spi_nor_reg_access *access, uint32_t clr,
 				     uint32_t set, bool volatile_write)
 {
-	uint32_t val;
+	uint32_t val, new;
 
 	STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, access, &val));
 
-	val &= ~clr;
-	val |= set;
+	new = val & (~clr);
+	new |= set;
 
-	return spi_nor_write_reg_acc(snor, access, val, volatile_write);
+	if (new == val)
+		return UFP_OK;
+
+	return spi_nor_write_reg_acc(snor, access, new, volatile_write);
 }
 
 ufprog_status UFPROG_API ufprog_spi_nor_update_reg(struct spi_nor *snor, const struct spi_nor_reg_access *access,
