@@ -24,6 +24,7 @@ static const struct spi_nor_vendor *vendors[] = {
 	&vendor_issi_pmc, /* PMC comes after ISSI */
 	&vendor_macronix,
 	&vendor_micron,
+	&vendor_spansion,
 	&vendor_sst,
 	&vendor_winbond,
 	&vendor_xmc,
@@ -324,7 +325,7 @@ uint32_t spi_nor_vendor_list_parts(const struct spi_nor_vendor *vendor, const ch
 				if (part->display_vendor)
 					list[count].vendor = part->display_vendor->name;
 				else
-				list[count].vendor = vendor->name;
+					list[count].vendor = vendor->name;
 				list[count].name = part->model;
 			}
 

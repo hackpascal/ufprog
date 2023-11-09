@@ -19,6 +19,7 @@
 #define SNOR_VENDOR_ISSI			0x9d
 #define SNOR_VENDOR_MACRONIX			0xc2
 #define SNOR_VENDOR_MICRON			0x20
+#define SNOR_VENDOR_SPANSION			0x01
 #define SNOR_VENDOR_SST				0xbf
 #define SNOR_VENDOR_WINBOND			0xef
 #define SNOR_VENDOR_XMC				0x20
@@ -60,6 +61,7 @@ extern const struct spi_nor_vendor vendor_issi;
 extern const struct spi_nor_vendor vendor_issi_pmc;
 extern const struct spi_nor_vendor vendor_macronix;
 extern const struct spi_nor_vendor vendor_micron;
+extern const struct spi_nor_vendor vendor_spansion;
 extern const struct spi_nor_vendor vendor_sst;
 extern const struct spi_nor_vendor vendor_winbond;
 extern const struct spi_nor_vendor vendor_xmc;

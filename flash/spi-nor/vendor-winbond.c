@@ -96,6 +96,9 @@ static const struct snor_reg_info w25q_4b_3_regs = SNOR_REG_INFO(&w25q_sr1, &w25
 static ufprog_status w25q16xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					  struct spi_nor_flash_part_blank *bp)
 {
+	if (snor->sfdp.data && snor->sfdp.hdr.minor_ver == 1)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "S25FL016K");
+
 	if (snor->sfdp.bfpt) {
 		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A)
 			return spi_nor_reprobe_part(snor, vp, bp, NULL, "W25Q16JV");
@@ -129,6 +132,9 @@ static ufprog_status w25q32xv_fixup_model(struct spi_nor *snor, struct spi_nor_v
 					  struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t dw;
+
+	if (snor->sfdp.data && snor->sfdp.hdr.minor_ver == 1)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "S25FL032K");
 
 	if (snor->sfdp.bfpt) {
 		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
@@ -168,6 +174,9 @@ static ufprog_status w25q64xv_fixup_model(struct spi_nor *snor, struct spi_nor_v
 					  struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t dw;
+
+	if (snor->sfdp.data && snor->sfdp.hdr.minor_ver == 1)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "S25FL064K");
 
 	if (snor->sfdp.bfpt) {
 		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
@@ -209,6 +218,9 @@ static ufprog_status w25q128xv_fixup_model(struct spi_nor *snor, struct spi_nor_
 					   struct spi_nor_flash_part_blank *bp)
 {
 	uint32_t dw;
+
+	if (snor->sfdp.data && snor->sfdp.hdr.minor_ver == 1)
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "S25FL128K");
 
 	if (snor->sfdp.bfpt) {
 		if (snor->sfdp.bfpt_hdr->minor_ver == SFDP_REV_MINOR_A) {
@@ -546,6 +558,19 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 	),
 
+	SNOR_PART("S25FL016K", SNOR_ID(0xef, 0x40, 0x15), SZ_2M,
+		  SNOR_DISPLAY_VENDOR(&vendor_spansion),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_UNIQUE_ID |
+			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
+		  SNOR_QE_SR2_BIT1_WR_SR1,
+		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
+		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
+		  SNOR_SPI_MAX_SPEED_MHZ(80),
+		  SNOR_OTP_INFO(&w25q_otp_3),
+		  SNOR_REGS(&w25q_regs),
+		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+	),
+
 	SNOR_PART("W25Q16JV-DTR", SNOR_ID(0xef, 0x70, 0x15), SZ_2M,
 		  SNOR_FLAGS(SNOR_F_UNIQUE_ID | SNOR_F_GLOBAL_UNLOCK),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
@@ -673,6 +698,19 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_REGS(&w25q_3_regs),
+		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+	),
+
+	SNOR_PART("S25FL032K", SNOR_ID(0xef, 0x40, 0x16), SZ_4M,
+		  SNOR_DISPLAY_VENDOR(&vendor_spansion),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_UNIQUE_ID |
+			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
+		  SNOR_QE_SR2_BIT1_WR_SR1,
+		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
+		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
+		  SNOR_SPI_MAX_SPEED_MHZ(80),
+		  SNOR_OTP_INFO(&w25q_otp_3),
+		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 	),
 
@@ -815,6 +853,19 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
 	),
 
+	SNOR_PART("S25FL064K", SNOR_ID(0xef, 0x40, 0x17), SZ_8M,
+		  SNOR_DISPLAY_VENDOR(&vendor_spansion),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_UNIQUE_ID |
+			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
+		  SNOR_QE_SR2_BIT1_WR_SR1,
+		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
+		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
+		  SNOR_SPI_MAX_SPEED_MHZ(80),
+		  SNOR_OTP_INFO(&w25q_otp_3),
+		  SNOR_REGS(&w25q_regs),
+		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+	),
+
 	SNOR_PART("W25Q64JV-DTR", SNOR_ID(0xef, 0x70, 0x17), SZ_8M,
 		  SNOR_FLAGS(SNOR_F_UNIQUE_ID | SNOR_F_GLOBAL_UNLOCK),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
@@ -922,6 +973,19 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_REGS(&w25q_3_regs),
+		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+	),
+
+	SNOR_PART("S25FL128K", SNOR_ID(0xef, 0x40, 0x18), SZ_16M,
+		  SNOR_DISPLAY_VENDOR(&vendor_spansion),
+		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K | SNOR_F_UNIQUE_ID |
+			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
+		  SNOR_QE_SR2_BIT1_WR_SR1,
+		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
+		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
+		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(70),
+		  SNOR_OTP_INFO(&w25q_otp_3),
+		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
 	),
 

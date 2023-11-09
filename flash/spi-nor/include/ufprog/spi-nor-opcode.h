@@ -165,4 +165,11 @@
 #define SNOR_CMD_PAGE_PROG_DUAL_IO		0xd2
 #define SNOR_CMD_CLEAR_FLAGR			0x50
 
+/* Spansion specific */
+#define SNOR_CMD_SPANDION_READ_SR2		0x07
+#define SNOR_CMD_SPANDION_READ_CR3		0x33
+#define SNOR_CMD_READ_AR			0x65
+#define SNOR_CMD_WRITE_AR			0x71
+#define SNOR_CMD_SECTOR_ERASE_8K		0x40
+
 #endif /* _UFPROG_SPI_NOR_OPCODE_H_ */
