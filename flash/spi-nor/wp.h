@@ -96,6 +96,9 @@ extern const struct spi_nor_wp_info wpr_2bp_tb;
 extern const struct spi_nor_wp_info wpr_3bp_up;
 extern const struct spi_nor_wp_info wpr_3bp_up_ratio;
 
+extern const struct spi_nor_wp_info wpr_3bp_lo;
+extern const struct spi_nor_wp_info wpr_3bp_lo_ratio;
+
 extern const struct spi_nor_wp_info wpr_3bp_tb;
 extern const struct spi_nor_wp_info wpr_3bp_tb_ratio;
 

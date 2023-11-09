@@ -111,6 +111,30 @@ const struct spi_nor_wp_info wpr_3bp_up_ratio = SNOR_WP_BP(&sr_acc, BP_2_0,
 	SNOR_WP_RP_UP(SR_BP2 | SR_BP1         , 1),	/* Upper 1/2 */
 );
 
+const struct spi_nor_wp_info wpr_3bp_lo = SNOR_WP_BP(&sr_acc, BP_2_0,
+	SNOR_WP_NONE( 0                          ),	/* None */
+	SNOR_WP_ALL(  SR_BP2 | SR_BP1 | SR_BP0   ),	/* All */
+
+	SNOR_WP_BP_LO(                  SR_BP0, 0),	/* Lower 64KB */
+	SNOR_WP_BP_LO(         SR_BP1         , 1),	/* Lower 128KB */
+	SNOR_WP_BP_LO(         SR_BP1 | SR_BP0, 2),	/* Lower 256KB */
+	SNOR_WP_BP_LO(SR_BP2                  , 3),	/* Lower 512KB */
+	SNOR_WP_BP_LO(SR_BP2 |          SR_BP0, 4),	/* Lower 1MB */
+	SNOR_WP_BP_LO(SR_BP2 | SR_BP1         , 5),	/* Lower 2MB */
+);
+
+const struct spi_nor_wp_info wpr_3bp_lo_ratio = SNOR_WP_BP(&sr_acc, BP_2_0,
+	SNOR_WP_NONE( 0                          ),	/* None */
+	SNOR_WP_ALL(  SR_BP2 | SR_BP1 | SR_BP0   ),	/* All */
+
+	SNOR_WP_RP_LO(                  SR_BP0, 6),	/* Lower 1/64 */
+	SNOR_WP_RP_LO(         SR_BP1         , 5),	/* Lower 1/32 */
+	SNOR_WP_RP_LO(         SR_BP1 | SR_BP0, 4),	/* Lower 1/16 */
+	SNOR_WP_RP_LO(SR_BP2                  , 3),	/* Lower 1/8 */
+	SNOR_WP_RP_LO(SR_BP2 |          SR_BP0, 2),	/* Lower 1/4 */
+	SNOR_WP_RP_LO(SR_BP2 | SR_BP1         , 1),	/* Lower 1/2 */
+);
+
 const struct spi_nor_wp_info wpr_3bp_tb = SNOR_WP_BP(&sr_acc, BP_2_0_TB,
 	SNOR_WP_NONE( 0                                  ),	/* None */
 	SNOR_WP_NONE( SR_TB                              ),	/* None */
