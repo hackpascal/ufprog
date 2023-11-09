@@ -120,6 +120,8 @@ static const char usage[] =
 	"        Display OTP region information.\n"
 	"    otp [index=<index>] read <file>\n"
 	"        Read OTP region into file.\n"
+	"    otp [index=<index>] dump\n"
+	"        Display OTP region data.\n"
 	"    otp [index=<index>] write [verify] <file>\n"
 	"        Write data to OTP region.\n"
 	"    otp [index=<index>] erase\n"
@@ -1009,6 +1011,38 @@ cleanup:
 	return exitcode;
 }
 
+static int do_snor_otp_dump(void *priv, int argc, char *argv[])
+{
+	struct ufsnor_otp_instance *inst = priv;
+	ufprog_status ret;
+	int exitcode = 1;
+	void *data;
+
+	data = malloc(inst->info->otp->size);
+	if (!data) {
+		if (!data) {
+			os_fprintf(stderr, "No memory OTP region data\n");
+			return 1;
+		}
+	}
+
+	ret = ufprog_spi_nor_otp_read(inst->snor, inst->index, 0, inst->info->otp->size, data);
+	if (ret) {
+		os_fprintf(stderr, "Failed to read OTP region %u\n", inst->index);
+		goto cleanup;
+	}
+
+	os_printf("Data of OTP region %u:\n", inst->index);
+	hexdump(data, inst->info->otp->size, 0, false);
+
+	exitcode = 0;
+
+cleanup:
+	free(data);
+
+	return exitcode;
+}
+
 static int do_snor_otp_write(void *priv, int argc, char *argv[])
 {
 	struct ufsnor_otp_instance *inst = priv;
@@ -1186,6 +1220,7 @@ static int do_snor_otp_lock(void *priv, int argc, char *argv[])
 static const struct subcmd_entry otp_cmds[] = {
 	SUBCMD("info", do_snor_otp_info),
 	SUBCMD("read", do_snor_otp_read),
+	SUBCMD("dump", do_snor_otp_dump),
 	SUBCMD("write", do_snor_otp_write),
 	SUBCMD("erase", do_snor_otp_erase),
 	SUBCMD("lock", do_snor_otp_lock),
