@@ -13,7 +13,7 @@
 #include "regs.h"
 
 const struct spi_nor_reg_access sr_acc = SNOR_REG_ACC_NORMAL_SR(SNOR_CMD_READ_SR, SNOR_CMD_WRITE_SR);
-const struct spi_nor_reg_access cr_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_READ_CR, SNOR_CMD_WRITE_CR);
+const struct spi_nor_reg_access cr_acc = SNOR_REG_ACC_NORMAL_SR(SNOR_CMD_READ_CR, SNOR_CMD_WRITE_CR);
 const struct spi_nor_reg_access cr_3e3f_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_READ_CR_3F, SNOR_CMD_WRITE_CR_3E);
 const struct spi_nor_reg_access sr3_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_READ_SR3, SNOR_CMD_WRITE_SR3);
 const struct spi_nor_reg_access srcr_acc = SNOR_REG_ACC_SRCR(SNOR_CMD_READ_SR, SNOR_CMD_READ_CR, SNOR_CMD_WRITE_SR);
