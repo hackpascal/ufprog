@@ -174,4 +174,10 @@
 #define SNOR_CMD_WRITE_AR			0x71
 #define SNOR_CMD_SECTOR_ERASE_8K		0x40
 
+/* Atmel specific */
+#define SNOR_CMD_ATMEL_READ_OTP			0x77
+#define SNOR_CMD_ATMEL_PROG_OTP			0x9b
+#define SNOR_CMD_AT26DF_2KB_ERASE		0x50
+#define SNOR_CMD_AT26DF_PAGE_PROG		0x11
+
 #endif /* _UFPROG_SPI_NOR_OPCODE_H_ */

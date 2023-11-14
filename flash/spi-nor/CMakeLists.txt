@@ -15,6 +15,7 @@ set(ufprog_spi_nor_src
 )
 
 set(ufprog_spi_nor_vendor_src
+	vendor-atmel.c
 	vendor-eon.c
 	vendor-esmt.c
 	vendor-gigadevice.c
