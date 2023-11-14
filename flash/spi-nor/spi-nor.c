@@ -390,7 +390,7 @@ static ufprog_status spi_nor_quad_enable_sr2_bit1(struct spi_nor *snor)
 
 static ufprog_status spi_nor_quad_enable_sr2_bit7(struct spi_nor *snor)
 {
-	return spi_nor_quad_enable_any(snor, &cr_acc, 7);
+	return spi_nor_quad_enable_any(snor, &cr_3e3f_acc, 7);
 }
 
 static ufprog_status spi_nor_quad_enable_nvcr_bit4(struct spi_nor *snor)

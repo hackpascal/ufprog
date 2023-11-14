@@ -17,6 +17,7 @@
 /* Read registers */
 #define SNOR_CMD_READ_SR			0x05
 #define SNOR_CMD_READ_CR			0x35
+#define SNOR_CMD_READ_CR_3F			0x3f
 #define SNOR_CMD_READ_SR3			0x15
 #define SNOR_CMD_READ_BANK			0x16
 #define SNOR_CMD_READ_EAR			0xc8
@@ -28,6 +29,7 @@
 /* Write registers */
 #define SNOR_CMD_WRITE_SR			0x01
 #define SNOR_CMD_WRITE_CR			0x31
+#define SNOR_CMD_WRITE_CR_3E			0x3e
 #define SNOR_CMD_WRITE_SR3			0x11
 #define SNOR_CMD_WRITE_BANK			0x17
 #define SNOR_CMD_WRITE_EAR			0xc5

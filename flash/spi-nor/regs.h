@@ -125,6 +125,7 @@ struct spi_nor_reg_access {
 
 extern const struct spi_nor_reg_access sr_acc;
 extern const struct spi_nor_reg_access cr_acc;
+extern const struct spi_nor_reg_access cr_3e3f_acc;
 extern const struct spi_nor_reg_access sr3_acc;
 extern const struct spi_nor_reg_access srcr_acc;
 extern const struct spi_nor_reg_access ear_acc;
