@@ -61,6 +61,7 @@ static const struct spi_nor_part_flag_enum_info part_flags[] = {
 	{ 14, "aai-word-program" },
 	{ 15, "no-op" },
 	{ 16, "bypass-vendor-fixups" },
+	{ 17, "page-program-dual-input" },
 };
 
 static const struct spi_nor_part_flag_enum_info part_qe_types[] = {

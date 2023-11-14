@@ -1619,6 +1619,9 @@ static ufprog_status spi_nor_setup_param(struct spi_nor *snor, const struct spi_
 		part->pp_io_caps &= ~(BIT_SPI_MEM_IO_2_2_2);
 	}
 
+	if (part->flags & SNOR_F_PP_DUAL_INPUT)
+		part->pp_io_caps |= BIT_SPI_MEM_IO_1_1_2;
+
 	if (!spi_nor_setup_opcode(snor, part))
 		return UFP_FAIL;
 
