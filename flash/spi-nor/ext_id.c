@@ -62,6 +62,7 @@ static const struct spi_nor_part_flag_enum_info part_flags[] = {
 	{ 15, "no-op" },
 	{ 16, "bypass-vendor-fixups" },
 	{ 17, "page-program-dual-input" },
+	{ 18, "no-write-enable-disable" },
 };
 
 static const struct spi_nor_part_flag_enum_info part_qe_types[] = {

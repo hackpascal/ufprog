@@ -37,6 +37,7 @@ struct spi_nor_flash_part_blank;
 #define SNOR_F_NO_OP				BIT(15)
 #define SNOR_F_BYPASS_VENDOR_FIXUPS		BIT(16)
 #define SNOR_F_PP_DUAL_INPUT			BIT(17)
+#define SNOR_F_NO_WREN				BIT(18)
 
 #define SNOR_FLAGS(_f)				.flags = (_f)
 #define SNOR_VENDOR_FLAGS(_f)			.vendor_flags = (_f)

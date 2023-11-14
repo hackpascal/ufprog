@@ -235,12 +235,18 @@ static ufprog_status spi_nor_read_id(struct spi_nor *snor, uint8_t opcode, uint8
 
 ufprog_status spi_nor_volatile_write_enable(struct spi_nor *snor)
 {
+	if (snor->param.flags & SNOR_F_NO_WREN)
+		return UFP_OK;
+
 	return spi_nor_issue_single_opcode(snor, SNOR_CMD_VOLATILE_WRITE_EN);
 }
 
 ufprog_status spi_nor_sr_write_enable(struct spi_nor *snor, bool volatile_write, bool *retpoll)
 {
 	*retpoll = false;
+
+	if (snor->param.flags & SNOR_F_NO_WREN)
+		return UFP_OK;
 
 	if (volatile_write && (snor->param.flags & SNOR_F_SR_VOLATILE_WREN_50H))
 		return spi_nor_volatile_write_enable(snor);
@@ -288,6 +294,9 @@ ufprog_status spi_nor_write_enable(struct spi_nor *snor)
 	ufprog_status ret;
 	uint8_t val;
 
+	if (snor->param.flags & SNOR_F_NO_WREN)
+		return UFP_OK;
+
 	ret = spi_nor_issue_single_opcode(snor, SNOR_CMD_WRITE_EN);
 	if (ret) {
 		logm_err("Failed to issue write enable instruction\n");
@@ -306,6 +315,9 @@ ufprog_status spi_nor_write_enable(struct spi_nor *snor)
 
 ufprog_status spi_nor_data_write_enable(struct spi_nor *snor)
 {
+	if (snor->param.flags & SNOR_F_NO_WREN)
+		return UFP_OK;
+
 	return snor->ext_param.data_write_enable(snor);
 }
 
@@ -313,6 +325,9 @@ ufprog_status spi_nor_write_disable(struct spi_nor *snor)
 {
 	ufprog_status ret;
 	uint8_t val;
+
+	if (snor->param.flags & SNOR_F_NO_WREN)
+		return UFP_OK;
 
 	ret = spi_nor_issue_single_opcode(snor, SNOR_CMD_WRITE_DIS);
 	if (ret) {
