@@ -84,6 +84,8 @@ struct spi_nor_wp_info {
 	{ .access = (_access), .sr_mask = (_mask), .ranges = { __VA_ARGS__ },				\
 	  .num = sizeof((struct spi_nor_wp_range[]){ __VA_ARGS__ }) / sizeof(struct spi_nor_wp_range) }
 
+extern const struct spi_nor_wp_info wpr_1bp;
+
 extern const struct spi_nor_wp_info wpr_2bp_all;
 
 extern const struct spi_nor_wp_info wpr_2bp_up;
