@@ -505,6 +505,9 @@ ufprog_status UFPROG_API ufprog_spi_nor_otp_erase(struct spi_nor *snor, uint32_t
 	if (!snor->ext_param.otp || !snor->ext_param.ops.otp)
 		return UFP_UNSUPPORTED;
 
+	if (!snor->ext_param.ops.otp->erase)
+		return UFP_UNSUPPORTED;
+
 	if (index < snor->ext_param.otp->start_index ||
 	    index >= snor->ext_param.otp->start_index + snor->ext_param.otp->count)
 		return UFP_INVALID_PARAMETER;
@@ -529,6 +532,9 @@ ufprog_status UFPROG_API ufprog_spi_nor_otp_lock(struct spi_nor *snor, uint32_t 
 	if (!snor->ext_param.otp || !snor->ext_param.ops.otp)
 		return UFP_UNSUPPORTED;
 
+	if (!snor->ext_param.ops.otp->lock)
+		return UFP_UNSUPPORTED;
+
 	if (index < snor->ext_param.otp->start_index ||
 	    index >= snor->ext_param.otp->start_index + snor->ext_param.otp->count)
 		return UFP_INVALID_PARAMETER;
@@ -551,6 +557,9 @@ ufprog_status UFPROG_API ufprog_spi_nor_otp_locked(struct spi_nor *snor, uint32_
 		return UFP_FLASH_NOT_PROBED;
 
 	if (!snor->ext_param.otp || !snor->ext_param.ops.otp)
+		return UFP_UNSUPPORTED;
+
+	if (!snor->ext_param.ops.otp->locked)
 		return UFP_UNSUPPORTED;
 
 	if (index < snor->ext_param.otp->start_index ||
