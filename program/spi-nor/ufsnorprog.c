@@ -962,6 +962,9 @@ static int do_snor_otp_info(void *priv, int argc, char *argv[])
 	for (i = 0; i < inst->info->otp->count; i++) {
 		ret = ufprog_spi_nor_otp_locked(inst->snor, inst->info->otp->start_index + i, &locked);
 		if (ret) {
+			if (ret == UFP_UNSUPPORTED)
+				break;
+
 			os_fprintf(stderr, "Failed to get lock status of OTP region %u\n",
 				   inst->info->otp->start_index + i);
 			continue;
@@ -1178,7 +1181,12 @@ static int do_snor_otp_lock(void *priv, int argc, char *argv[])
 
 	ret = ufprog_spi_nor_otp_locked(inst->snor, inst->index, &locked);
 	if (ret) {
-		os_fprintf(stderr, "Failed to get lock status of OTP region %u\n", inst->index);
+		if (ret == UFP_UNSUPPORTED) {
+			os_fprintf(stderr, "This chip does not support OTP lock.\n");
+			os_fprintf(stderr, "Maybe this chip locks the OTP once it's written.\n");
+		} else {
+			os_fprintf(stderr, "Failed to get lock status of OTP region %u\n", inst->index);
+		}
 		return 1;
 	}
 
