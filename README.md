@@ -46,6 +46,7 @@ Pull requests are welcome.
 * TBD: Parallel NAND/24 EEPROM
 
 ## Supported SPI-NOR flashes
+* Atmel/Adesto/Dialog/Renesas
 * EON
 * ESMT
 * GigaDevice
@@ -58,7 +59,7 @@ Pull requests are welcome.
 * Winbond
 * XMC
 * XTX
-* TBD: Atmel/FudanMicro/Puya/Zbit/Zetta...
+* TBD: FudanMicro/Puya/Zbit/Zetta...
 
 ## Supported SPI-NAND flashes
 * Alliance Memory
