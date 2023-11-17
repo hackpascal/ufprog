@@ -90,6 +90,7 @@ struct spi_nor_ext_param {
 	const struct spi_nor_otp_info *otp;
 	const struct snor_reg_info *regs;
 	const struct spi_nor_wp_info *wp_ranges;
+	const struct spi_nor_reg_access *wp_regacc;
 
 	struct spi_nor_erase_region *erase_regions;
 	uint32_t num_erase_regions;

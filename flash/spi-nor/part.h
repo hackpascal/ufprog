@@ -179,6 +179,9 @@ enum snor_4b_dis_type {
 #define SNOR_REGS(_regs)			.regs = (_regs)
 #define SNOR_OTP_INFO(_info)			.otp = (_info)
 #define SNOR_WP_RANGES(_wp_ranges)		.wp_ranges = (_wp_ranges)
+#define SNOR_WP_RANGES_ACC(_wp_ranges, _wp_regacc)	\
+						.wp_ranges = (_wp_ranges),	\
+						.wp_regacc = (_wp_regacc)
 
 #define SNOR_PAGE_SIZE(_pgsz)			.page_size = (_pgsz)
 #define SNOR_PP_MAX_TIME_US(_us)		.max_pp_time_us = (_us)
@@ -295,6 +298,7 @@ struct spi_nor_flash_part {
 	const struct snor_reg_info *regs;
 	const struct spi_nor_otp_info *otp;
 	const struct spi_nor_wp_info *wp_ranges;
+	const struct spi_nor_reg_access *wp_regacc;
 
 	const struct spi_nor_flash_part_ops *ops;
 	const struct spi_nor_flash_part_fixup *fixups;

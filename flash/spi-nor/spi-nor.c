@@ -1640,6 +1640,9 @@ static ufprog_status spi_nor_setup_param_final(struct spi_nor *snor, const struc
 	if (!snor->ext_param.wp_ranges)
 		snor->ext_param.wp_ranges = part->wp_ranges;
 
+	if (!snor->ext_param.wp_regacc)
+		snor->ext_param.wp_regacc = part->wp_regacc;
+
 	if (!snor->ext_param.ops.select_die) {
 		if (part->ops && part->ops->select_die)
 			snor->ext_param.ops.select_die = part->ops->select_die;

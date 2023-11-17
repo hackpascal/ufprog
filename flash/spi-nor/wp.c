@@ -777,7 +777,10 @@ ufprog_status UFPROG_API ufprog_spi_nor_set_wp_region(struct spi_nor *snor, cons
 		if (rg.base != base || rg.size != region->size)
 			continue;
 
-		access = snor->ext_param.wp_ranges->access;
+		if (snor->ext_param.wp_regacc)
+			access = snor->ext_param.wp_regacc;
+		else
+			access = snor->ext_param.wp_ranges->access;
 
 		STATUS_CHECK_RET(spi_nor_set_low_speed(snor));
 
