@@ -233,8 +233,12 @@ static int do_snor_probe(void *priv, int argc, char *argv[])
 	if (mask) {
 		os_printf("Block/Sector size:  ");
 		for (i = 0; i < SPI_NOR_MAX_ERASE_INFO; i++) {
-			if (mask & BIT(i))
-				os_printf("%uKB ", inst->info.erasesizes[i] >> 10);
+			if (mask & BIT(i)) {
+				if (inst->info.erasesizes[i] >= SZ_1K)
+					os_printf("%uKB ", inst->info.erasesizes[i] >> 10);
+				else
+					os_printf("%uB ", inst->info.erasesizes[i]);
+			}
 		}
 		os_printf("\n");
 	}
