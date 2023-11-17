@@ -1248,8 +1248,13 @@ setup_io_opcodes:
 		if (!snor->param.erase_info.info[i].size)
 			continue;
 
-		logm_dbg("Selected opcode %02Xh for %uKB erase\n",
-			 snor->param.erase_info.info[i].opcode, snor->param.erase_info.info[i].size >> 10);
+		if (snor->param.erase_info.info[i].size >= SZ_1K) {
+			logm_dbg("Selected opcode %02Xh for %uKB erase\n",
+				 snor->param.erase_info.info[i].opcode, snor->param.erase_info.info[i].size >> 10);
+		} else {
+			logm_dbg("Selected opcode %02Xh for %uB erase\n",
+				 snor->param.erase_info.info[i].opcode, snor->param.erase_info.info[i].size);
+		}
 
 		if (!snor->param.erase_info.info[i].max_erase_time_ms)
 			snor->param.erase_info.info[i].max_erase_time_ms = SNOR_ERASE_TIMEOUT_MS;
