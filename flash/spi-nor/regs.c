@@ -36,6 +36,23 @@ const struct spi_nor_reg_access cr2v_800003h_acc = {
 	},
 };
 
+const struct spi_nor_reg_access srcr_comb_acc = {
+	.type = SNOR_REG_NORMAL,
+	.num = 2,
+	.desc[0] = {
+		.ndata = 1,
+		.read_opcode = SNOR_CMD_READ_SR,
+		.write_opcode = SNOR_CMD_WRITE_SR,
+		.flags = SNOR_REGACC_F_SR,
+	},
+	.desc[1] = {
+		.ndata = 1,
+		.read_opcode = SNOR_CMD_READ_CR,
+		.write_opcode = SNOR_CMD_WRITE_CR,
+		.flags = SNOR_REGACC_F_SR,
+	},
+};
+
 static const struct spi_nor_reg_field_item w25q_sr_no_lb_fields[] = {
 	SNOR_REG_FIELD(2, 1, "BP0", "Block Protect Bit 0"),
 	SNOR_REG_FIELD(3, 1, "BP1", "Block Protect Bit 1"),

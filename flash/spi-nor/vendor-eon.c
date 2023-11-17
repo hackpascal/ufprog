@@ -1118,9 +1118,6 @@ static const struct spi_nor_flash_part_fixup en25qh256_fixups = {
 	.pre_param_setup = en25qh256_fixup_model,
 };
 
-static struct spi_nor_wp_info *eon_3bp_tb_sec_cmp, eon_3bp_tb_sec_cmp_dummy;
-static struct spi_nor_wp_info *eon_4bp_tb_cmp, eon_4bp_tb_cmp_dummy;
-
 static const struct spi_nor_erase_info en25p05_erase_opcodes = SNOR_ERASE_SECTORS(
 	SNOR_ERASE_SECTOR(SZ_32K, SNOR_CMD_BLOCK_ERASE),
 );
@@ -1366,7 +1363,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4 | BIT_SPI_MEM_IO_4_4_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(86),
 		  SNOR_REGS(&en25qxb_regs),
-		  SNOR_WP_RANGES(&eon_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &eon_sr1_sr4_acc),
 		  SNOR_OTP_INFO(&eon_otp_3x512b),
 	),
 
@@ -1503,7 +1500,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4 | BIT_SPI_MEM_IO_4_4_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(86),
 		  SNOR_REGS(&en25qxb_regs),
-		  SNOR_WP_RANGES(&eon_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &eon_sr1_sr4_acc),
 		  SNOR_OTP_INFO(&eon_otp_3x512b),
 	),
 
@@ -1855,7 +1852,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4 | BIT_SPI_MEM_IO_4_4_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&en25s32a_regs),
-		  SNOR_WP_RANGES(&eon_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &eon_sr1_sr4_acc),
 		  SNOR_OTP_INFO(&eon_otp_3x512b),
 	),
 
@@ -2245,7 +2242,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4 | EON_F_DC_SR3_BIT5_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&en25qh256a_regs),
-		  SNOR_WP_RANGES(&eon_4bp_tb_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_4bp_tb_cmp, &eon_sr1_sr4_acc),
 		  SNOR_OTP_INFO(&eon_otp_3x512b),
 	),
 
@@ -2697,12 +2694,6 @@ static ufprog_status eon_part_fixup(struct spi_nor *snor, struct spi_nor_vendor_
 		bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 0;
 	}
 
-	if (bp->p.wp_ranges == &eon_3bp_tb_sec_cmp_dummy)
-		bp->p.wp_ranges = eon_3bp_tb_sec_cmp;
-
-	if (bp->p.wp_ranges == &eon_4bp_tb_cmp_dummy)
-		bp->p.wp_ranges = eon_4bp_tb_cmp;
-
 	return UFP_OK;
 }
 
@@ -2803,29 +2794,6 @@ static const struct spi_nor_flash_part_ops eon_part_ops = {
 	.read_uid = eon_read_uid,
 };
 
-static ufprog_status eon_init(void)
-{
-	eon_3bp_tb_sec_cmp = wp_bp_info_copy(&wpr_3bp_tb_sec_cmp);
-	if (!eon_3bp_tb_sec_cmp)
-		return UFP_NOMEM;
-
-	eon_3bp_tb_sec_cmp->access = &eon_sr1_sr4_acc;
-
-	eon_4bp_tb_cmp = wp_bp_info_copy(&wpr_4bp_tb_cmp);
-	if (!eon_4bp_tb_cmp) {
-		free(eon_3bp_tb_sec_cmp);
-		return UFP_NOMEM;
-	}
-
-	eon_4bp_tb_cmp->access = &eon_sr1_sr4_acc;
-
-	return UFP_OK;
-}
-
-static const struct spi_nor_vendor_ops eon_ops = {
-	.init = eon_init,
-};
-
 const struct spi_nor_vendor vendor_eon = {
 	.mfr_id = SNOR_VENDOR_EON,
 	.id = "eon",
@@ -2834,7 +2802,6 @@ const struct spi_nor_vendor vendor_eon = {
 	.nparts = ARRAY_SIZE(eon_parts),
 	.vendor_flag_names = eon_vendor_flag_info,
 	.num_vendor_flag_names = ARRAY_SIZE(eon_vendor_flag_info),
-	.ops = &eon_ops,
 	.default_part_ops = &eon_part_ops,
 	.default_part_fixups = &eon_fixups,
 };

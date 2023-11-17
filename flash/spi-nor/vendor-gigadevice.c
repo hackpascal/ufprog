@@ -105,19 +105,6 @@ static const struct spi_nor_reg_access gd_vcr_0_acc = GD_REG_ACC_VCR(0);
 static const struct spi_nor_reg_access gd_vcr_1_acc = GD_REG_ACC_VCR(1);
 static const struct spi_nor_reg_access gd_vcr_4_acc = GD_REG_ACC_VCR(4);
 
-static const struct spi_nor_reg_access gd_srcr_acc = {
-	.type = SNOR_REG_NORMAL,
-	.num = 2,
-	.desc[0] = {
-		.read_opcode = SNOR_CMD_READ_SR,
-		.write_opcode = SNOR_CMD_WRITE_SR,
-	},
-	.desc[0] = {
-		.read_opcode = SNOR_CMD_READ_CR,
-		.write_opcode = SNOR_CMD_WRITE_CR,
-	},
-};
-
 static const struct spi_nor_reg_field_item gd25dxc_sr_fields[] = {
 	SNOR_REG_FIELD(2, 1, "BP0", "Block Protect Bit 0"),
 	SNOR_REG_FIELD(3, 1, "BP1", "Block Protect Bit 1"),
@@ -652,7 +639,7 @@ static const struct spi_nor_wp_info gd25dxe_wpr = SNOR_WP_BP(&sr_acc, BP_2_0_TB,
 	SNOR_WP_SP_CMPF_UP(SR_TB | SR_BP2 | SR_BP1         , 6),	/* Upper 256KB */
 );
 
-static const struct spi_nor_wp_info gd_wpr_4bp_tb = SNOR_WP_BP(&gd_srcr_acc, BP_3_0_TB,
+static const struct spi_nor_wp_info gd_wpr_4bp_tb = SNOR_WP_BP(&srcr_comb_acc, BP_3_0_TB,
 	SNOR_WP_NONE( 0                                             ),	/* None */
 	SNOR_WP_NONE( SR_TB11                                       ),	/* None */
 
@@ -1034,8 +1021,6 @@ static ufprog_status gd25s513md_fixup(struct spi_nor *snor, struct spi_nor_vendo
 static const struct spi_nor_flash_part_fixup gd25s513md_fixups = {
 	.pre_param_setup = gd25s513md_fixup,
 };
-
-static struct spi_nor_wp_info *gd_3bp_tb_sec_cmp, gd_3bp_tb_sec_cmp_dummy;
 
 static const struct spi_nor_flash_part gigadevice_parts[] = {
 	SNOR_PART("GD25 512Kb", SNOR_ID(0xc8, 0x40, 0x10), SZ_64K,
@@ -1868,7 +1853,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&gd25qxc_3_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -1877,7 +1862,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxe_3_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -1892,7 +1877,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxc_3_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -1962,7 +1947,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&gd25qxe_3_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -1998,7 +1983,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&gd25qxc_3_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -2007,7 +1992,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxe_3_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -2022,7 +2007,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxc_3_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -2092,7 +2077,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&gd25qxe_3_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -2126,7 +2111,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(80), SNOR_QUAD_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&gd25q128c_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_512b),
 	),
 
@@ -2139,7 +2124,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(80), SNOR_QUAD_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&gd25b127d_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -2152,7 +2137,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(70), SNOR_QUAD_MAX_SPEED_MHZ(70),
 		  SNOR_REGS(&gd25q127c_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -2160,7 +2145,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxe_3_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -2168,7 +2153,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25q128e_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -2181,7 +2166,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(80), SNOR_QUAD_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&gd25q127c_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -2259,7 +2244,7 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
 		  SNOR_SPI_MAX_SPEED_MHZ(50),
 		  SNOR_REGS(&gd25q128e_regs),
-		  SNOR_WP_RANGES(&gd_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
 	),
 
@@ -2715,9 +2700,6 @@ static ufprog_status gd_pre_param_setup(struct spi_nor *snor, struct spi_nor_ven
 		snor->state.reg.cr_shift = 8;
 	}
 
-	if (bp->p.wp_ranges == &gd_3bp_tb_sec_cmp_dummy)
-		bp->p.wp_ranges = gd_3bp_tb_sec_cmp;
-
 	return UFP_OK;
 }
 
@@ -2937,21 +2919,6 @@ static const struct spi_nor_flash_part_ops gd_default_part_ops = {
 	.setup_qpi = gd_setup_qpi,
 };
 
-static ufprog_status gd_init(void)
-{
-	gd_3bp_tb_sec_cmp = wp_bp_info_copy(&wpr_3bp_tb_sec_cmp);
-	if (!gd_3bp_tb_sec_cmp)
-		return UFP_NOMEM;
-
-	gd_3bp_tb_sec_cmp->access = &gd_srcr_acc;
-
-	return UFP_OK;
-}
-
-static const struct spi_nor_vendor_ops gd_ops = {
-	.init = gd_init,
-};
-
 const struct spi_nor_vendor vendor_gigadevice = {
 	.mfr_id = SNOR_VENDOR_GIGADEVICE,
 	.id = "gigadevice",
@@ -2960,7 +2927,6 @@ const struct spi_nor_vendor vendor_gigadevice = {
 	.nparts = ARRAY_SIZE(gigadevice_parts),
 	.vendor_flag_names = gigadevice_vendor_flag_info,
 	.num_vendor_flag_names = ARRAY_SIZE(gigadevice_vendor_flag_info),
-	.ops = &gd_ops,
 	.default_part_ops = &gd_default_part_ops,
 	.default_part_fixups = &gd_default_part_fixups,
 };

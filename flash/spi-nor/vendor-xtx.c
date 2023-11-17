@@ -44,23 +44,6 @@ static const struct spi_nor_part_flag_enum_info xtx_vendor_flag_info[] = {
 	{ 4, "lc-sr3-bit1" },
 };
 
-static const struct spi_nor_reg_access xtx_srcr_acc = {
-	.type = SNOR_REG_NORMAL,
-	.num = 2,
-	.desc[0] = {
-		.read_opcode = SNOR_CMD_READ_SR,
-		.write_opcode = SNOR_CMD_WRITE_SR,
-		.flags = SNOR_REGACC_F_SR,
-		.ndata = 1,
-	},
-	.desc[1] = {
-		.read_opcode = SNOR_CMD_READ_CR,
-		.write_opcode = SNOR_CMD_WRITE_CR,
-		.flags = SNOR_REGACC_F_SR,
-		.ndata = 1,
-	},
-};
-
 static const struct spi_nor_otp_info xtx_otp_512b = {
 	.start_index = 0,
 	.count = 1,
@@ -129,7 +112,7 @@ static const struct spi_nor_reg_field_item xtx_4bp_srp_qe_lb_cmp_srcr_fields[] =
 	SNOR_REG_FIELD(14, 1, "CMP", "Complement Protect"),
 };
 
-static const struct spi_nor_reg_def xtx_4bp_srp_qe_lb_cmp_srcr = SNOR_REG_DEF("SR", "Status Register", &xtx_srcr_acc,
+static const struct spi_nor_reg_def xtx_4bp_srp_qe_lb_cmp_srcr = SNOR_REG_DEF("SR", "Status Register", &srcr_acc,
 									      xtx_4bp_srp_qe_lb_cmp_srcr_fields);
 
 static const struct snor_reg_info xtx_4bp_srp_qe_lb_cmp_regs = SNOR_REG_INFO(&xtx_4bp_srp_qe_lb_cmp_srcr);
@@ -147,7 +130,7 @@ static const struct spi_nor_reg_field_item xtx_5bp_srp_qe_lb_cmp_srcr_fields[] =
 };
 
 static const struct spi_nor_reg_def xtx_5bp_srp_qe_lb_cmp_srcr = SNOR_REG_DEF("SRCR", "Status & Configuration Register",
-									      &xtx_srcr_acc,
+									      &srcr_acc,
 									      xtx_5bp_srp_qe_lb_cmp_srcr_fields);
 
 static const struct snor_reg_info xtx_5bp_srp_qe_lb_cmp_regs = SNOR_REG_INFO(&xtx_5bp_srp_qe_lb_cmp_srcr);
@@ -167,7 +150,7 @@ static const struct spi_nor_reg_field_item xtx_5bp_srp2_qe_lb_cmp_srcr_fields[] 
 
 static const struct spi_nor_reg_def xtx_5bp_srp2_qe_lb_cmp_srcr = SNOR_REG_DEF("SRCR",
 									       "Status & Configuration Register",
-									       &xtx_srcr_acc,
+									       &srcr_acc,
 									       xtx_5bp_srp2_qe_lb_cmp_srcr_fields);
 
 static const struct snor_reg_info xtx_5bp_srp2_qe_lb_cmp_regs = SNOR_REG_INFO(&xtx_5bp_srp2_qe_lb_cmp_srcr);
@@ -335,9 +318,6 @@ static DEFINE_SNOR_ALIAS(xt25q64d_alias, SNOR_ALIAS_MODEL("XT25BQ64D"));
 static DEFINE_SNOR_ALIAS(xt25q128d_alias, SNOR_ALIAS_MODEL("XT25BQ128D"));
 static DEFINE_SNOR_ALIAS(xt25f256b_alias, SNOR_ALIAS_MODEL("XT25BF256B"));
 
-static struct spi_nor_wp_info *xtx_3bp_tb_sec_cmp, xtx_3bp_tb_sec_cmp_dummy;
-static struct spi_nor_wp_info *xtx_3bp_tb_sec_cmp_ratio, xtx_3bp_tb_sec_cmp_ratio_dummy;
-
 static const struct spi_nor_flash_part xtx_parts[] = {
 
 	SNOR_PART("XT25F02E", SNOR_ID(0x0b, 0x40, 0x12), SZ_256K,
@@ -424,7 +404,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_VENDOR_FLAGS(XTX_F_LC_SR3_BIT1 | XTX_F_WPS_SR3_BIT2),
 		  SNOR_SPI_MAX_SPEED_MHZ(108),
 		  SNOR_REGS(&xtx_sr_cr_sr3_regs),
-		  SNOR_WP_RANGES(&xtx_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_2x256b), /* DS said 2x1k. Tested to be 2x256b */
 	),
 
@@ -446,7 +426,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_VENDOR_FLAGS(XTX_F_LC_SR3_BIT1 | XTX_F_WPS_SR3_BIT2),
 		  SNOR_SPI_MAX_SPEED_MHZ(108),
 		  SNOR_REGS(&xtx_sr_cr_sr3_regs),
-		  SNOR_WP_RANGES(&xtx_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_2x256b), /* DS said 2x1k. Tested to be 2x256b */
 	),
 
@@ -482,7 +462,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&xtx_sr_cr_lb23_sr3_lc0_regs),
-		  SNOR_WP_RANGES(&xtx_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_2x256b), /* DS said 2x1k. Tested to be 2x256b */
 	),
 
@@ -518,7 +498,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&xtx_sr1_sr2_sr3_lc0_drv_regs),
-		  SNOR_WP_RANGES(&xtx_3bp_tb_sec_cmp_ratio_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp_ratio, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_3x256b), /* DS said 3x1k. Tested to be 3x256b */
 	),
 
@@ -527,7 +507,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_VENDOR_FLAGS(XTX_F_LC_SR3_BIT1 | XTX_F_WPS_SR3_BIT2),
 		  SNOR_SPI_MAX_SPEED_MHZ(133), SNOR_QUAD_MAX_SPEED_MHZ(108),
 		  SNOR_REGS(&xtx_sr_sr2_sr3_regs),
-		  SNOR_WP_RANGES(&xtx_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_3x256b), /* DS said 3x1k. Tested to be 3x256b */
 	),
 
@@ -538,7 +518,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_2),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(60),
-		  SNOR_WP_RANGES(&xtx_3bp_tb_sec_cmp_ratio_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp_ratio, &srcr_comb_acc),
 	),
 
 	SNOR_PART("XT25F128B", SNOR_ID(0x0b, 0x40, 0x18), SZ_16M, /* SFDP 1.? */
@@ -564,7 +544,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&xtx_sr1_sr2_sr3_dc01_drv_hold_rst_regs),
-		  SNOR_WP_RANGES(&xtx_3bp_tb_sec_cmp_ratio_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp_ratio, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_3x256b), /* DS said 3x1k. Tested to be 3x256b */
 	),
 
@@ -573,7 +553,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_VENDOR_FLAGS(XTX_F_LC_SR3_BIT1 | XTX_F_WPS_SR3_BIT2),
 		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(76), SNOR_QUAD_MAX_SPEED_MHZ(76),
 		  SNOR_REGS(&xtx_sr_sr2_sr3_regs),
-		  SNOR_WP_RANGES(&xtx_3bp_tb_sec_cmp_dummy),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_3x256b), /* DS said 3x1k. Tested to be 3x256b */
 	),
 
@@ -660,11 +640,6 @@ static ufprog_status xtx_part_fixup(struct spi_nor *snor, struct spi_nor_vendor_
 		else
 			bp->p.flags &= ~SNOR_F_GLOBAL_UNLOCK;
 	}
-
-	if (bp->p.wp_ranges == &xtx_3bp_tb_sec_cmp_dummy)
-		bp->p.wp_ranges = xtx_3bp_tb_sec_cmp;
-	else if (bp->p.wp_ranges == &xtx_3bp_tb_sec_cmp_ratio_dummy)
-			bp->p.wp_ranges = xtx_3bp_tb_sec_cmp_ratio;
 
 	return UFP_OK;
 }
@@ -774,36 +749,12 @@ static const struct spi_nor_flash_part_ops xtx_default_part_ops = {
 	.read_uid = xtx_read_uid,
 };
 
-static ufprog_status xtx_init(void)
-{
-	xtx_3bp_tb_sec_cmp = wp_bp_info_copy(&wpr_3bp_tb_sec_cmp);
-	if (!xtx_3bp_tb_sec_cmp)
-		return UFP_NOMEM;
-
-	xtx_3bp_tb_sec_cmp->access = &xtx_srcr_acc;
-
-	xtx_3bp_tb_sec_cmp_ratio = wp_bp_info_copy(&wpr_3bp_tb_sec_cmp_ratio);
-	if (!xtx_3bp_tb_sec_cmp_ratio) {
-		free(xtx_3bp_tb_sec_cmp);
-		return UFP_NOMEM;
-	}
-
-	xtx_3bp_tb_sec_cmp_ratio->access = &xtx_srcr_acc;
-
-	return UFP_OK;
-}
-
-static const struct spi_nor_vendor_ops xtx_ops = {
-	.init = xtx_init,
-};
-
 const struct spi_nor_vendor vendor_xtx = {
 	.mfr_id = SNOR_VENDOR_XTX,
 	.id = "xtx",
 	.name = "XTX",
 	.parts = xtx_parts,
 	.nparts = ARRAY_SIZE(xtx_parts),
-	.ops = &xtx_ops,
 	.default_part_ops = &xtx_default_part_ops,
 	.default_part_fixups = &xtx_fixups,
 	.vendor_flag_names = xtx_vendor_flag_info,
