@@ -22,7 +22,17 @@ const struct spi_nor_reg_access br_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_READ_BANK,
 const struct spi_nor_reg_access scur_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_READ_SCUR, SNOR_CMD_WRITE_SCUR);
 const struct spi_nor_reg_access nvcr_acc = SNOR_REG_ACC_XVCR(SNOR_CMD_READ_NVCR, SNOR_CMD_WRITE_NVCR, 2);
 const struct spi_nor_reg_access vcr_acc = SNOR_REG_ACC_XVCR(SNOR_CMD_READ_VCR, SNOR_CMD_WRITE_VCR, 1);
-const struct spi_nor_reg_access evcr_acc = SNOR_REG_ACC_XVCR(SNOR_CMD_READ_EVCR, SNOR_CMD_WRITE_EVCR, 1);
+
+const struct spi_nor_reg_access evcr_acc = {
+	.type = SNOR_REG_NORMAL,
+	.num = 1,
+	.desc[0] = {
+		.ndata = 1,
+		.read_opcode = SNOR_CMD_READ_EVCR,
+		.write_opcode = SNOR_CMD_WRITE_EVCR,
+		.flags = SNOR_REGACC_F_NO_POLL | SNOR_REGACC_F_NO_WRDIS,
+	},
+};
 
 const struct spi_nor_reg_access cr2v_800003h_acc = {
 	.type = SNOR_REG_NORMAL,
