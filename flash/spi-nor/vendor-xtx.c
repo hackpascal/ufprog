@@ -33,25 +33,33 @@
 #define XTX_F_HPM				BIT(0)
 #define XTX_F_WPS_SR3_BIT2			BIT(1)
 #define XTX_F_OTP_LOCK_SR1_BIT6			BIT(2)
-#define XTX_F_LC_SR3_BIT0			BIT(3)	/* 0 = 4/6 (Default), 1 = 8/10 */
-#define XTX_F_LC_SR3_BIT1			BIT(4)	/* DTR: 0 = 8 (Default), 1 = 6 */
+#define XTX_F_OTP_RW_PAGED			BIT(3)
+#define XTX_F_LC_SR3_BIT0			BIT(4)	/* 0 = 4/6 (Default), 1 = 8/10 */
+#define XTX_F_LC_SR3_BIT1			BIT(5)	/* DTR: 0 = 8 (Default), 1 = 6 */
 
 static const struct spi_nor_part_flag_enum_info xtx_vendor_flag_info[] = {
 	{ 0, "hs-mode" },
 	{ 1, "wps-sr3-bit2" },
 	{ 2, "otp-lock-sr-bit6" },
-	{ 3, "lc-sr3-bit0" },
-	{ 4, "lc-sr3-bit1" },
+	{ 3, "otp-rw-paged" },
+	{ 4, "lc-sr3-bit0" },
+	{ 5, "lc-sr3-bit1" },
 };
 
-static const struct spi_nor_otp_info xtx_otp_512b = {
+static const struct spi_nor_otp_info xtx_otp_2x256b_0 = {
 	.start_index = 0,
-	.count = 1,
-	.size = 0x200,
+	.count = 2,
+	.size = 0x100,
 };
 
 static const struct spi_nor_otp_info xtx_otp_2x256b = {
 	.start_index = 1,
+	.count = 2,
+	.size = 0x100,
+};
+
+static const struct spi_nor_otp_info xtx_otp_2x256b_2 = {
+	.start_index = 2,
 	.count = 2,
 	.size = 0x100,
 };
@@ -314,6 +322,57 @@ static const struct spi_nor_flash_part_fixup xf25f04x_fixups = {
 	.pre_param_setup = xf25f04x_fixup_model,
 };
 
+static ufprog_status xf25f32x_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
+{
+	if (snor->sfdp.bfpt) {
+		if (snor->sfdp.bfpt_hdr->minor_ver == 6)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "XT25F32F");
+
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "XT25F32B");
+	}
+
+	return UFP_OK;
+}
+
+static const struct spi_nor_flash_part_fixup xf25f32x_fixups = {
+	.pre_param_setup = xf25f32x_fixup_model,
+};
+
+static ufprog_status xf25f64x_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
+{
+	if (snor->sfdp.bfpt) {
+		if (snor->sfdp.bfpt_hdr->minor_ver == 6)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "XT25F64F");
+
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "XT25F64B");
+	}
+
+	return UFP_OK;
+}
+
+static const struct spi_nor_flash_part_fixup xf25f64x_fixups = {
+	.pre_param_setup = xf25f64x_fixup_model,
+};
+
+static ufprog_status xf25f128x_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
+					  struct spi_nor_flash_part_blank *bp)
+{
+	if (snor->sfdp.bfpt) {
+		if (snor->sfdp.bfpt_hdr->minor_ver == 6)
+			return spi_nor_reprobe_part(snor, vp, bp, NULL, "XT25F128F");
+
+		return spi_nor_reprobe_part(snor, vp, bp, NULL, "XT25F128B");
+	}
+
+	return UFP_OK;
+}
+
+static const struct spi_nor_flash_part_fixup xf25f128x_fixups = {
+	.pre_param_setup = xf25f128x_fixup_model,
+};
+
 static DEFINE_SNOR_ALIAS(xt25q64d_alias, SNOR_ALIAS_MODEL("XT25BQ64D"));
 static DEFINE_SNOR_ALIAS(xt25q128d_alias, SNOR_ALIAS_MODEL("XT25BQ128D"));
 static DEFINE_SNOR_ALIAS(xt25f256b_alias, SNOR_ALIAS_MODEL("XT25BF256B"));
@@ -371,7 +430,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(120), SNOR_DUAL_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&xtx_3bp_lb_regs),
 		  SNOR_WP_RANGES(&xtx_wpr_3bp_lo_cmp_sec),
-		  SNOR_OTP_INFO(&xtx_otp_512b),
+		  SNOR_OTP_INFO(&xtx_otp_2x256b_0),
 	),
 
 	SNOR_PART("XT25W04D", SNOR_ID(0x0b, 0x60, 0x13), SZ_512K, /* SFDP 1.2 */
@@ -384,12 +443,13 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(50), SNOR_DUAL_MAX_SPEED_MHZ(30),
 		  SNOR_REGS(&xtx_3bp_lb_regs),
 		  SNOR_WP_RANGES(&xtx_wpr_3bp_lo_cmp_sec),
-		  SNOR_OTP_INFO(&xtx_otp_512b),
+		  SNOR_OTP_INFO(&xtx_otp_2x256b_0),
 	),
 
 	SNOR_PART("XT25F08B", SNOR_ID(0x0b, 0x40, 0x14), SZ_1M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
+		  SNOR_VENDOR_FLAGS(XTX_F_OTP_RW_PAGED),
 		  SNOR_QE_SR2_BIT1_WR_SR1,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
@@ -411,7 +471,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 	SNOR_PART("XT25F16B", SNOR_ID(0x0b, 0x40, 0x15), SZ_2M,
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
-		  SNOR_VENDOR_FLAGS(XTX_F_HPM | XTX_F_OTP_LOCK_SR1_BIT6),
+		  SNOR_VENDOR_FLAGS(XTX_F_HPM | XTX_F_OTP_RW_PAGED),
 		  SNOR_QE_SR2_BIT1_WR_SR1,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
@@ -437,11 +497,13 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_2),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(60),
+		  SNOR_FIXUPS(&xf25f32x_fixups),
 	),
 
 	SNOR_PART("XT25F32B", SNOR_ID(0x0b, 0x40, 0x16), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
+		  SNOR_VENDOR_FLAGS(XTX_F_OTP_RW_PAGED),
 		  SNOR_QE_SR2_BIT1_WR_SR1, SNOR_QPI_QER_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -452,7 +514,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_OTP_INFO(&xtx_otp_1k),
 	),
 
-	SNOR_PART("XT25F32F", SNOR_ID(0x0b, 0x40, 0x16), SZ_4M, /* SFDP 1.0 */
+	SNOR_PART("XT25F32F", SNOR_ID(0x0b, 0x40, 0x16), SZ_4M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
 		  SNOR_VENDOR_FLAGS(XTX_F_HPM | XTX_F_LC_SR3_BIT0),
@@ -463,7 +525,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&xtx_sr_cr_lb23_sr3_lc0_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
-		  SNOR_OTP_INFO(&xtx_otp_2x256b), /* DS said 2x1k. Tested to be 2x256b */
+		  SNOR_OTP_INFO(&xtx_otp_2x256b_2), /* DS said 2x1k. Tested to be 2x256b */
 	),
 
 	SNOR_PART("XT25F64*", SNOR_ID(0x0b, 0x40, 0x17), SZ_8M,
@@ -473,11 +535,13 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_2),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(60),
+		  SNOR_FIXUPS(&xf25f64x_fixups),
 	),
 
 	SNOR_PART("XT25F64B", SNOR_ID(0x0b, 0x40, 0x17), SZ_8M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
+		  SNOR_VENDOR_FLAGS(XTX_F_OTP_RW_PAGED),
 		  SNOR_QE_SR2_BIT1_WR_SR1, SNOR_QPI_QER_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -488,7 +552,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_OTP_INFO(&xtx_otp_1k),
 	),
 
-	SNOR_PART("XT25F64F", SNOR_ID(0x0b, 0x40, 0x17), SZ_8M, /* SFDP 1.0 */
+	SNOR_PART("XT25F64F", SNOR_ID(0x0b, 0x40, 0x17), SZ_8M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
 		  SNOR_VENDOR_FLAGS(XTX_F_HPM | XTX_F_LC_SR3_BIT0),
@@ -519,11 +583,13 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(60),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp_ratio, &srcr_comb_acc),
+		  SNOR_FIXUPS(&xf25f128x_fixups),
 	),
 
 	SNOR_PART("XT25F128B", SNOR_ID(0x0b, 0x40, 0x18), SZ_16M, /* SFDP 1.? */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
+		  SNOR_VENDOR_FLAGS(XTX_F_OTP_RW_PAGED),
 		  SNOR_QE_SR2_BIT1_WR_SR1, SNOR_QPI_QER_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -534,7 +600,7 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_OTP_INFO(&xtx_otp_1k),
 	),
 
-	SNOR_PART("XT25F128F", SNOR_ID(0x0b, 0x40, 0x18), SZ_16M, /* SFDP 1.? */
+	SNOR_PART("XT25F128F", SNOR_ID(0x0b, 0x40, 0x18), SZ_16M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
 		  SNOR_VENDOR_FLAGS(XTX_F_HPM | XTX_F_LC_SR3_BIT0 | XTX_F_LC_SR3_BIT1),
@@ -662,6 +728,11 @@ static ufprog_status xtx_enter_hpm_pre_read(struct spi_nor *snor, uint64_t addr,
 	return ret;
 }
 
+static uint32_t xtx_otp_lock_sr1_bit6_addr(struct spi_nor *snor, uint32_t index, uint32_t addr)
+{
+	return (index << 8) | addr;
+}
+
 static ufprog_status xtx_otp_lock_sr1_bit6_bit(struct spi_nor *snor, uint32_t index, uint32_t *retbit,
 					       const struct spi_nor_reg_access **retacc)
 {
@@ -672,16 +743,25 @@ static ufprog_status xtx_otp_lock_sr1_bit6_bit(struct spi_nor *snor, uint32_t in
 }
 
 static const struct spi_nor_flash_secr_otp_ops xtx_otp_lock_sr1_bit6_ops = {
+	.otp_addr = xtx_otp_lock_sr1_bit6_addr,
 	.otp_lock_bit = xtx_otp_lock_sr1_bit6_bit,
 };
 
 static const struct spi_nor_flash_part_otp_ops xtx_otp_lock_sr1_bit6_otp_ops = {
-	.read = secr_otp_read_paged,
-	.write = secr_otp_write_paged,
+	.read = secr_otp_read,
+	.write = secr_otp_write,
 	.erase = secr_otp_erase,
 	.lock = secr_otp_lock,
 	.locked = secr_otp_locked,
 	.secr = &xtx_otp_lock_sr1_bit6_ops,
+};
+
+static const struct spi_nor_flash_part_otp_ops xtx_paged_otp_ops = {
+	.read = secr_otp_read,
+	.write = secr_otp_write_paged,
+	.erase = secr_otp_erase,
+	.lock = secr_otp_lock,
+	.locked = secr_otp_locked,
 };
 
 static ufprog_status xtx_setup_qpi(struct spi_nor *snor, bool enabled)
@@ -723,6 +803,8 @@ static ufprog_status xtx_part_set_ops(struct spi_nor *snor)
 
 	if (snor->param.vendor_flags & XTX_F_OTP_LOCK_SR1_BIT6)
 		snor->ext_param.ops.otp = &xtx_otp_lock_sr1_bit6_otp_ops;
+	else if (snor->param.vendor_flags & XTX_F_OTP_RW_PAGED)
+		snor->ext_param.ops.otp = &xtx_paged_otp_ops;
 
 	return UFP_OK;
 }
