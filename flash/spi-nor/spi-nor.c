@@ -1519,6 +1519,10 @@ retry:
 	/* SPI cmd */
 	snor->state.cmd_buswidth_curr = 1;
 
+	/* Try to reset flash */
+	spi_nor_disable_qpi_66h_99h(snor);
+	os_udelay(10000);
+
 	logm_dbg("Trying reading JEDEC ID in SPI mode\n");
 	ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID, 0, retvp);
 	if (ret)
@@ -1541,6 +1545,11 @@ retry:
 	if (ret)
 		return ret;
 
+	/* Try to exit from QPI mode */
+	spi_nor_disable_qpi_ffh(snor);
+	spi_nor_disable_qpi_66h_99h(snor);
+	os_udelay(10000);
+
 	/* Dual I/O cmd */
 	logm_dbg("Trying reading JEDEC ID in DPI mode\n");
 
@@ -1553,6 +1562,10 @@ retry:
 	ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID, 0, retvp);
 	if (ret)
 		return ret;
+
+	/* Try to exit from DPI mode */
+	spi_nor_disable_qpi_66h_99h(snor);
+	os_udelay(10000);
 
 	if (retries) {
 		retries--;
