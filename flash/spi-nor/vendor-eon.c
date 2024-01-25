@@ -85,6 +85,8 @@ static const struct spi_nor_reg_access eon_sr1_sr4_acc = {
 	},
 };
 
+static const struct spi_nor_reg_access eon_sr3_acc = SNOR_REG_ACC_NORMAL(SNOR_CMD_EON_READ_SR3, SNOR_CMD_EON_WRITE_SR3);
+
 static const struct spi_nor_reg_field_item en25p05_sr_fields[] = {
 	SNOR_REG_FIELD(2, 1, "BP0", "Block Protect Bit 0"),
 	SNOR_REG_FIELD(3, 1, "BP1", "Block Protect Bit 1"),
@@ -263,7 +265,8 @@ static const struct spi_nor_reg_field_item en25qe_sr3_fields[] = {
 	SNOR_REG_FIELD(7, 1, "DC", "Dummy Configuration"),
 };
 
-static const struct spi_nor_reg_def en25qe_sr3 = SNOR_REG_DEF("SR3", "Status Register 3", &sr3_acc, en25qe_sr3_fields);
+static const struct spi_nor_reg_def en25qe_sr3 = SNOR_REG_DEF("SR3", "Status Register 3", &eon_sr3_acc,
+							      en25qe_sr3_fields);
 
 static const struct snor_reg_info en25qe_regs = SNOR_REG_INFO(&en25qxb_sr1, &en25qe_sr2, &en25qe_sr3);
 
@@ -372,7 +375,8 @@ static const struct spi_nor_reg_field_item en25qx_sr3_fields[] = {
 	SNOR_REG_FIELD(7, 1, "DC", "Dummy Configuration"),
 };
 
-static const struct spi_nor_reg_def en25qx_sr3 = SNOR_REG_DEF("SR3", "Status Register 3", &sr3_acc, en25qx_sr3_fields);
+static const struct spi_nor_reg_def en25qx_sr3 = SNOR_REG_DEF("SR3", "Status Register 3", &eon_sr3_acc,
+							      en25qx_sr3_fields);
 
 static const struct snor_reg_info en25qx_regs = SNOR_REG_INFO(&en25qxb_sr1, &en25qe_sr2, &en25qx_sr3);
 
@@ -383,7 +387,7 @@ static const struct spi_nor_reg_field_item en25qx256a_sr3_fields[] = {
 	SNOR_REG_FIELD(7, 1, "DC", "Dummy Configuration"),
 };
 
-static const struct spi_nor_reg_def en25qx256a_sr3 = SNOR_REG_DEF("SR3", "Status Register 3", &sr3_acc,
+static const struct spi_nor_reg_def en25qx256a_sr3 = SNOR_REG_DEF("SR3", "Status Register 3", &eon_sr3_acc,
 								  en25qx256a_sr3_fields);
 
 static const struct snor_reg_info en25qx256a_regs = SNOR_REG_INFO(&en25qxb_sr1, &en25qe_sr2, &en25qx256a_sr3);
