@@ -46,18 +46,9 @@
 #define MXIC_F_OTP_SINGLE_ESN_16B_FULL_LOCK	BIT(5)
 #define MXIC_F_OTP_2X512B_LAST_ESN_16B		BIT(6)
 #define MXIC_F_WPSEL_SCUR_BIT7			BIT(7)
-#define MXIC_F_DC_CR1_BIT6			BIT(8)
-#define MXIC_F_DC_CR1_BIT7			BIT(9)
-#define MXIC_F_DC_CR1_BIT7_6			BIT(10)
-#define MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10		BIT(11)
-#define MXIC_F_DC_CR1_BIT7_6_RST_0		BIT(12)
-#define MXIC_F_DC_Q8				BIT(13)
-#define MXIC_F_DC_D8_Q10			BIT(14)
-#define MXIC_F_DC_ALL_10			BIT(15)
-#define MXIC_F_CHIP_UNPROTECT_F3		BIT(16)
-#define MXIC_F_CHIP_UNPROTECT_98		BIT(17)
-#define MXIC_F_OCTAL				BIT(18)
-#define MXIC_F_WPR_4BP_TB_OTP			BIT(19)
+#define MXIC_F_CHIP_UNPROTECT_F3		BIT(8)
+#define MXIC_F_CHIP_UNPROTECT_98		BIT(9)
+#define MXIC_F_WPR_4BP_TB_OTP			BIT(10)
 
  /* Macronix vendor runtime flags */
 #define MXIC_SF_NO_QSPI				BIT(0)
@@ -71,18 +62,9 @@ static const struct spi_nor_part_flag_enum_info macronix_vendor_flag_info[] = {
 	{ 5, "otp-single-with-esn-16-bytes-full-lock" },
 	{ 6, "otp-2x512-bytes-with-last-esn-16-bytes" },
 	{ 7, "wpsel-scur-bit7" },
-	{ 8, "dc-cr1-bit6" },
-	{ 9, "dc-cr1-bit7" },
-	{ 10, "dc-cr1-bit6-7" },
-	{ 11, "dc-cr1-bit6-7-default-10-cycles" },
-	{ 12, "dc-cr1-bit6-7-reset-to-0" },
-	{ 13, "dc-quad-8-cycles" },
-	{ 14, "dc-dual-8-quad-10-cycles" },
-	{ 15, "dc-all-10-cycles" },
-	{ 16, "chip-unprotect-f3h" },
-	{ 17, "chip-unprotect-98h" },
-	{ 18, "octal" },
-	{ 19, "wp-range-4bp-tb-in-otp" },
+	{ 8, "chip-unprotect-f3h" },
+	{ 9, "chip-unprotect-98h" },
+	{ 10, "wp-range-4bp-tb-in-otp" },
 };
 
 #define MXIC_REG_ACC_CR2(_addr)											\
@@ -304,6 +286,322 @@ static const struct spi_nor_wp_info mx25x_wpr_type3_4bp_tb0 = SNOR_WP_BP(&sr_acc
 	SNOR_WP_BP_UP(SR_BP3 | SR_BP2 | SR_BP1         , 14),	/* Upper 1GB */
 );
 
+/* MX25V512F */
+static const SNOR_DC_CONFIG(mx25v512f_dc_122_cfgs, SNOR_DC_IDX_VALUE(0, 4, 104), SNOR_DC_IDX_VALUE(1, 8, 104));
+static const SNOR_DC_CONFIG(mx25v512f_dc_144_cfgs, SNOR_DC_IDX_VALUE(0, 6, 104), SNOR_DC_IDX_VALUE(1, 10, 104));
+
+static const SNOR_DC_TABLE(mxic_cr1_bit6_all_104mhz_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25v512f_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25v512f_dc_144_cfgs));
+
+/* MX25V1635F */
+static const SNOR_DC_CONFIG(mx25v1635f_dc_122_cfgs, SNOR_DC_IDX_VALUE(0, 4, 80), SNOR_DC_IDX_VALUE(1, 8, 80));
+static const SNOR_DC_CONFIG(mx25v1635f_dc_144_cfgs, SNOR_DC_IDX_VALUE(0, 6, 80), SNOR_DC_IDX_VALUE(1, 10, 80));
+
+static const SNOR_DC_TABLE(mxic_cr1_bit6_all_80mhz_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25v1635f_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25v1635f_dc_144_cfgs));
+
+/* MX25L3233F */
+static const SNOR_DC_CONFIG(mx25l3233f_dc_122_cfgs, SNOR_DC_IDX_VALUE(1, 8, 133), SNOR_DC_IDX_VALUE(0, 4, 104));
+static const SNOR_DC_CONFIG(mx25l3233f_dc_144_cfgs, SNOR_DC_IDX_VALUE(1, 10, 133), SNOR_DC_IDX_VALUE(0, 6, 104));
+
+static const SNOR_DC_TABLE(mxic_cr1_bit6_104_133mhz_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25l3233f_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l3233f_dc_144_cfgs));
+
+/* MX25L32356 */
+static const SNOR_DC_CONFIG(mx25l32356_dc_122_cfgs, SNOR_DC_IDX_VALUE(1, 8, 120), SNOR_DC_IDX_VALUE(0, 4, 80));
+static const SNOR_DC_CONFIG(mx25l32356_dc_144_cfgs, SNOR_DC_IDX_VALUE(1, 10, 120), SNOR_DC_IDX_VALUE(0, 6, 80));
+
+static const SNOR_DC_TABLE(mxic_cr1_bit6_80_120mhz_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25l32356_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l32356_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25l32356_dc_144_cfgs));
+
+/* MX25L6433F */
+static const SNOR_DC_CONFIG(mx25l6433f_dc_122_cfgs, SNOR_DC_IDX_VALUE(1, 8, 133), SNOR_DC_IDX_VALUE(0, 4, 80));
+static const SNOR_DC_CONFIG(mx25l6433f_dc_144_cfgs, SNOR_DC_IDX_VALUE(1, 10, 133), SNOR_DC_IDX_VALUE(0, 6, 80));
+
+static const SNOR_DC_TABLE(mxic_cr1_bit6_80_133mhz_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25l6433f_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l6433f_dc_144_cfgs));
+
+/* MX25L3235E */
+static const SNOR_DC_CONFIG(mx25l3235e_dc_144_cfgs, SNOR_DC_IDX_VALUE(1, 8, 104), SNOR_DC_IDX_VALUE(0, 6, 86));
+
+static const SNOR_DC_TABLE(mxic_cr1_bit7_86_104mhz_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l3235e_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25l3235e_dc_144_cfgs));
+
+/* MX25U12835F */
+static const SNOR_DC_CONFIG(mx25u12835f_dc_144_cfgs, /* SNOR_DC_IDX_VALUE(1, 8, 133), */ SNOR_DC_IDX_VALUE(0, 6, 104));
+
+static const SNOR_DC_TABLE(mxic_cr1_bit7_104_133mhz_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25u12835f_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25u12835f_dc_144_cfgs));
+
+/* CR1 DC7_6 Default */
+static const SNOR_DC_CONFIG(mxic_cr1_dc7_6_dfl_11x_cfgs, SNOR_DC_IDX_VALUE(0, 8, 60));
+static const SNOR_DC_CONFIG(mxic_cr1_dc7_6_dfl_122_cfgs, SNOR_DC_IDX_VALUE(0, 4, 60));
+static const SNOR_DC_CONFIG(mxic_cr1_dc7_6_dfl_144_cfgs, SNOR_DC_IDX_VALUE(0, 6, 60));
+
+static const SNOR_DC_TABLE(mxic_cr1_dc7_6_dfl_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, mxic_cr1_dc7_6_dfl_11x_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_2, mxic_cr1_dc7_6_dfl_11x_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mxic_cr1_dc7_6_dfl_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_4, mxic_cr1_dc7_6_dfl_11x_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mxic_cr1_dc7_6_dfl_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mxic_cr1_dc7_6_dfl_144_cfgs));
+
+/* MX25U20356 */
+static const SNOR_DC_CONFIG(mx25u20356_dc_122_cfgs, SNOR_DC_IDX_VALUE(1, 8, 133), SNOR_DC_IDX_VALUE(0, 4, 104));
+static const SNOR_DC_CONFIG(mx25u20356_dc_144_cfgs, SNOR_DC_IDX_VALUE(1, 10, 133), SNOR_DC_IDX_VALUE(0, 6, 104));
+
+static const SNOR_DC_TABLE(mxic_cr1_bit7_6_104_133mhz_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25u20356_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25u20356_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25u20356_dc_144_cfgs));
+
+/* MX25U1632F */
+static const SNOR_DC_CONFIG(mx25u1632f_dc_111_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 8, 104), SNOR_DC_IDX_VALUE(1, 6, 104));
+
+static const SNOR_DC_CONFIG(mx25u1632f_dc_122_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(1, 6, 104), SNOR_DC_IDX_VALUE(0, 4, 84));
+
+static const SNOR_DC_CONFIG(mx25u1632f_dc_114_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 8, 104), SNOR_DC_IDX_VALUE(1, 6, 84));
+
+static const SNOR_DC_CONFIG(mx25u1632f_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 6, 84), SNOR_DC_IDX_VALUE(1, 4, 66));
+
+static const SNOR_DC_TABLE(mx25u1632f_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, mx25u1632f_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_2, mx25u1632f_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25u1632f_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_4, mx25u1632f_dc_114_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25u1632f_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25u1632f_dc_144_cfgs));
+
+/* MX25L12833F */
+static const SNOR_DC_CONFIG(mx25l12833f_dc_111_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 8, 104), SNOR_DC_IDX_VALUE(1, 6, 104));
+
+static const SNOR_DC_CONFIG(mx25l12833f_dc_122_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(1, 6, 104), SNOR_DC_IDX_VALUE(0, 4, 84));
+
+static const SNOR_DC_CONFIG(mx25l12833f_dc_114_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 8, 104), SNOR_DC_IDX_VALUE(1, 6, 84));
+
+static const SNOR_DC_CONFIG(mx25l12833f_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 120), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 6, 84), SNOR_DC_IDX_VALUE(1, 4, 66));
+
+static const SNOR_DC_TABLE(mx25l12833f_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, mx25l12833f_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_2, mx25l12833f_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25l12833f_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_4, mx25l12833f_dc_114_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l12833f_dc_144_cfgs));
+
+/* MX25L12835F */
+static const SNOR_DC_CONFIG(mx25l12835f_dc_111_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 8, 104), SNOR_DC_IDX_VALUE(1, 6, 104));
+
+static const SNOR_DC_CONFIG(mx25l12835f_dc_122_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(1, 6, 104), SNOR_DC_IDX_VALUE(0, 4, 84));
+
+static const SNOR_DC_CONFIG(mx25l12835f_dc_114_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 8, 104), SNOR_DC_IDX_VALUE(1, 6, 84));
+
+static const SNOR_DC_CONFIG(mx25l12835f_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 6, 84), SNOR_DC_IDX_VALUE(1, 4, 70));
+
+static const SNOR_DC_TABLE(mx25l12835f_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, mx25l12835f_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_2, mx25l12835f_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25l12835f_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_4, mx25l12835f_dc_114_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l12835f_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25l12835f_dc_144_cfgs));
+
+/* MX25L12839F */
+static const SNOR_DC_CONFIG(mx25l12839f_dc_111_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 8, 104), SNOR_DC_IDX_VALUE(1, 6, 104));
+
+static const SNOR_DC_CONFIG(mx25l12839f_dc_114_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 8, 104), SNOR_DC_IDX_VALUE(1, 6, 84));
+
+static const SNOR_DC_CONFIG(mx25l12839f_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 6, 84), SNOR_DC_IDX_VALUE(1, 4, 70));
+
+static const SNOR_DC_TABLE(mx25l12839f_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, mx25l12839f_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_4, mx25l12839f_dc_114_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l12839f_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25l12839f_dc_144_cfgs));
+
+/* MX25L12845G */
+static const SNOR_DC_CONFIG(mx25l12845g_dc_122_cfgs, SNOR_DC_IDX_VALUE(3, 8, 120), SNOR_DC_IDX_VALUE(1, 8, 120),
+			    SNOR_DC_IDX_VALUE(2, 4, 80), SNOR_DC_IDX_VALUE(0, 4, 80));
+
+static const SNOR_DC_CONFIG(mx25l12845g_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 120), SNOR_DC_IDX_VALUE(2, 8, 84),
+			    SNOR_DC_IDX_VALUE(0, 6, 80), SNOR_DC_IDX_VALUE(1, 4, 54));
+
+static const SNOR_DC_TABLE(mx25l12845g_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25l12845g_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l12845g_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25l12845g_dc_144_cfgs));
+
+/* MX25L12843G */
+static const SNOR_DC_CONFIG(mx25l12843g_dc_122_cfgs, SNOR_DC_IDX_VALUE(3, 8, 133), SNOR_DC_IDX_VALUE(1, 8, 133),
+			    SNOR_DC_IDX_VALUE(2, 4, 84), SNOR_DC_IDX_VALUE(0, 4, 84));
+
+static const SNOR_DC_CONFIG(mx25l12843g_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 6, 84), SNOR_DC_IDX_VALUE(1, 4, 66));
+
+static const SNOR_DC_TABLE(mx25l12843g_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25l12843g_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l12843g_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25l12843g_dc_144_cfgs));
+
+/* MX25L25633F */
+static const SNOR_DC_CONFIG(mx25l25633f_dc_111_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 8, 104), SNOR_DC_IDX_VALUE(1, 6, 104));
+
+static const SNOR_DC_CONFIG(mx25l25633f_dc_122_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(1, 6, 104), SNOR_DC_IDX_VALUE(0, 4, 84));
+
+static const SNOR_DC_CONFIG(mx25l25633f_dc_114_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 8, 104), SNOR_DC_IDX_VALUE(1, 6, 84));
+
+static const SNOR_DC_CONFIG(mx25l25633f_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 120), SNOR_DC_IDX_VALUE(2, 8, 95),
+			    SNOR_DC_IDX_VALUE(0, 6, 80), SNOR_DC_IDX_VALUE(1, 4, 60));
+
+static const SNOR_DC_TABLE(mx25l25633f_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, mx25l25633f_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_2, mx25l25633f_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25l25633f_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_4, mx25l25633f_dc_114_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l25633f_dc_144_cfgs));
+
+/* MX25U25635F */
+static const SNOR_DC_CONFIG(mx25u25635f_dc_111_cfgs, /* SNOR_DC_IDX_VALUE(3, 10, 133), */ SNOR_DC_IDX_VALUE(2, 8, 108),
+			    SNOR_DC_IDX_VALUE(0, 8, 108), SNOR_DC_IDX_VALUE(1, 6, 108));
+
+static const SNOR_DC_CONFIG(mx25u25635f_dc_122_cfgs, /* SNOR_DC_IDX_VALUE(3, 10, 133), */ SNOR_DC_IDX_VALUE(2, 8, 108),
+			    SNOR_DC_IDX_VALUE(1, 6, 108), SNOR_DC_IDX_VALUE(0, 4, 84));
+
+static const SNOR_DC_CONFIG(mx25u25635f_dc_114_cfgs, /* SNOR_DC_IDX_VALUE(3, 10, 133), */ SNOR_DC_IDX_VALUE(2, 8, 108),
+			    SNOR_DC_IDX_VALUE(0, 8, 108), SNOR_DC_IDX_VALUE(1, 6, 84));
+
+static const SNOR_DC_CONFIG(mx25u25635f_dc_144_cfgs, /* SNOR_DC_IDX_VALUE(3, 10, 133), */ SNOR_DC_IDX_VALUE(2, 8, 108),
+			    SNOR_DC_IDX_VALUE(0, 6, 84), SNOR_DC_IDX_VALUE(1, 4, 70));
+
+static const SNOR_DC_TABLE(mx25u25635f_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, mx25u25635f_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_2, mx25u25635f_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25u25635f_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_4, mx25u25635f_dc_114_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25u25635f_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25u25635f_dc_144_cfgs));
+
+/* MX25L25643G */
+static const SNOR_DC_CONFIG(mx25l25643g_dc_122_cfgs, SNOR_DC_IDX_VALUE(3, 8, 120), SNOR_DC_IDX_VALUE(1, 8, 120),
+			    SNOR_DC_IDX_VALUE(2, 4, 84), SNOR_DC_IDX_VALUE(0, 4, 84));
+
+static const SNOR_DC_CONFIG(mx25l25643g_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 120), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 6, 84), SNOR_DC_IDX_VALUE(1, 4, 66));
+
+static const SNOR_DC_TABLE(mx25l25643g_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25l25643g_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l25643g_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25l25643g_dc_144_cfgs));
+
+/* MX25U25645G */
+static const SNOR_DC_CONFIG(mx25u25645g_dc_111_cfgs, SNOR_DC_IDX_VALUE(3, 10, 166), SNOR_DC_IDX_VALUE(2, 8, 133),
+			    SNOR_DC_IDX_VALUE(0, 8, 133), SNOR_DC_IDX_VALUE(1, 6, 133));
+
+static const SNOR_DC_CONFIG(mx25u25645g_dc_122_cfgs, SNOR_DC_IDX_VALUE(3, 10, 166), SNOR_DC_IDX_VALUE(2, 8, 133),
+			    SNOR_DC_IDX_VALUE(1, 6, 104), SNOR_DC_IDX_VALUE(0, 4, 84));
+
+static const SNOR_DC_CONFIG(mx25u25645g_dc_114_cfgs, SNOR_DC_IDX_VALUE(3, 10, 166), SNOR_DC_IDX_VALUE(2, 8, 133),
+			    SNOR_DC_IDX_VALUE(0, 8, 133), SNOR_DC_IDX_VALUE(1, 6, 104));
+
+static const SNOR_DC_CONFIG(mx25u25645g_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 6, 84), SNOR_DC_IDX_VALUE(1, 4, 70));
+
+static const SNOR_DC_TABLE(mx25u25645g_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, mx25u25645g_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_2, mx25u25645g_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25u25645g_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_4, mx25u25645g_dc_114_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25u25645g_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25u25645g_dc_144_cfgs));
+
+/* MX25U25645G-54 */
+static const SNOR_DC_CONFIG(mx25u25645g54_dc_111_cfgs, SNOR_DC_IDX_VALUE(0, 10, 166), SNOR_DC_IDX_VALUE(1, 8, 133),
+			    SNOR_DC_IDX_VALUE(3, 8, 133), SNOR_DC_IDX_VALUE(2, 6, 133));
+
+static const SNOR_DC_CONFIG(mx25u25645g54_dc_122_cfgs, SNOR_DC_IDX_VALUE(0, 10, 166), SNOR_DC_IDX_VALUE(1, 8, 133),
+			    SNOR_DC_IDX_VALUE(2, 6, 104), SNOR_DC_IDX_VALUE(3, 4, 84));
+
+static const SNOR_DC_CONFIG(mx25u25645g54_dc_114_cfgs, SNOR_DC_IDX_VALUE(0, 10, 166), SNOR_DC_IDX_VALUE(1, 8, 133),
+			    SNOR_DC_IDX_VALUE(3, 8, 133), SNOR_DC_IDX_VALUE(2, 6, 104));
+
+static const SNOR_DC_CONFIG(mx25u25645g54_dc_144_cfgs, SNOR_DC_IDX_VALUE(0, 10, 133), SNOR_DC_IDX_VALUE(1, 8, 104),
+			    SNOR_DC_IDX_VALUE(3, 6, 84), SNOR_DC_IDX_VALUE(2, 4, 70));
+
+static const SNOR_DC_TABLE(mx25u25645g54_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, mx25u25645g54_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_2, mx25u25645g54_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25u25645g54_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_4, mx25u25645g54_dc_114_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25u25645g54_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25u25645g54_dc_144_cfgs));
+
+/* MX25L51245J */
+static const SNOR_DC_CONFIG(mx25l51245j_dc_122_cfgs, SNOR_DC_IDX_VALUE(3, 8, 104), SNOR_DC_IDX_VALUE(2, 4, 80),
+			    SNOR_DC_IDX_VALUE(1, 8, 104), SNOR_DC_IDX_VALUE(0, 4, 80));
+
+static const SNOR_DC_CONFIG(mx25l51245j_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 104), SNOR_DC_IDX_VALUE(2, 8, 84),
+			    SNOR_DC_IDX_VALUE(0, 6, 70), SNOR_DC_IDX_VALUE(1, 4, 54));
+
+static const SNOR_DC_TABLE(mx25l51245j_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25l51245j_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l51245j_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25l51245j_dc_144_cfgs));
+
+/* MX25L51237G */
+static const SNOR_DC_CONFIG(mx25l51237g_dc_111_cfgs, SNOR_DC_IDX_VALUE(3, 10, 104), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 8, 104), SNOR_DC_IDX_VALUE(1, 6, 84));
+
+static const SNOR_DC_CONFIG(mx25l51237g_dc_122_cfgs, SNOR_DC_IDX_VALUE(3, 10, 104), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(1, 6, 84), SNOR_DC_IDX_VALUE(0, 4, 66));
+
+static const SNOR_DC_CONFIG(mx25l51237g_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 104), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(0, 6, 84), SNOR_DC_IDX_VALUE(1, 4, 66));
+
+static const SNOR_DC_TABLE(mx25l51237g_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, mx25l51237g_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_2, mx25l51237g_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, mx25l51237g_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_4, mx25l51237g_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, mx25l51237g_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, mx25l51237g_dc_144_cfgs));
+
+/* Octal */
+static const SNOR_DC_CONFIG(mxix_octal_dc_legacy_cfgs, SNOR_DC_IDX_VALUE(0, 8, 133));
+
+static const SNOR_DC_TABLE(mxix_octal_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, mxix_octal_dc_legacy_cfgs));
+
+static const SNOR_DC_CHIP_SETUP_ACC(mxic_dc_acc_cr1_bit6, &mx25x_srcr_acc, 1, 14);
+static const SNOR_DC_CHIP_SETUP_ACC(mxic_dc_acc_cr1_bit7, &mx25x_srcr_acc, 1, 15);
+static const SNOR_DC_CHIP_SETUP_ACC(mxic_dc_acc_cr1_bit7_6, &mx25x_srcr_acc, 3, 14);
+static const SNOR_DC_CHIP_SETUP_ACC(mxic_dc_acc_cr2_300, &mxic_cr2_300_acc, 7, 0);
+
+
 static ufprog_status mx25x_wpr_type2_4bp_tb_select(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 						   struct spi_nor_flash_part_blank *bp)
 {
@@ -451,7 +749,7 @@ static DEFINE_SNOR_ALIAS(mx25u25643g_alias, SNOR_ALIAS_MODEL("MX25U25672G"));
 static DEFINE_SNOR_ALIAS(mx25u25645g_alias, SNOR_ALIAS_MODEL("MX25U25673G"));
 static DEFINE_SNOR_ALIAS(mx25l51245g_alias, SNOR_ALIAS_MODEL("MX25L51273G"));
 static DEFINE_SNOR_ALIAS(mx25u51245g_alias, SNOR_ALIAS_MODEL("MX25U51293G"));
-static DEFINE_SNOR_ALIAS(mx25u1g45g_alias, SNOR_ALIAS_MODEL("MX25U1G93G"));
+static DEFINE_SNOR_ALIAS(mx25u1g45g_alias, SNOR_ALIAS_MODEL("MX66U1G93G"));
 
 static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25*512", SNOR_ID(0xc2, 0x20, 0x10), SZ_64K,
@@ -522,9 +820,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25V512F", SNOR_ID(0xc2, 0x23, 0x10), SZ_64K, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25U5121E", SNOR_ID(0xc2, 0x25, 0x30), SZ_64K,
@@ -614,9 +914,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25V1035F", SNOR_ID(0xc2, 0x23, 0x11), SZ_128K, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25U1021E", SNOR_ID(0xc2, 0x25, 0x31), SZ_128K,
@@ -717,9 +1019,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25V2035F", SNOR_ID(0xc2, 0x23, 0x12), SZ_256K, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25U20***", SNOR_ID(0xc2, 0x25, 0x32), SZ_256K,
@@ -746,24 +1050,29 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25U2035F", SNOR_ID(0xc2, 0x25, 0x32), SZ_256K, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25U20356", SNOR_ID(0xc2, 0x25, 0x32), SZ_256K, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit7_6_104_133mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25R2035F", SNOR_ID(0xc2, 0x28, 0x12), SZ_256K, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_HP_MODE | MXIC_F_SCUR_P_E_FAIL_IND |
-				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25rxf_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	/**********************************************************************/
@@ -808,9 +1117,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25V4035F", SNOR_ID(0xc2, 0x23, 0x13), SZ_512K, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25V4035", SNOR_ID(0xc2, 0x25, 0x53), SZ_512K,
@@ -862,24 +1173,29 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25U4035F", SNOR_ID(0xc2, 0x25, 0x33), SZ_512K, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25U40356", SNOR_ID(0xc2, 0x25, 0x33), SZ_512K, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit7_6_104_133mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
-	SNOR_PART("MX254035F", SNOR_ID(0xc2, 0x28, 0x13), SZ_512K, /* SFDP 1.6 */
+	SNOR_PART("MX25R4035F", SNOR_ID(0xc2, 0x28, 0x13), SZ_512K, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_HP_MODE | MXIC_F_SCUR_P_E_FAIL_IND |
-				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25rxf_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	/**********************************************************************/
@@ -947,9 +1263,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25V8035F", SNOR_ID(0xc2, 0x23, 0x14), SZ_1M, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25U80**", SNOR_ID(0xc2, 0x25, 0x34), SZ_1M,
@@ -1013,16 +1331,20 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25U8035F", SNOR_ID(0xc2, 0x25, 0x34), SZ_1M, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25U80356", SNOR_ID(0xc2, 0x25, 0x34), SZ_1M, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit7_6_104_133mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25V8035", SNOR_ID(0xc2, 0x25, 0x54), SZ_1M,
@@ -1039,10 +1361,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25R8035F", SNOR_ID(0xc2, 0x28, 0x14), SZ_1M, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_HP_MODE | MXIC_F_SCUR_P_E_FAIL_IND |
-				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25rxf_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	/**********************************************************************/
@@ -1126,11 +1449,12 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	),
 
 	SNOR_PART("MX25V1635F", SNOR_ID(0xc2, 0x23, 0x15), SZ_2M, /* SFDP 1.6 */
-		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10),
+		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B),
 		  SNOR_SPI_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_80mhz_dc_table),
 		  SNOR_FIXUPS(&mx25x_wpr_type2_4bp_tb_fixups),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25L16***", SNOR_ID(0xc2, 0x24, 0x15), SZ_2M,
@@ -1227,17 +1551,20 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25U1632F", SNOR_ID(0xc2, 0x25, 0x35), SZ_2M, /* SFDP 1.6 */
 		  SNOR_ALIAS(&mx25u1632f_alias),
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u1632f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25U1633F", SNOR_ID(0xc2, 0x25, 0x35), SZ_2M, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_80mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25U1635E", SNOR_ID(0xc2, 0x25, 0x35), SZ_2M, /* SFDP 1.0 */
@@ -1269,10 +1596,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25R1635F", SNOR_ID(0xc2, 0x28, 0x15), SZ_2M, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_HP_MODE | MXIC_F_SCUR_P_E_FAIL_IND |
-				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&mx25rxf_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_80mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	/**********************************************************************/
@@ -1342,85 +1670,94 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
 		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_SINGLE_ESN_16B_FULL_LOCK |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_4_4),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+		  SNOR_SPI_MAX_SPEED_MHZ(133), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
 		  SNOR_OTP_INFO(&mx25x_otp_512b),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_104_133mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25L32356", SNOR_ID(0xc2, 0x20, 0x16), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT6 |
-				     MXIC_F_DC_D8_Q10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+				      MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+		  SNOR_SPI_MAX_SPEED_MHZ(133), SNOR_DUAL_MAX_SPEED_MHZ(120), SNOR_QUAD_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_80_120mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25L32366", SNOR_ID(0xc2, 0x20, 0x16), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT6 |
-				    MXIC_F_DC_D8_Q10 | MXIC_F_WPSEL_SCUR_BIT7),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+				    MXIC_F_WPSEL_SCUR_BIT7),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+		  SNOR_SPI_MAX_SPEED_MHZ(133), SNOR_DUAL_MAX_SPEED_MHZ(120), SNOR_QUAD_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&mx25x_regs),
-		  SNOR_FIXUPS(&mx25x_wpr_type2_4bp_tb_fixups),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_80_120mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25L3235E", SNOR_ID(0xc2, 0x20, 0x16), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
 		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_SINGLE_ESN_16B_FULL_LOCK |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_Q8 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_4_4),
-		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(86),
+		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
 		  SNOR_OTP_INFO(&mx25x_otp_512b),
+		  SNOR_DC_INFO(&mxic_cr1_bit7_86_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7),
 	),
 
 	SNOR_PART("MX25L3236F", SNOR_ID(0xc2, 0x20, 0x16), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_SINGLE_ESN_16B_FULL_LOCK |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_SINGLE_ESN_16B_FULL_LOCK),
 		  SNOR_QE_SR1_BIT6,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_4_4),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+		  SNOR_SPI_MAX_SPEED_MHZ(133), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
 		  SNOR_OTP_INFO(&mx25x_otp_512b),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_104_133mhz_dc_table),
 		  SNOR_FIXUPS(&mx25x_wpr_type2_4bp_tb_fixups),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25L3273E", SNOR_ID(0xc2, 0x20, 0x16), SZ_4M, /* SFDP 1.0 */
 		  SNOR_ALIAS(&mx25l3273e_alias),
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7 |
-				    MXIC_F_DC_Q8 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7 |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_4_4),
-		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(86),
+		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit7_86_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7),
 	),
 
 	SNOR_PART("MX25U32***", SNOR_ID(0xc2, 0x25, 0x36), SZ_4M,
@@ -1435,24 +1772,26 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L3239E", SNOR_ID(0xc2, 0x25, 0x36), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT6 |
-				    MXIC_F_DC_Q8 | MXIC_F_WPSEL_SCUR_BIT7),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
-		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(86),
+		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_up),
+		  SNOR_DC_INFO(&mxic_cr1_bit7_86_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7),
 	),
 
 	SNOR_PART("MX25U3232F", SNOR_ID(0xc2, 0x25, 0x36), SZ_4M, /* SFDP 1.6 */
 		  SNOR_ALIAS(&mx25u3232f_alias),
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u1632f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25U3235E", SNOR_ID(0xc2, 0x25, 0x36), SZ_4M, /* SFDP 1.0 */
@@ -1485,22 +1824,24 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25U3273F", SNOR_ID(0xc2, 0x25, 0x36), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_4_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_80mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25R3235F", SNOR_ID(0xc2, 0x28, 0x16), SZ_4M, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_HP_MODE | MXIC_F_SCUR_P_E_FAIL_IND |
-				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&mx25rxf_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_80mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25L32**D", SNOR_ID(0xc2, 0x5e, 0x16), SZ_4M,
@@ -1551,14 +1892,15 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L3255E", SNOR_ID(0xc2, 0x9e, 0x16), SZ_4M,
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7 | MXIC_F_DC_Q8 |
-				    MXIC_F_WPSEL_SCUR_BIT7),
+		  SNOR_VENDOR_FLAGS(MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7),
 		  SNOR_QE_SR1_BIT6,
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_4_4),
-		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(86),
+		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_up),
+		  SNOR_DC_INFO(&mxic_cr1_bit7_86_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7),
 	),
 
 	/**********************************************************************/
@@ -1626,42 +1968,48 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_ALIAS(&mx25l6433f_alias),
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT6 |
-				    MXIC_F_DC_D8_Q10 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_4_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_80_133mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25L64356", SNOR_ID(0xc2, 0x20, 0x17), SZ_8M, /* SFDP 1.0 */
 		  SNOR_ALIAS(&mx25l64356_alias),
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT6 |
-				     MXIC_F_DC_D8_Q10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+				     MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+		  SNOR_SPI_MAX_SPEED_MHZ(133), SNOR_DUAL_MAX_SPEED_MHZ(120), SNOR_QUAD_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_80_120mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX25L6435E", SNOR_ID(0xc2, 0x20, 0x17), SZ_8M, /* SFDP 1.0 */
 		  SNOR_ALIAS(&mx25l6435e_alias),
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7 |
-				     MXIC_F_DC_Q8 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7 |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_4_4),
-		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(86),
+		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit7_86_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7),
 	),
 
 	SNOR_PART("MX25L6436E", SNOR_ID(0xc2, 0x20, 0x17), SZ_8M, /* SFDP 1.0 */
@@ -1680,14 +2028,15 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L6436F", SNOR_ID(0xc2, 0x20, 0x17), SZ_8M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT6 |
-				    MXIC_F_DC_D8_Q10),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B),
 		  SNOR_QE_SR1_BIT6,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_4_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_80_133mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 		  SNOR_FIXUPS(&mx25x_wpr_type2_4bp_tb_fixups),
 	),
 
@@ -1703,24 +2052,26 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L6439E", SNOR_ID(0xc2, 0x25, 0x37), SZ_8M, /* SFDP 1.0, DTR */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT6 |
-				    MXIC_F_DC_Q8 | MXIC_F_WPSEL_SCUR_BIT7),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
-		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(86),
+		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_up),
+		  SNOR_DC_INFO(&mxic_cr1_bit7_86_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7),
 	),
 
 	SNOR_PART("MX25U6432F", SNOR_ID(0xc2, 0x25, 0x37), SZ_8M, /* SFDP 1.6 */
 		  SNOR_ALIAS(&mx25u6432f_alias),
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u1632f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25U6433F", SNOR_ID(0xc2, 0x25, 0x37), SZ_8M, /* SFDP 1.6 */
@@ -1772,10 +2123,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25R6435F", SNOR_ID(0xc2, 0x28, 0x17), SZ_8M, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_HP_MODE | MXIC_F_SCUR_P_E_FAIL_IND |
-				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT6 | MXIC_F_DC_D8_Q10 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(80),
 		  SNOR_REGS(&mx25rxf_regs),
+		  SNOR_DC_INFO(&mxic_cr1_bit6_all_80mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit6),
 	),
 
 	SNOR_PART("MX77L6450F", SNOR_ID(0xc2, 0x75, 0x17), SZ_8M, /* SFDP 1.6 */
@@ -1807,24 +2159,27 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25L12833F", SNOR_ID(0xc2, 0x20, 0x18), SZ_16M, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(120),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(133), SNOR_QUAD_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12833f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L128356", SNOR_ID(0xc2, 0x20, 0x18), SZ_16M, /* SFDP 1.0 */
 		  SNOR_ALIAS(&mx25l128356_alias),
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B | MXIC_F_DC_CR1_BIT7_6 |
-				    MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
-		  SNOR_SPI_MAX_SPEED_MHZ(120),
+		  SNOR_SPI_MAX_SPEED_MHZ(133), SNOR_QUAD_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12833f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L12835E", SNOR_ID(0xc2, 0x20, 0x18), SZ_16M,
@@ -1844,14 +2199,16 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_ALIAS(&mx25l12835f_alias),
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7_6 |
-				    MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7 |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12835f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L12836E", SNOR_ID(0xc2, 0x20, 0x18), SZ_16M, /* SFDP 1.0 */
@@ -1870,15 +2227,16 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L12839F", SNOR_ID(0xc2, 0x20, 0x18), SZ_16M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7_6 |
-				    MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
-		  SNOR_SPI_MAX_SPEED_MHZ(120),
+		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12839f_dc_table),
 		  SNOR_FIXUPS(&mx25x_wpr_type2_4bp_tb_fixups),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L12845E", SNOR_ID(0xc2, 0x20, 0x18), SZ_16M, /* SFDP 1.0, DTR */
@@ -1896,10 +2254,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L12845G", SNOR_ID(0xc2, 0x20, 0x18), SZ_16M, /* SFDP 1.6 */
 		  SNOR_ALIAS(&mx25l12845g_alias), /* MX25L12873G: Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12845g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L12850F", SNOR_ID(0xc2, 0x20, 0x18), SZ_16M, /* SFDP 1.5 */
@@ -1911,10 +2270,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25L12872F", SNOR_ID(0xc2, 0x20, 0x18), SZ_16M, /* SFDP 1.6 */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(120),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(133), SNOR_QUAD_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12833f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25U128***", SNOR_ID(0xc2, 0x25, 0x38), SZ_16M,
@@ -1928,17 +2288,17 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25U12832F", SNOR_ID(0xc2, 0x25, 0x38), SZ_16M, /* SFDP 1.6 */
 		  SNOR_ALIAS(&mx25u12832f_alias),
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12835f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25U12835F", SNOR_ID(0xc2, 0x25, 0x38), SZ_16M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7 |
-				    MXIC_F_DC_Q8 | MXIC_F_WPSEL_SCUR_BIT7),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -1946,6 +2306,8 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(84), SNOR_QUAD_MAX_SPEED_MHZ(84),
 		  SNOR_REGS(&mx25x_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_up),
+		  SNOR_DC_INFO(&mxic_cr1_bit7_104_133mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7),
 	),
 
 	SNOR_PART("MX25U12873F", SNOR_ID(0xc2, 0x25, 0x38), SZ_16M, /* SFDP 1.0 */
@@ -1963,10 +2325,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 
 	SNOR_PART("MX25U12843G", SNOR_ID(0xc2, 0x25, 0x38), SZ_16M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12843g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L12855*", SNOR_ID(0xc2, 0x26, 0x18), SZ_16M,
@@ -1994,14 +2357,16 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L12855F", SNOR_ID(0xc2, 0x26, 0x18), SZ_16M, /* DTR */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7_6 |
-				    MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7 |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12835f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX77L12850F", SNOR_ID(0xc2, 0x75, 0x18), SZ_16M, /* SFDP 1.6 */
@@ -2027,10 +2392,11 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L25633F", SNOR_ID(0xc2, 0x20, 0x19), SZ_32M, /* SFDP 1.6 */
 		  SNOR_ALIAS(&mx25l25633f_alias), /* MX25L25672F, MX25L25733F */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l25633f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L25635E", SNOR_ID(0xc2, 0x20, 0x19), SZ_32M,
@@ -2049,8 +2415,8 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L25635F", SNOR_ID(0xc2, 0x20, 0x19), SZ_32M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7_6 |
-				    MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7 |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_4B_FLAGS(SNOR_4B_F_B7H_E9H | SNOR_4B_F_EAR | SNOR_4B_F_OPCODE),
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
@@ -2058,13 +2424,15 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12835f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L25639F", SNOR_ID(0xc2, 0x20, 0x19), SZ_32M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7_6 |
-				    MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7 |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_4B_FLAGS(SNOR_4B_F_B7H_E9H | SNOR_4B_F_EAR | SNOR_4B_F_OPCODE),
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
@@ -2072,15 +2440,18 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12839f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L25645G", SNOR_ID(0xc2, 0x20, 0x19), SZ_32M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_ALIAS(&mx25l25645g_alias), /* MX25L25673G, MX25L25745G, MX25L25773G */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12845g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L25735E", SNOR_ID(0xc2, 0x20, 0x19), SZ_32M,
@@ -2099,8 +2470,8 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L25735F", SNOR_ID(0xc2, 0x20, 0x19), SZ_32M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7_6 |
-				    MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7 |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_4B_FLAGS(SNOR_4B_F_ALWAYS),
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
@@ -2108,6 +2479,8 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12835f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25U256***", SNOR_ID(0xc2, 0x25, 0x39), SZ_32M,
@@ -2125,34 +2498,37 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25U25635F", SNOR_ID(0xc2, 0x25, 0x39), SZ_32M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7_6 |
-				    MXIC_F_DC_ALL_10),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_4B_FLAGS(SNOR_4B_F_B7H_E9H | SNOR_4B_F_EAR | SNOR_4B_F_OPCODE),
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
-		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(84), SNOR_QUAD_MAX_SPEED_MHZ(84),
+		  SNOR_SPI_MAX_SPEED_MHZ(108),
 		  SNOR_REGS(&mx25x_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_up),
+		  SNOR_DC_INFO(&mx25u25635f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25U25643G", SNOR_ID(0xc2, 0x25, 0x39), SZ_32M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_ALIAS(&mx25u25643g_alias), /* MX25U25672G */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(120), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l25643g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25U25645G", SNOR_ID(0xc2, 0x25, 0x39), SZ_32M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_ALIAS(&mx25u25645g_alias), /* MX25U25673G */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(166), SNOR_QUAD_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u25645g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L25655*", SNOR_ID(0xc2, 0x26, 0x19), SZ_32M,
@@ -2175,8 +2551,8 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L25655F", SNOR_ID(0xc2, 0x26, 0x19), SZ_32M, /* SFDP 1.0, DTR */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7_6 |
-				    MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7 |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_4B_FLAGS(SNOR_4B_F_B7H_E9H | SNOR_4B_F_EAR | SNOR_4B_F_OPCODE),
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
@@ -2184,34 +2560,44 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12835f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25UM25645G", SNOR_ID(0xc2, 0x80, 0x39), SZ_32M, /* SFDP 1.8, Preamble Bit, DTR, Octal */
-		  SNOR_VENDOR_FLAGS(MXIC_F_OCTAL | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
 				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25xm_octal_regs),
+		  SNOR_DC_INFO(&mxix_octal_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr2_300),
 	),
 
 	SNOR_PART("MX25UM25345G", SNOR_ID(0xc2, 0x83, 0x39), SZ_32M, /* SFDP 1.8, Preamble Bit, DTR, Octal */
-		  SNOR_VENDOR_FLAGS(MXIC_F_OCTAL | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
 				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25xm_octal_regs),
+		  SNOR_DC_INFO(&mxix_octal_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr2_300),
 	),
 
 	SNOR_PART("MX25LM25645G", SNOR_ID(0xc2, 0x85, 0x39), SZ_32M, /* SFDP 1.8, Preamble Bit, DTR, Octal */
-		  SNOR_VENDOR_FLAGS(MXIC_F_OCTAL | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
 				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25xm_octal_regs),
+		  SNOR_DC_INFO(&mxix_octal_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr2_300),
 	),
 
 	SNOR_PART("MX25U25645G-54", SNOR_ID(0xc2, 0x95, 0x39), SZ_32M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(166), SNOR_QUAD_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u25645g54_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	/**********************************************************************/
@@ -2219,8 +2605,8 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX25L512**G", SNOR_ID(0xc2, 0x20, 0x1a), SZ_64M,
 		  SNOR_FLAGS(SNOR_F_META | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_DC_CR1_BIT7_6_RST_0 |
-				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_WPSEL_SCUR_BIT7 |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6,
 		  SNOR_4B_FLAGS(SNOR_4B_F_B7H_E9H),
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
@@ -2228,39 +2614,44 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_4_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_dc7_6_dfl_table),
 		  SNOR_FIXUPS(&mx66l512xxx_fixups),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L51237G", SNOR_ID(0xc2, 0x20, 0x1a), SZ_64M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(66),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l51237g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L51245G", SNOR_ID(0xc2, 0x20, 0x1a), SZ_64M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_ALIAS(&mx25l51245g_alias), /* MX25L51273G */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u25645g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25L51245J", SNOR_ID(0xc2, 0x20, 0x1a), SZ_64M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(120), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l51245j_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX66L51235F", SNOR_ID(0xc2, 0x20, 0x1a), SZ_64M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE),
-		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_DC_CR1_BIT7_6 |
-				    MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B | MXIC_F_WPSEL_SCUR_BIT7 |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_QE_SR1_BIT6, SNOR_QPI_35H_F5H,
 		  SNOR_4B_FLAGS(SNOR_4B_F_B7H_E9H | SNOR_4B_F_EAR | SNOR_4B_F_OPCODE),
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
@@ -2268,99 +2659,121 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X4),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l12835f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25U51245G", SNOR_ID(0xc2, 0x25, 0x3a), SZ_64M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_ALIAS(&mx25u51245g_alias), /* MX25U51293G */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(166), SNOR_QUAD_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u25645g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX25UM51245G", SNOR_ID(0xc2, 0x80, 0x3a), SZ_64M, /* SFDP 1.8, Preamble Bit, DTR, Octal */
-		  SNOR_VENDOR_FLAGS(MXIC_F_OCTAL | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
 				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25xm_octal_regs),
+		  SNOR_DC_INFO(&mxix_octal_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr2_300),
 	),
 
 	SNOR_PART("MX25UM51345G", SNOR_ID(0xc2, 0x81, 0x3a), SZ_64M, /* SFDP 1.8, Preamble Bit, DTR, Octal */
-		  SNOR_VENDOR_FLAGS(MXIC_F_OCTAL | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
 				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25xm_octal_regs),
+		  SNOR_DC_INFO(&mxix_octal_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr2_300),
 	),
 
 	SNOR_PART("MX25LM51245G", SNOR_ID(0xc2, 0x85, 0x3a), SZ_64M, /* SFDP 1.8, Preamble Bit, DTR, Octal */
-		  SNOR_VENDOR_FLAGS(MXIC_F_OCTAL | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
 				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25xm_octal_regs),
+		  SNOR_DC_INFO(&mxix_octal_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr2_300),
 	),
 
 	SNOR_PART("MX25U51245G-54", SNOR_ID(0xc2, 0x95, 0x3a), SZ_64M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(166), SNOR_QUAD_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u25645g54_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	/**********************************************************************/
 
 	SNOR_PART("MX66L1G45*", SNOR_ID(0xc2, 0x20, 0x1b), SZ_128M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_FLAGS(SNOR_F_META),
-		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_DC_CR1_BIT7_6_RST_0 |
-				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_WPSEL_SCUR_BIT7 |
+				    MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_dc7_6_dfl_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX66L1G45G", SNOR_ID(0xc2, 0x20, 0x1b), SZ_128M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_512B_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(166), SNOR_QUAD_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u25645g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX66L1G45J", SNOR_ID(0xc2, 0x20, 0x1b), SZ_128M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(120), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l51245j_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX66U1G45G", SNOR_ID(0xc2, 0x25, 0x3b), SZ_128M, /* SFDP 1.6, Preamble Bit, DTR */
-		  SNOR_ALIAS(&mx25u1g45g_alias), /* MX25U1G93G */
+		  SNOR_ALIAS(&mx25u1g45g_alias), /* MX66U1G93G */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(166), SNOR_QUAD_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u25645g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX66UM1G45G", SNOR_ID(0xc2, 0x80, 0x3b), SZ_128M, /* SFDP 1.8, Preamble Bit, DTR, Octal */
-		  SNOR_VENDOR_FLAGS(MXIC_F_OCTAL | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
 				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(166),
 		  SNOR_REGS(&mx25xm_octal_regs),
+		  SNOR_DC_INFO(&mxix_octal_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr2_300),
 	),
 
 	SNOR_PART("MX66LM1G45G", SNOR_ID(0xc2, 0x85, 0x3b), SZ_128M, /* SFDP 1.8, Preamble Bit, DTR, Octal */
-		  SNOR_VENDOR_FLAGS(MXIC_F_OCTAL | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
 				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25xm_octal_regs),
+		  SNOR_DC_INFO(&mxix_octal_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr2_300),
 	),
 
 	SNOR_PART("MX66U1G45G-54", SNOR_ID(0xc2, 0x95, 0x3b), SZ_128M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(166), SNOR_QUAD_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u25645g54_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	/**********************************************************************/
@@ -2368,48 +2781,56 @@ static const struct spi_nor_flash_part macronix_parts[] = {
 	SNOR_PART("MX66L2G45*", SNOR_ID(0xc2, 0x20, 0x1c), SZ_256M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_FLAGS(SNOR_F_META),
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6_RST_0 | MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mxic_cr1_dc7_6_dfl_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX66L2G45G", SNOR_ID(0xc2, 0x20, 0x1c), SZ_256M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u25645g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX66L2G45J", SNOR_ID(0xc2, 0x20, 0x1c), SZ_256M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_D8_Q10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(120), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25l51245j_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX66U2G45G", SNOR_ID(0xc2, 0x25, 0x3c), SZ_256M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6 | MXIC_F_DC_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(166), SNOR_QUAD_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u25645g_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 
 	SNOR_PART("MX66UM2G45G", SNOR_ID(0xc2, 0x80, 0x3c), SZ_256M, /* SFDP 1.8, Preamble Bit, DTR, Octal */
-		  SNOR_VENDOR_FLAGS(MXIC_F_OCTAL | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
+		  SNOR_VENDOR_FLAGS(MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
 				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25xm_octal_regs),
+		  SNOR_DC_INFO(&mxix_octal_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr2_300),
 	),
 
 	SNOR_PART("MX66U2G45G-54", SNOR_ID(0xc2, 0x95, 0x3c), SZ_256M, /* SFDP 1.6, Preamble Bit, DTR */
 		  SNOR_VENDOR_FLAGS(MXIC_F_PP_1_4_4 | MXIC_F_SCUR_P_E_FAIL_IND | MXIC_F_OTP_2X512B_LAST_ESN_16B |
-				    MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 | MXIC_F_WPSEL_SCUR_BIT7 |
-				    MXIC_F_WPR_4BP_TB_OTP),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+				    MXIC_F_WPSEL_SCUR_BIT7 | MXIC_F_WPR_4BP_TB_OTP),
+		  SNOR_SPI_MAX_SPEED_MHZ(166), SNOR_QUAD_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&mx25x_regs),
+		  SNOR_DC_INFO(&mx25u25645g54_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&mxic_dc_acc_cr1_bit7_6),
 	),
 };
 
@@ -2424,125 +2845,6 @@ static ufprog_status mx25l2026c_write_enable(struct spi_nor *snor)
 	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &sr_acc, 0xfc, 0, false));
 
 	return spi_nor_write_enable(snor);
-}
-
-static void mxic_test_controller_qspi_support(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp)
-{
-	if (spi_nor_test_io_opcode(snor, bp->read_opcodes_3b, SPI_MEM_IO_1_1_4, 3, SPI_DATA_IN) ||
-	    spi_nor_test_io_opcode(snor, bp->read_opcodes_3b, SPI_MEM_IO_1_4_4, 3, SPI_DATA_IN) ||
-	    spi_nor_test_io_opcode(snor, bp->read_opcodes_3b, SPI_MEM_IO_4_4_4, 3, SPI_DATA_IN) ||
-	    spi_nor_test_io_opcode(snor, bp->pp_opcodes_3b, SPI_MEM_IO_1_1_4, 3, SPI_DATA_OUT) ||
-	    spi_nor_test_io_opcode(snor, bp->pp_opcodes_3b, SPI_MEM_IO_4_4_4, 3, SPI_DATA_OUT))
-		return;
-
-	if (bp->p.size > SZ_16M &&
-	    (spi_nor_test_io_opcode(snor, bp->read_opcodes_4b, SPI_MEM_IO_1_1_4, 4, SPI_DATA_IN) ||
-	    spi_nor_test_io_opcode(snor, bp->read_opcodes_4b, SPI_MEM_IO_1_4_4, 4, SPI_DATA_IN) ||
-	    spi_nor_test_io_opcode(snor, bp->read_opcodes_4b, SPI_MEM_IO_4_4_4, 4, SPI_DATA_IN) ||
-	    spi_nor_test_io_opcode(snor, bp->pp_opcodes_4b, SPI_MEM_IO_1_1_4, 4, SPI_DATA_OUT) ||
-	    spi_nor_test_io_opcode(snor, bp->pp_opcodes_4b, SPI_MEM_IO_4_4_4, 4, SPI_DATA_OUT)))
-		return;
-
-	snor->state.vendor_flags |= MXIC_SF_NO_QSPI;
-}
-
-static ufprog_status mxic_part_setup_dummy_cycles(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp,
-						  const struct spi_nor_reg_access *regacc, uint32_t mask, uint32_t val)
-{
-	uint8_t sio_dc = 8, dual_dc = 8, dio_dc = 4, quad_dc = 8, qio_dc = 6;
-
-	if (mask)
-		STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, regacc, mask, val, true));
-
-	if (bp) {
-		if (!(bp->p.vendor_flags & MXIC_F_DC_CR1_BIT7_6_RST_0)) {
-			if (bp->p.vendor_flags & MXIC_F_DC_Q8) {
-				qio_dc = 8;
-			} else if (bp->p.vendor_flags & MXIC_F_DC_D8_Q10) {
-				dio_dc = 8;
-				qio_dc = 10;
-			} else if (bp->p.vendor_flags & (MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 | MXIC_F_DC_ALL_10)) {
-				mxic_test_controller_qspi_support(snor, bp);
-				if (snor->state.vendor_flags & MXIC_SF_NO_QSPI) {
-					sio_dc = 8;
-					dual_dc = 8;
-					dio_dc = 8;
-					quad_dc = 8;
-					qio_dc = 8;
-					if (bp->p.max_speed_quad_mhz > 104)
-						bp->p.max_speed_quad_mhz = 104;
-					if (bp->p.max_speed_dual_mhz > 104)
-						bp->p.max_speed_dual_mhz = 104;
-					if (bp->p.max_speed_spi_mhz > 104)
-						bp->p.max_speed_spi_mhz = 104;
-				} else {
-					sio_dc = 10;
-					dual_dc = 10;
-					dio_dc = 10;
-					quad_dc = 10;
-					qio_dc = 10;
-				}
-			} else if (bp->p.vendor_flags & MXIC_F_OCTAL) {
-				sio_dc = 16;
-				dual_dc = 16;
-				dio_dc = 16;
-				quad_dc = 16;
-				qio_dc = 16;
-			}
-
-			if (bp->p.vendor_flags & (MXIC_F_DC_ALL_10 | MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 | MXIC_F_OCTAL)) {
-				bp->read_opcodes_3b[SPI_MEM_IO_1_1_1].ndummy = sio_dc;
-				bp->read_opcodes_3b[SPI_MEM_IO_1_1_1].nmode = 0;
-				bp->read_opcodes_3b[SPI_MEM_IO_1_1_2].ndummy = dual_dc;
-				bp->read_opcodes_3b[SPI_MEM_IO_1_1_2].nmode = 0;
-				bp->read_opcodes_3b[SPI_MEM_IO_1_1_4].ndummy = quad_dc;
-				bp->read_opcodes_3b[SPI_MEM_IO_1_1_4].nmode = 0;
-
-				if (bp->p.size >= SZ_32M) {
-					bp->read_opcodes_4b[SPI_MEM_IO_1_1_1].ndummy = sio_dc;
-					bp->read_opcodes_4b[SPI_MEM_IO_1_1_1].nmode = 0;
-					bp->read_opcodes_4b[SPI_MEM_IO_1_1_2].ndummy = dual_dc;
-					bp->read_opcodes_4b[SPI_MEM_IO_1_1_2].nmode = 0;
-					bp->read_opcodes_4b[SPI_MEM_IO_1_1_4].ndummy = quad_dc;
-					bp->read_opcodes_4b[SPI_MEM_IO_1_1_4].nmode = 0;
-				}
-			}
-
-			bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].ndummy = dio_dc;
-			bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].nmode = 0;
-			bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = qio_dc;
-			bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
-			bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = qio_dc;
-			bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 0;
-
-			if (bp->p.size >= SZ_32M) {
-				bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].ndummy = dio_dc;
-				bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].nmode = 0;
-				bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].ndummy = qio_dc;
-				bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].nmode = 0;
-				bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].ndummy = qio_dc;
-				bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].nmode = 0;
-			}
-		} else {
-			bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].ndummy = dio_dc;
-			bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].nmode = 0;
-			bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = qio_dc;
-			bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
-			bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = qio_dc;
-			bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 0;
-
-			if (bp->p.size >= SZ_32M) {
-				bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].ndummy = dio_dc;
-				bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].nmode = 0;
-				bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].ndummy = qio_dc;
-				bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].nmode = 0;
-				bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].ndummy = qio_dc;
-				bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].nmode = 0;
-			}
-		}
-	}
-
-	return UFP_OK;
 }
 
 static ufprog_status scur_otp_single_esn_full_locked(struct spi_nor *snor, uint32_t index, ufprog_bool *retlocked)
@@ -2671,19 +2973,6 @@ static ufprog_status macronix_part_fixup(struct spi_nor *snor, struct spi_nor_ve
 			bp->p.wp_ranges = &wpr_4bp_up;
 	}
 
-	if (bp->p.vendor_flags & MXIC_F_DC_CR1_BIT6)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, 0, 0));
-	else if (bp->p.vendor_flags & MXIC_F_DC_CR1_BIT7)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, 0, 0));
-	else if (bp->p.vendor_flags & MXIC_F_DC_CR1_BIT7_6)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, 0, 0));
-	else if (bp->p.vendor_flags & (MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 | MXIC_F_DC_CR1_BIT7_6_RST_0))
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, 0, 0));
-	else if (bp->p.vendor_flags & MXIC_F_OCTAL)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mxic_cr2_300_acc, 0, 0));
-	else
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, bp, &mx25x_srcr_acc, 0, 0));
-
 	return UFP_OK;
 }
 
@@ -2750,26 +3039,7 @@ static ufprog_status macronix_chip_setup(struct spi_nor *snor)
 		STATUS_CHECK_RET(spi_nor_write_disable(snor));
 	}
 
-	if (snor->param.vendor_flags & MXIC_F_DC_CR1_BIT6)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT6, 1 << 14));
-	else if (snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7, 1 << 15));
-	else if ((snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7_6) && (snor->state.vendor_flags & MXIC_SF_NO_QSPI))
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 2 << 14));
-	else if ((snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7_6) && !(snor->state.vendor_flags & MXIC_SF_NO_QSPI))
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 3 << 14));
-	else if (snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7_6_RST_0)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 0));
-	else if (snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10 && (snor->state.vendor_flags & MXIC_SF_NO_QSPI))
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 1 << 14));
-	else if ((snor->param.vendor_flags & MXIC_F_DC_CR1_BIT7_6_DFL_ALL_10) && !(snor->state.vendor_flags & MXIC_SF_NO_QSPI))
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, MXIC_DC_BIT7_6, 0));
-	else if (snor->param.vendor_flags & MXIC_F_OCTAL)
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mxic_cr2_300_acc, MXIC_CR2_300_DC_MASK, 2));
-	else
-		STATUS_CHECK_RET(mxic_part_setup_dummy_cycles(snor, NULL, &mx25x_srcr_acc, 0, 0));
-
-	if (snor->param.vendor_flags & MXIC_F_OCTAL) {
+	if (snor->ext_param.dc_setup_acc == &mxic_dc_acc_cr2_300) {
 		STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &mxic_cr2_0_acc, 0xff, 0, true));
 		STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &mxic_cr2_200_acc, 0xff, 0, true));
 	}

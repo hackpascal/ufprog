@@ -13,6 +13,7 @@
 #define SR3_WPS					BIT(2)
 
 /* QPI Read Parameters */
+#define QPI_READ_DUMMY_CLOCKS_SHIFT		4
 #define QPI_READ_DUMMY_CLOCKS_2			0x00
 #define QPI_READ_DUMMY_CLOCKS_4			0x10
 #define QPI_READ_DUMMY_CLOCKS_6			0x20

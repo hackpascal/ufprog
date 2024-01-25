@@ -93,6 +93,80 @@ static const struct snor_reg_info w25q_2_regs = SNOR_REG_INFO(&w25q_sr1, &w25q_s
 static const struct snor_reg_info w25q_3_regs = SNOR_REG_INFO(&w25q_sr1, &w25q_sr2, &w25q_sr3);
 static const struct snor_reg_info w25q_4b_3_regs = SNOR_REG_INFO(&w25q_sr1, &w25q_sr2, &w25q_sr3_4b);
 
+/* W25Q40EW */
+static const SNOR_DC_CONFIG(w25q40ew_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 104), SNOR_DC_IDX_VALUE(2, 6, 80),
+			    SNOR_DC_IDX_VALUE(1, 4, 55), SNOR_DC_IDX_VALUE(0, 2, 26));
+
+static const SNOR_DC_TABLE(w25q40ew_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, w25q40ew_qpi_cfgs));
+
+/* W25Q16DW */
+static const SNOR_DC_CONFIG(w25q16dw_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 104), SNOR_DC_IDX_VALUE(2, 6, 80),
+			    SNOR_DC_IDX_VALUE(1, 4, 50), SNOR_DC_IDX_VALUE(0, 2, 30));
+
+static const SNOR_DC_TABLE(w25q16dw_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, w25q16dw_qpi_cfgs));
+
+/* W25Q16JW-DTR */
+static const SNOR_DC_CONFIG(w25q16jw_dtr_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 104), SNOR_DC_IDX_VALUE(2, 6, 80),
+			    SNOR_DC_IDX_VALUE(1, 4, 50), SNOR_DC_IDX_VALUE(0, 2, 26));
+
+static const SNOR_DC_TABLE(w25q16jw_dtr_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, w25q16jw_dtr_qpi_cfgs));
+
+/* W25Q32FV */
+static const SNOR_DC_CONFIG(w25q32fv_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 104), SNOR_DC_IDX_VALUE(2, 6, 80),
+			    SNOR_DC_IDX_VALUE(1, 4, 55), SNOR_DC_IDX_VALUE(0, 2, 33));
+
+static const SNOR_DC_TABLE(w25q32fv_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, w25q32fv_qpi_cfgs));
+
+/* W25Q32JV-DTR */
+static const SNOR_DC_CONFIG(w25q32jv_dtr_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 104), SNOR_DC_IDX_VALUE(2, 6, 80),
+			    SNOR_DC_IDX_VALUE(1, 4, 50), SNOR_DC_IDX_VALUE(0, 2, 33));
+
+static const SNOR_DC_TABLE(w25q32jv_dtr_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, w25q32jv_dtr_qpi_cfgs));
+
+/* W25Q64FV */
+static const SNOR_DC_CONFIG(w25q64fv_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 104), SNOR_DC_IDX_VALUE(2, 6, 80),
+			    SNOR_DC_IDX_VALUE(1, 4, 60), SNOR_DC_IDX_VALUE(0, 2, 40));
+
+static const SNOR_DC_TABLE(w25q64fv_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, w25q64fv_qpi_cfgs));
+
+/* W25Q64JW-DTR */
+static const SNOR_DC_CONFIG(w25q64jw_dtr_qpi_cfgs, SNOR_DC_IDX_VALUE(2, 6, 104), SNOR_DC_IDX_VALUE(3, 8, 104),
+			    SNOR_DC_IDX_VALUE(1, 4, 80), SNOR_DC_IDX_VALUE(0, 2, 26));
+
+static const SNOR_DC_TABLE(w25q64jw_dtr_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, w25q64jw_dtr_qpi_cfgs));
+
+/* W25Q128FV */
+static const SNOR_DC_CONFIG(w25q128fv_qpi_cfgs, SNOR_DC_IDX_VALUE(2, 6, 80), SNOR_DC_IDX_VALUE(3, 8, 80),
+			    SNOR_DC_IDX_VALUE(1, 4, 55), SNOR_DC_IDX_VALUE(0, 2, 33));
+
+static const SNOR_DC_TABLE(w25q128fv_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, w25q128fv_qpi_cfgs));
+
+/* W25Q512NW-DTR */
+static const SNOR_DC_CONFIG(w25q512nw_dtr_144_cfgs, SNOR_DC_IDX_VALUE(3, 8, 133), SNOR_DC_IDX_VALUE(4, 10, 133),
+			    SNOR_DC_IDX_VALUE(5, 12, 133), SNOR_DC_IDX_VALUE(6, 14, 133), SNOR_DC_IDX_VALUE(7, 16, 133),
+			    SNOR_DC_TUPLE(0, 2, 6, 0, 104));
+
+static const SNOR_DC_CONFIG(w25q512nw_dtr_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 133), SNOR_DC_IDX_VALUE(4, 10, 133),
+			    SNOR_DC_IDX_VALUE(5, 12, 133), SNOR_DC_IDX_VALUE(6, 14, 133), SNOR_DC_IDX_VALUE(7, 16, 133),
+			    SNOR_DC_IDX_VALUE(2, 6, 104), SNOR_DC_IDX_VALUE(1, 4, 80), SNOR_DC_IDX_VALUE(0, 2, 50));
+
+static const SNOR_DC_TABLE(w25q512nw_dtr_dc_table, 7,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, w25q512nw_dtr_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, w25q512nw_dtr_qpi_cfgs));
+
+/* W25Q02JV-DTR */
+static const SNOR_DC_CONFIG(w25q02jv_dtr_144_cfgs, SNOR_DC_TUPLE(0, 2, 6, 0, 104), SNOR_DC_IDX_VALUE(3, 8, 104),
+			    SNOR_DC_IDX_VALUE(4, 10, 104), SNOR_DC_IDX_VALUE(5, 12, 104), SNOR_DC_IDX_VALUE(6, 14, 104),
+			    SNOR_DC_IDX_VALUE(7, 16, 104));
+
+static const SNOR_DC_CONFIG(w25q02jv_dtr_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 104), SNOR_DC_IDX_VALUE(4, 10, 104),
+			    SNOR_DC_IDX_VALUE(5, 12, 104), SNOR_DC_IDX_VALUE(6, 14, 104), SNOR_DC_IDX_VALUE(7, 16, 104),
+			    SNOR_DC_IDX_VALUE(2, 6, 80), SNOR_DC_IDX_VALUE(1, 4, 50), SNOR_DC_IDX_VALUE(0, 2, 25));
+
+static const SNOR_DC_TABLE(w25q02jv_dtr_dc_table, 7,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, w25q02jv_dtr_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, w25q02jv_dtr_qpi_cfgs));
+
 static ufprog_status w25q16xv_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					  struct spi_nor_flash_part_blank *bp)
 {
@@ -452,6 +526,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_2_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+		  SNOR_DC_INFO(&w25q40ew_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25X80", SNOR_ID(0xef, 0x30, 0x14), SZ_1M,
@@ -498,6 +574,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_2_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+		  SNOR_DC_INFO(&w25q40ew_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25X16", SNOR_ID(0xef, 0x30, 0x15), SZ_2M,
@@ -600,6 +678,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_OTP_INFO(&w25q_otp_4),
 		  SNOR_REGS(&w25q_4lb_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+		  SNOR_DC_INFO(&w25q16dw_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q16FW", SNOR_ID(0xef, 0x60, 0x15), SZ_2M,
@@ -612,6 +692,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+		  SNOR_DC_INFO(&w25q40ew_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q16JW", SNOR_ID(0xef, 0x60, 0x15), SZ_2M,
@@ -632,6 +714,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+		  SNOR_DC_INFO(&w25q16jw_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25X32", SNOR_ID(0xef, 0x30, 0x16), SZ_4M,
@@ -687,6 +771,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+		  SNOR_DC_INFO(&w25q32fv_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q32JV", SNOR_ID(0xef, 0x40, 0x16), SZ_4M,
@@ -720,6 +806,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+		  SNOR_DC_INFO(&w25q32jv_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q32*W", SNOR_ID(0xef, 0x60, 0x16), SZ_4M,
@@ -743,6 +831,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_OTP_INFO(&w25q_otp_4),
 		  SNOR_REGS(&w25q_4lb_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+		  SNOR_DC_INFO(&w25q16dw_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q32FW", SNOR_ID(0xef, 0x60, 0x16), SZ_4M,
@@ -755,6 +845,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+		  SNOR_DC_INFO(&w25q40ew_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q32JW", SNOR_ID(0xef, 0x60, 0x16), SZ_4M,
@@ -775,6 +867,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+		  SNOR_DC_INFO(&w25q32jv_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25X64", SNOR_ID(0xef, 0x30, 0x17), SZ_8M,
@@ -839,6 +933,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&w25q64fv_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q64JV", SNOR_ID(0xef, 0x40, 0x17), SZ_8M,
@@ -872,6 +968,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&w25q32jv_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q64*W", SNOR_ID(0xef, 0x60, 0x17), SZ_8M,
@@ -894,6 +992,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_OTP_INFO(&w25q_otp_4),
 		  SNOR_REGS(&w25q_4lb_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_ratio),
+		  SNOR_DC_INFO(&w25q16dw_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q64FW", SNOR_ID(0xef, 0x60, 0x17), SZ_8M,
@@ -906,6 +1006,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&w25q40ew_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q64JW", SNOR_ID(0xef, 0x60, 0x17), SZ_8M,
@@ -926,6 +1028,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&w25q64jw_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q128", SNOR_ID(0xef, 0x40, 0x18), SZ_16M,
@@ -962,6 +1066,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&w25q128fv_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q128JV", SNOR_ID(0xef, 0x40, 0x18), SZ_16M,
@@ -995,6 +1101,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&w25q32jv_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q128*W", SNOR_ID(0xef, 0x60, 0x18), SZ_16M,
@@ -1018,6 +1126,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_OTP_INFO(&w25q_otp_4),
 		  SNOR_REGS(&w25q_4lb_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&w25q16dw_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q128FW", SNOR_ID(0xef, 0x60, 0x18), SZ_16M,
@@ -1030,6 +1140,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&w25q40ew_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q128JW", SNOR_ID(0xef, 0x60, 0x18), SZ_16M,
@@ -1050,6 +1162,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&w25q64jw_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q256", SNOR_ID(0xef, 0x40, 0x19), SZ_32M,
@@ -1091,6 +1205,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_4bp_tb_cmp),
+		  SNOR_DC_INFO(&w25q128fv_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q256JV", SNOR_ID(0xef, 0x40, 0x19), SZ_32M,
@@ -1112,6 +1228,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_4bp_tb_cmp),
+		  SNOR_DC_INFO(&w25q32jv_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q256JW", SNOR_ID(0xef, 0x60, 0x19), SZ_32M,
@@ -1128,6 +1246,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_4bp_tb_cmp),
+		  SNOR_DC_INFO(&w25q16jw_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q512JV", SNOR_ID(0xef, 0x40, 0x20), SZ_64M,
@@ -1144,6 +1264,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_4bp_tb_cmp),
+		  SNOR_DC_INFO(&w25q32jv_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q512NW", SNOR_ID(0xef, 0x60, 0x20), SZ_64M,
@@ -1160,6 +1282,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_4bp_tb_cmp),
+		  SNOR_DC_INFO(&w25q512nw_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25M512JV", SNOR_ID(0xef, 0x71, 0x19), SZ_32M,
@@ -1196,6 +1320,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_4bp_tb_cmp),
+		  SNOR_DC_INFO(&w25q32jv_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q01NW", SNOR_ID(0xef, 0x60, 0x21), SZ_128M,
@@ -1214,6 +1340,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  SNOR_WP_RANGES(&wpr_4bp_tb_cmp),
+		  SNOR_DC_INFO(&w25q512nw_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q02JV-DTR", SNOR_ID(0xef, 0x70, 0x22), SZ_256M,
@@ -1223,6 +1351,8 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  /* SNOR_WP_RANGES(&wpr_4bp_tb_cmp), // FIXME: not supported now */
+		  SNOR_DC_INFO(&w25q02jv_dtr_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("W25Q02NW-DTR", SNOR_ID(0xef, 0x80, 0x22), SZ_256M,
@@ -1232,8 +1362,19 @@ static const struct spi_nor_flash_part winbond_parts[] = {
 		  SNOR_REGS(&w25q_4b_3_regs),
 		  SNOR_OTP_INFO(&w25q_otp_3),
 		  /* SNOR_WP_RANGES(&wpr_4bp_tb_cmp), // FIXME: not supported now */
+		  SNOR_DC_INFO(&w25q512nw_dtr_dc_table), // FIXME: no documentation now */
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 };
+
+static ufprog_status winbond_set_c0h_dc(struct spi_nor *snor, uint8_t idx)
+{
+	/* Set 1-4-4/QPI read dummy cycles for maximum speed */
+	if (spi_mem_io_info_addr_bw(snor->state.read_io_info) == 4)
+		return spi_nor_write_reg(snor, SNOR_CMD_SET_READ_PARAMETERS, idx << QPI_READ_DUMMY_CLOCKS_SHIFT);
+
+	return UFP_OK;
+}
 
 static ufprog_status winbond_part_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					struct spi_nor_flash_part_blank *bp)
@@ -1279,12 +1420,6 @@ static ufprog_status winbond_part_fixup(struct spi_nor *snor, struct spi_nor_ven
 		}
 	}
 
-	/* 8 dummy cycles will be used for QPI read */
-	if (bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].opcode) {
-		bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = 8;
-		bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 0;
-	}
-
 	if (bp->p.size > SZ_16M && (bp->p.a4b_flags & SNOR_4B_F_OPCODE)) {
 		if (spi_nor_test_io_opcode(snor, bp->read_opcodes_4b, SPI_MEM_IO_4_4_4, 4, SPI_DATA_IN) ||
 		    spi_nor_test_io_opcode(snor, bp->pp_opcodes_4b, SPI_MEM_IO_4_4_4, 4, SPI_DATA_OUT)) {
@@ -1308,6 +1443,9 @@ static ufprog_status winbond_part_fixup(struct spi_nor *snor, struct spi_nor_ven
 	if (bp->p.vendor_flags & WINBOND_F_MULTI_DIE)
 		snor->state.die_read_granularity = SZ_64M;
 
+	if (bp->p.dc_table == &w25q512nw_dtr_dc_table || bp->p.dc_table == &w25q02jv_dtr_dc_table)
+		snor->ext_param.ops.set_dc = winbond_set_c0h_dc;
+
 	if (bp->p.regs == &w25x_regs || bp->p.regs == &w25xc_regs || bp->p.regs == &w25q_2_regs ||
 	    bp->p.regs == &w25q_3_regs || bp->p.regs == &w25q_4b_3_regs) {
 		snor->state.reg.cr = &cr_acc;
@@ -1324,16 +1462,6 @@ static ufprog_status winbond_part_fixup(struct spi_nor *snor, struct spi_nor_ven
 static const struct spi_nor_flash_part_fixup winbond_fixups = {
 	.pre_param_setup = winbond_part_fixup,
 };
-
-static ufprog_status winbond_setup_qpi(struct spi_nor *snor, bool enabled)
-{
-	if (enabled) {
-		/* Set QPI read dummy cycles to 8 for maximum speed */
-		return spi_nor_write_reg(snor, SNOR_CMD_SET_READ_PARAMETERS, QPI_READ_DUMMY_CLOCKS_8);
-	}
-
-	return UFP_OK;
-}
 
 static ufprog_status winbond_read_uid(struct spi_nor *snor, void *data, uint32_t *retlen)
 {
@@ -1361,7 +1489,6 @@ static const struct spi_nor_flash_part_ops winbond_ops = {
 
 	.read_uid = winbond_read_uid,
 	.select_die = spi_nor_select_die,
-	.setup_qpi = winbond_setup_qpi,
 	.qpi_dis = spi_nor_disable_qpi_ffh,
 };
 

@@ -887,8 +887,8 @@ ufprog_status spi_nor_select_die(struct spi_nor *snor, uint8_t id)
 	return spi_nor_write_reg(snor, SNOR_CMD_SELECT_DIE, id);
 }
 
-bool spi_nor_test_io_opcode(struct spi_nor *snor, const struct spi_nor_io_opcode *opcodes, enum spi_mem_io_type io_type,
-			    uint8_t naddr, enum ufprog_spi_data_dir data_dir)
+bool spi_nor_test_io_opcode_full(struct spi_nor *snor, enum spi_mem_io_type io_type, uint8_t naddr, uint8_t ndummy,
+				 uint8_t nmode, enum ufprog_spi_data_dir data_dir)
 {
 	struct ufprog_spi_mem_op op = { 0 };
 	uint8_t dummy_cycles, dummy_bytes;
@@ -901,7 +901,7 @@ bool spi_nor_test_io_opcode(struct spi_nor *snor, const struct spi_nor_io_opcode
 	op.addr.buswidth = spi_mem_io_addr_bw(io_type);
 	op.addr.dtr = spi_mem_io_addr_dtr(io_type);
 
-	dummy_cycles = opcodes[io_type].ndummy + opcodes[io_type].nmode;
+	dummy_cycles = ndummy + nmode;
 
 	if ((dummy_cycles * op.addr.buswidth) % 8)
 		return false;
@@ -921,9 +921,20 @@ bool spi_nor_test_io_opcode(struct spi_nor *snor, const struct spi_nor_io_opcode
 }
 
 static enum spi_mem_io_type spi_nor_choose_io_type(struct spi_nor *snor, const struct spi_nor_io_opcode *opcodes,
-						   uint32_t io_caps, uint8_t naddr, enum ufprog_spi_data_dir data_dir)
+						   uint32_t io_caps, uint8_t naddr, enum ufprog_spi_data_dir data_dir,
+						   const struct spi_nor_dummy_cycle_table *dc_table)
 {
+	uint32_t i, max_speed = 0, spi_max_speed = 0, new_speed;
+	uint8_t read_dc_idx = 0, read_ndummy = 0, new_ndummy;
+	const struct spi_nor_dummy_cycle_config *dc_cfg;
+	const struct spi_nor_dummy_cycle_tuple *dc_tup;
 	enum spi_mem_io_type io_type;
+	bool read_dc_valid = false;
+
+
+	ufprog_spi_get_speed_limit(snor->spi, NULL, &spi_max_speed);
+	if (!spi_max_speed || (snor->max_speed && spi_max_speed > snor->max_speed))
+		spi_max_speed = snor->max_speed;
 
 	for (io_type = __SPI_MEM_IO_MAX; io_type > 0; io_type--) {
 		if (!(io_caps & (1 << (io_type - 1))))
@@ -932,8 +943,53 @@ static enum spi_mem_io_type spi_nor_choose_io_type(struct spi_nor *snor, const s
 		if (!opcodes[io_type - 1].opcode)
 			continue;
 
-		if (spi_nor_test_io_opcode(snor, opcodes, io_type - 1, naddr, data_dir))
+		if (dc_table && dc_table->configs[io_type - 1]) {
+			dc_cfg = dc_table->configs[io_type - 1];
+			snor->state.read_dc_valid = false;
+
+			for (i = 0; i < dc_cfg->num; i++) {
+				dc_tup = &dc_cfg->tuples[i];
+
+				if (spi_nor_test_io_opcode_full(snor, io_type - 1, naddr, dc_tup->ndummy, dc_tup->nmode,
+								data_dir)) {
+					new_speed = (uint32_t)dc_tup->max_freq_mhz * 1000000;
+
+					if (!read_dc_valid || (spi_max_speed && new_speed > spi_max_speed)) {
+						new_ndummy = (dc_tup->ndummy + dc_tup->nmode) *
+							spi_mem_io_addr_bw(io_type - 1) / 8;
+
+						if ((max_speed && new_speed == max_speed) && new_ndummy >= read_ndummy)
+							continue;
+
+						read_dc_valid = true;
+						read_dc_idx = dc_tup->lower_idx;
+						read_ndummy = new_ndummy;
+						max_speed = new_speed;
+					}
+
+					if (new_speed <= spi_max_speed)
+						break;
+				}
+			}
+
+			if (read_dc_valid) {
+				snor->state.read_dc_valid = true;
+				snor->state.read_dc_idx = read_dc_idx;
+				snor->state.read_ndummy = read_ndummy;
+				snor->state.max_speed = max_speed;
+
+				return io_type - 1;
+			}
+		}
+
+		if (spi_nor_test_io_opcode(snor, opcodes, io_type - 1, naddr, data_dir)) {
+			if (data_dir == SPI_DATA_IN) {
+				snor->state.read_dc_valid = false;
+				snor->state.read_dc_idx = 0;
+				snor->state.max_speed = 0;
+			}
 			return io_type - 1;
+		}
 	}
 
 	return __SPI_MEM_IO_MAX;
@@ -942,6 +998,7 @@ static enum spi_mem_io_type spi_nor_choose_io_type(struct spi_nor *snor, const s
 static bool spi_nor_test_read_pp_opcode(struct spi_nor *snor, const struct spi_nor_io_opcode *read_opcodes,
 					uint32_t read_io_caps,  const struct spi_nor_io_opcode *pp_opcodes,
 					uint32_t pp_io_caps, uint8_t naddr, bool same_cmd_bw,
+					const struct spi_nor_dummy_cycle_table *dc_table,
 					enum spi_mem_io_type *ret_read_io_type, enum spi_mem_io_type *ret_pp_io_type)
 {
 	enum spi_mem_io_type read_io_type = SPI_MEM_IO_1_1_1, pp_io_type = SPI_MEM_IO_1_1_1;
@@ -957,11 +1014,11 @@ static bool spi_nor_test_read_pp_opcode(struct spi_nor *snor, const struct spi_n
 	pp_io_caps &= snor->allowed_io_caps;
 
 	while (read_io_caps && pp_io_caps) {
-		read_io_type = spi_nor_choose_io_type(snor, read_opcodes, read_io_caps, naddr, SPI_DATA_IN);
+		read_io_type = spi_nor_choose_io_type(snor, read_opcodes, read_io_caps, naddr, SPI_DATA_IN, dc_table);
 		if (read_io_type >= __SPI_MEM_IO_MAX)
 			return false;
 
-		pp_io_type = spi_nor_choose_io_type(snor, pp_opcodes, pp_io_caps, naddr, SPI_DATA_OUT);
+		pp_io_type = spi_nor_choose_io_type(snor, pp_opcodes, pp_io_caps, naddr, SPI_DATA_OUT, NULL);
 		if (pp_io_type >= __SPI_MEM_IO_MAX)
 			return false;
 
@@ -1129,7 +1186,7 @@ static bool spi_nor_setup_opcode(struct spi_nor *snor, const struct spi_nor_flas
 		spi_nor_get_3b_opcodes(part, &opcodes);
 
 		ret = spi_nor_test_read_pp_opcode(snor, opcodes.read, part->read_io_caps, opcodes.pp, part->pp_io_caps,
-						  snor->state.naddr, false, &read_io_type, &pp_io_type);
+						  snor->state.naddr, false, part->dc_table, &read_io_type, &pp_io_type);
 		if (ret && spi_nor_is_valid_erase_info(&opcodes.ei))
 			goto setup_io_opcodes;
 
@@ -1140,7 +1197,7 @@ static bool spi_nor_setup_opcode(struct spi_nor *snor, const struct spi_nor_flas
 		spi_nor_get_4b_3b_opcodes(part, &opcodes);
 
 		ret = spi_nor_test_read_pp_opcode(snor, opcodes.read, part->read_io_caps, opcodes.pp, part->pp_io_caps,
-						  snor->state.naddr, false, &read_io_type, &pp_io_type);
+						  snor->state.naddr, false, part->dc_table, &read_io_type, &pp_io_type);
 		if (ret && spi_nor_is_valid_erase_info(&opcodes.ei)) {
 			logm_dbg("All opcodes are always working in 4-byte addressing mode\n");
 			goto setup_io_opcodes;
@@ -1151,7 +1208,7 @@ static bool spi_nor_setup_opcode(struct spi_nor *snor, const struct spi_nor_flas
 		spi_nor_get_4b_opcodes(part, &opcodes);
 
 		ret = spi_nor_test_read_pp_opcode(snor, opcodes.read, part->read_io_caps, opcodes.pp, part->pp_io_caps,
-						  snor->state.naddr, false, &read_io_type, &pp_io_type);
+						  snor->state.naddr, false, part->dc_table, &read_io_type, &pp_io_type);
 		if (ret && spi_nor_is_valid_erase_info(&opcodes.ei)) {
 			logm_dbg("Using 4-byte addressing opcodes\n");
 			goto setup_io_opcodes;
@@ -1177,7 +1234,7 @@ static bool spi_nor_setup_opcode(struct spi_nor *snor, const struct spi_nor_flas
 		spi_nor_get_3b_opcodes(part, &opcodes);
 
 		ret = spi_nor_test_read_pp_opcode(snor, opcodes.read, part->read_io_caps, opcodes.pp, part->pp_io_caps,
-						  snor->state.naddr, false, &read_io_type, &pp_io_type);
+						  snor->state.naddr, false, part->dc_table, &read_io_type, &pp_io_type);
 		if (ret && spi_nor_is_valid_erase_info(&opcodes.ei)) {
 
 			if ((part->a4b_flags & SNOR_4B_F_B7H_E9H) ||
@@ -1211,7 +1268,7 @@ static bool spi_nor_setup_opcode(struct spi_nor *snor, const struct spi_nor_flas
 		spi_nor_get_3b_opcodes(part, &opcodes);
 
 		ret = spi_nor_test_read_pp_opcode(snor, opcodes.read, part->read_io_caps, opcodes.pp, part->pp_io_caps,
-						  snor->state.naddr, false, &read_io_type, &pp_io_type);
+						  snor->state.naddr, false, part->dc_table, &read_io_type, &pp_io_type);
 		if (ret && spi_nor_is_valid_erase_info(&opcodes.ei)) {
 			if (part->a4b_flags & SNOR_4B_F_EAR)
 				snor->ext_param.ops.write_addr_high_byte = spi_nor_write_addr_high_byte_ear;
@@ -1229,8 +1286,10 @@ fail:
 
 setup_io_opcodes:
 	snor->state.read_opcode = opcodes.read[read_io_type].opcode;
-	snor->state.read_ndummy = (opcodes.read[read_io_type].ndummy + opcodes.read[read_io_type].nmode) *
-		spi_mem_io_addr_bw(read_io_type) / 8;
+	if (!snor->state.read_dc_valid) {
+		snor->state.read_ndummy = (opcodes.read[read_io_type].ndummy + opcodes.read[read_io_type].nmode) *
+			spi_mem_io_addr_bw(read_io_type) / 8;
+	}
 	snor->state.read_io_info = ufprog_spi_mem_io_bus_width_info(read_io_type);
 
 	logm_dbg("Selected opcode %02Xh for read, I/O type %s, %u dummy byte(s)\n",
@@ -1679,6 +1738,9 @@ static ufprog_status spi_nor_setup_param_final(struct spi_nor *snor, const struc
 	if (!snor->ext_param.wp_regacc)
 		snor->ext_param.wp_regacc = part->wp_regacc;
 
+	if (!snor->ext_param.dc_setup_acc)
+		snor->ext_param.dc_setup_acc = part->dc_chip_setup_acc;
+
 	if (!snor->ext_param.ops.select_die) {
 		if (part->ops && part->ops->select_die)
 			snor->ext_param.ops.select_die = part->ops->select_die;
@@ -1735,6 +1797,20 @@ static ufprog_status spi_nor_setup_param_final(struct spi_nor *snor, const struc
 			snor->ext_param.ops.dpi_dis = vendor->default_part_ops->dpi_dis;
 	}
 
+	if (!snor->ext_param.ops.set_dc) {
+		if (part->ops && part->ops->set_dc)
+			snor->ext_param.ops.set_dc = part->ops->set_dc;
+		else if (vendor && vendor->default_part_ops && vendor->default_part_ops->set_dc)
+			snor->ext_param.ops.set_dc = vendor->default_part_ops->set_dc;
+	}
+
+	if (!snor->ext_param.ops.get_dc) {
+		if (part->ops && part->ops->get_dc)
+			snor->ext_param.ops.get_dc = part->ops->get_dc;
+		else if (vendor && vendor->default_part_ops && vendor->default_part_ops->get_dc)
+			snor->ext_param.ops.get_dc = vendor->default_part_ops->get_dc;
+	}
+
 	if (!snor->param.max_pp_time_ms)
 		snor->param.max_pp_time_ms = SNOR_PP_TIMEOUT_MS;
 
@@ -1759,13 +1835,16 @@ static ufprog_status spi_nor_setup_param_final(struct spi_nor *snor, const struc
 	if (!max_speed)
 		max_speed = part->max_speed_spi_mhz;
 
+	snor->param.max_speed = max_speed * 1000000;
+
 	max_speed *= 1000000;
 	if (!max_speed)
 		max_speed = snor->max_speed;
 
-	snor->param.max_speed = max_speed;
+	if (!snor->state.max_speed || snor->state.max_speed > max_speed)
+		snor->state.max_speed = max_speed;
 
-	snor->state.speed_high = snor->param.max_speed;
+	snor->state.speed_high = snor->state.max_speed;
 	if (snor->state.speed_high > snor->max_speed)
 		snor->state.speed_high = snor->max_speed;
 
@@ -1794,6 +1873,9 @@ static ufprog_status spi_nor_setup_param_final(struct spi_nor *snor, const struc
 
 	if (!snor->ext_param.erase_regions)
 		spi_nor_generate_erase_regions(snor);
+
+	if (!snor->ext_param.dc_qpi_srp.dc_shift)
+		memcpy(&snor->ext_param.dc_qpi_srp, &part->dc_qpi_srp, sizeof(part->dc_qpi_srp));
 
 	if (!snor->state.reg.cr) {
 		if (part->qe_type == QE_SR2_BIT1_WR_SR1) {
@@ -1844,6 +1926,74 @@ static ufprog_status spi_nor_setup_param_final(struct spi_nor *snor, const struc
 	return UFP_OK;
 }
 
+static ufprog_status spi_nor_chip_set_dc(struct spi_nor *snor, uint8_t idx)
+{
+	const struct spi_nor_chip_setup_dc_acc *dc_setup_acc;
+
+	if (snor->ext_param.dc_setup_acc) {
+		dc_setup_acc = snor->ext_param.dc_setup_acc;
+
+		return spi_nor_update_reg_acc(snor, dc_setup_acc->reg_acc, dc_setup_acc->mask << dc_setup_acc->shift,
+					      ((uint32_t)idx & dc_setup_acc->mask) << dc_setup_acc->shift,
+					      !dc_setup_acc->nonvolatile);
+	}
+
+	if (snor->ext_param.ops.set_dc)
+		return snor->ext_param.ops.set_dc(snor, idx);
+
+	return UFP_UNSUPPORTED;
+}
+
+static ufprog_status spi_nor_chip_get_dc(struct spi_nor *snor, uint8_t *retidx)
+{
+	const struct spi_nor_chip_setup_dc_acc *dc_setup_acc;
+	uint32_t val;
+
+	if (snor->ext_param.dc_setup_acc) {
+		dc_setup_acc = snor->ext_param.dc_setup_acc;
+
+		STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, dc_setup_acc->reg_acc, &val));
+
+		*retidx = (uint8_t)((val >> dc_setup_acc->shift) & dc_setup_acc->mask);
+
+		return UFP_OK;
+	}
+
+	if (snor->ext_param.ops.get_dc)
+		return snor->ext_param.ops.get_dc(snor, retidx);
+
+	return UFP_UNSUPPORTED;
+}
+
+static ufprog_status spi_nor_chip_setup_dc(struct spi_nor *snor)
+{
+	ufprog_status ret;
+	uint8_t idx;
+
+	ret = spi_nor_chip_set_dc(snor, snor->state.read_dc_idx);
+	if (ret) {
+		if (ret == UFP_UNSUPPORTED)
+			return UFP_OK;
+
+		return ret;
+	}
+
+	ret = spi_nor_chip_get_dc(snor, &idx);
+	if (ret) {
+		if (ret == UFP_UNSUPPORTED)
+			return UFP_OK;
+
+		return ret;
+	}
+
+	if (idx != snor->state.read_dc_idx) {
+		logm_err("Failed to set read dummy cycle index to %u\n", snor->state.read_dc_idx);
+		return UFP_UNSUPPORTED;
+	}
+
+	return UFP_OK;
+}
+
 static ufprog_status spi_nor_chip_die_setup(struct spi_nor *snor, uint32_t die)
 {
 	spi_nor_select_die(snor, (uint8_t )die);
@@ -1852,6 +2002,11 @@ static ufprog_status spi_nor_chip_die_setup(struct spi_nor *snor, uint32_t die)
 
 	if (snor->ext_param.ops.chip_setup)
 		STATUS_CHECK_RET(snor->ext_param.ops.chip_setup(snor));
+
+	if (snor->state.read_dc_valid) {
+		if (!snor->ext_param.dc_qpi_srp.dc_shift || spi_mem_io_info_cmd_bw(snor->state.read_io_info) != 4)
+			STATUS_CHECK_RET(spi_nor_chip_setup_dc(snor));
+	}
 
 	if ((snor->param.flags & SNOR_F_GLOBAL_UNLOCK) || (snor->state.flags & SNOR_F_GLOBAL_UNLOCK)) {
 		STATUS_CHECK_RET(spi_nor_write_enable(snor));
@@ -2370,6 +2525,18 @@ ufprog_status UFPROG_API ufprog_spi_nor_select_die(struct spi_nor *snor, uint32_
 	return ret;
 }
 
+static ufprog_status spi_nor_setup_qpi_read_param(struct spi_nor *snor)
+{
+	if (!snor->ext_param.dc_qpi_srp.dc_shift)
+		return UFP_OK;
+
+	if (!snor->state.read_dc_valid)
+		return UFP_OK;
+
+	return spi_nor_write_reg(snor, SNOR_CMD_SET_READ_PARAMETERS, snor->ext_param.dc_qpi_srp.set |
+				 (snor->state.read_dc_idx << snor->ext_param.dc_qpi_srp.dc_shift));
+}
+
 ufprog_status spi_nor_set_bus_width(struct spi_nor *snor, uint8_t buswidth)
 {
 	if (buswidth != snor->state.cmd_buswidth_curr) {
@@ -2395,6 +2562,7 @@ ufprog_status spi_nor_set_bus_width(struct spi_nor *snor, uint8_t buswidth)
 
 		case 4:
 			STATUS_CHECK_RET(spi_nor_qpi_control(snor, true));
+			STATUS_CHECK_RET(spi_nor_setup_qpi_read_param(snor));
 			if (snor->ext_param.ops.setup_qpi)
 				STATUS_CHECK_RET(snor->ext_param.ops.setup_qpi(snor, true));
 		}

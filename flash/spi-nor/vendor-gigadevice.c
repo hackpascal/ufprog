@@ -15,20 +15,10 @@
 #include "regs.h"
 #include "otp.h"
 #include "ext_id.h"
+#include "vendor-winbond.h"
 
 #define GD_UID_LEN				16
 #define GD25Q256C_UID_LEN			8
-
- /* QPI Read Parameters */
-#define QPI_READ_DUMMY_CLOCKS_4			0x00
-#define QPI_READ_DUMMY_CLOCKS_4_6		0x10
-#define QPI_READ_DUMMY_CLOCKS_6_8		0x20
-#define QPI_READ_DUMMY_CLOCKS_8_10		0x30
-
-#define QPI_READ_WRAP_LENGTH_8			0x00
-#define QPI_READ_WRAP_LENGTH_16			0x01
-#define QPI_READ_WRAP_LENGTH_32			0x02
-#define QPI_READ_WRAP_LENGTH_64			0x03
 
 /* OTP lock bit */
 #define GD_OTP_LOCK_BIT				6
@@ -46,39 +36,29 @@
 
 /* GigaDevice vendor flags */
 #define GD_F_OTP_1				BIT(0)
-#define GD_F_QPI_DUMMY_10			BIT(1)
-#define GD_F_QPI_4B_OPCODE			BIT(2)
-#define GD_F_HPM				BIT(3)
-#define GD_F_DC_SRCR_BIT12			BIT(4)
-#define GD_F_DC_SR3_BIT0			BIT(5)
-#define GD_F_DC_SR3_BIT0_1			BIT(6)
-#define GD_F_DC_NVCR1				BIT(7)
-#define GD_F_WPS_SR3_BIT2			BIT(8)
-#define GD_F_WPS_SR3_BIT7			BIT(9)
-#define GD_F_WPS_NVCR4_BIT2			BIT(10)
-#define GD_F_ECC_NVCR4_BIT0_1			BIT(11)
-#define GD_F_CRC_NVCR4_BIT4_5			BIT(12)
-#define GD_F_OTP_LOCK_NVCR2_BIT1		BIT(13)
-#define GD_F_OTP_LOCK_CR_BIT3			BIT(14)
-#define GD_F_IOM_NVCR0				BIT(15)
+#define GD_F_QPI_4B_OPCODE			BIT(1)
+#define GD_F_HPM				BIT(2)
+#define GD_F_WPS_SR3_BIT2			BIT(3)
+#define GD_F_WPS_SR3_BIT7			BIT(4)
+#define GD_F_WPS_NVCR4_BIT2			BIT(5)
+#define GD_F_ECC_NVCR4_BIT0_1			BIT(6)
+#define GD_F_CRC_NVCR4_BIT4_5			BIT(7)
+#define GD_F_OTP_LOCK_NVCR2_BIT1		BIT(8)
+#define GD_F_OTP_LOCK_CR_BIT3			BIT(9)
+#define GD_F_IOM_NVCR0				BIT(10)
 
 static const struct spi_nor_part_flag_enum_info gigadevice_vendor_flag_info[] = {
 	{ 0, "otp-1" },
-	{ 1, "qpi-dummy-10" },
-	{ 2, "qpi-4b-opcode" },
-	{ 3, "hpm" },
-	{ 4, "dc-srcr-bit12" },
-	{ 5, "dc-sr3-bit0" },
-	{ 6, "dc-sr3-bit0-1" },
-	{ 7, "dc-nvcr1" },
-	{ 8, "wps-sr3-bit2" },
-	{ 9, "wps-sr3-bit7" },
-	{ 10, "wps-nvcr4-bit2" },
-	{ 11, "ecc-nvcr4-bit0-1" },
-	{ 12, "crc-nvcr4-bit4-5" },
-	{ 13, "otp-lock-nvcr2-bit1" },
-	{ 14, "otp-lock-cr-bit3" },
-	{ 15, "iom-nvcr0" },
+	{ 1, "qpi-4b-opcode" },
+	{ 2, "hpm" },
+	{ 3, "wps-sr3-bit2" },
+	{ 4, "wps-sr3-bit7" },
+	{ 5, "wps-nvcr4-bit2" },
+	{ 6, "ecc-nvcr4-bit0-1" },
+	{ 7, "crc-nvcr4-bit4-5" },
+	{ 8, "otp-lock-nvcr2-bit1" },
+	{ 9, "otp-lock-cr-bit3" },
+	{ 10, "iom-nvcr0" },
 };
 
 #define GD_REG_ACC_NVCR(_addr)											\
@@ -677,6 +657,182 @@ static const struct spi_nor_wp_info gd_wpr_4bp_tb = SNOR_WP_BP(&srcr_comb_acc, B
 	SNOR_WP_BP_LO(SR_TB11 | SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Lower 512MB */
 );
 
+/* GD25Q20E (133R/104) */
+static const SNOR_DC_CONFIG(gd25q20e_dc_122_cfgs, SNOR_DC_IDX_VALUE(0, 4, 104), SNOR_DC_IDX_VALUE(1, 8, 104));
+static const SNOR_DC_CONFIG(gd25q20e_dc_144_cfgs, SNOR_DC_IDX_VALUE(0, 6, 104), SNOR_DC_IDX_VALUE(1, 10, 104));
+
+static const SNOR_DC_TABLE(gd_1bit_all_104mhz_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, gd25q20e_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25q20e_dc_144_cfgs));
+
+/* GD25WQ20E (104R/66) */
+static const SNOR_DC_CONFIG(gd25wq20e_dc_122_cfgs, SNOR_DC_IDX_VALUE(0, 4, 60), SNOR_DC_IDX_VALUE(1, 8, 50));
+static const SNOR_DC_CONFIG(gd25wq20e_dc_144_cfgs, SNOR_DC_IDX_VALUE(0, 6, 60), SNOR_DC_IDX_VALUE(1, 10, 50));
+
+static const SNOR_DC_TABLE(gd_1bit_60_50mhz_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, gd25wq20e_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25wq20e_dc_144_cfgs));
+
+/* GD25Q16E (120/104) */
+static const SNOR_DC_CONFIG(gd25q16e_dc_122_cfgs, SNOR_DC_IDX_VALUE(1, 8, 120), SNOR_DC_IDX_VALUE(0, 4, 104));
+static const SNOR_DC_CONFIG(gd25q16e_dc_144_cfgs, SNOR_DC_IDX_VALUE(1, 10, 120), SNOR_DC_IDX_VALUE(0, 6, 104));
+
+static const SNOR_DC_TABLE(gd_1bit_120_104mhz_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, gd25q16e_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25q16e_dc_144_cfgs));
+
+/* GD25LE128E (133/120) */
+static const SNOR_DC_CONFIG(gd25le128e_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 133),
+			    SNOR_DC_IDX_VALUE(0, 6, 120), SNOR_DC_IDX_VALUE(1, 6, 120));
+
+static const SNOR_DC_CONFIG(gd25le128e_dc_444_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 133),
+			    SNOR_DC_IDX_VALUE(1, 6, 108), SNOR_DC_IDX_VALUE(0, 4, 80));
+
+static const SNOR_DC_TABLE(gd25le128e_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25le128e_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, gd25le128e_dc_444_cfgs));
+
+/* GD25LF128E (166/133/120) */
+static const SNOR_DC_CONFIG(gd25lf128e_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 166), SNOR_DC_IDX_VALUE(2, 8, 133),
+			    SNOR_DC_IDX_VALUE(0, 6, 120), SNOR_DC_IDX_VALUE(1, 6, 120));
+
+static const SNOR_DC_CONFIG(gd25lf128e_dc_444_cfgs, SNOR_DC_IDX_VALUE(3, 10, 166), SNOR_DC_IDX_VALUE(2, 8, 133),
+			    SNOR_DC_IDX_VALUE(1, 6, 108), SNOR_DC_IDX_VALUE(0, 4, 80));
+
+static const SNOR_DC_TABLE(gd25lf128e_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25lf128e_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, gd25lf128e_dc_444_cfgs));
+
+/* GD25Q256C */
+static const SNOR_DC_CONFIG(gd25q256c_dc_111_cfgs, SNOR_DC_TUPLE(0, 2, 8, 0, 104), SNOR_DC_IDX_VALUE(3, 0, 50));
+
+static const SNOR_DC_CONFIG(gd25q256c_dc_112_cfgs, SNOR_DC_TUPLE(1, 2, 8, 0, 104), SNOR_DC_IDX_VALUE(0, 8, 80),
+			    SNOR_DC_IDX_VALUE(3, 6, 80));
+
+static const SNOR_DC_CONFIG(gd25q256c_dc_122_cfgs, SNOR_DC_TUPLE(1, 2, 2, 4, 104), SNOR_DCM_IDX_VALUE(0, 0, 4, 80),
+			    SNOR_DCM_IDX_VALUE(3, 0, 4, 80));
+
+static const SNOR_DC_CONFIG(gd25q256c_dc_144_cfgs, SNOR_DC_TUPLE(1, 2, 6, 2, 104), SNOR_DCM_IDX_VALUE(0, 4, 2, 80),
+			    SNOR_DCM_IDX_VALUE(3, 4, 2, 80));
+
+static const SNOR_DC_TABLE(gd25q256c_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_1, gd25q256c_dc_111_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_2, gd25q256c_dc_112_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, gd25q256c_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_1_4, gd25q256c_dc_112_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25q256c_dc_144_cfgs));
+
+/* GD25Q256E (133/104) */
+static const SNOR_DC_CONFIG(gd25q256e_dc_122_cfgs, SNOR_DC_IDX_VALUE(1, 8, 133), SNOR_DC_IDX_VALUE(3, 8, 133),
+			    SNOR_DC_IDX_VALUE(0, 4, 104), SNOR_DC_IDX_VALUE(2, 4, 104));
+
+static const SNOR_DC_CONFIG(gd25q256e_dc_144_cfgs, SNOR_DC_IDX_VALUE(1, 10, 133), SNOR_DC_IDX_VALUE(3, 10, 133),
+			    SNOR_DC_IDX_VALUE(0, 6, 104), SNOR_DC_IDX_VALUE(2, 6, 104));
+
+static const SNOR_DC_TABLE(gd_2bit_133_104mhz_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, gd25q256e_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25q256e_dc_144_cfgs));
+
+/* GD25WB256E (90/80) */
+static const SNOR_DC_CONFIG(gd25wb256e_dc_122_cfgs, SNOR_DC_IDX_VALUE(1, 8, 90), SNOR_DC_IDX_VALUE(3, 8, 90),
+			    SNOR_DC_IDX_VALUE(0, 4, 80), SNOR_DC_IDX_VALUE(2, 4, 80));
+
+static const SNOR_DC_CONFIG(gd25wb256e_dc_144_cfgs, SNOR_DC_IDX_VALUE(1, 10, 90), SNOR_DC_IDX_VALUE(3, 10, 90),
+			    SNOR_DC_IDX_VALUE(0, 6, 80), SNOR_DC_IDX_VALUE(2, 6, 80));
+
+static const SNOR_DC_TABLE(gd_2bit_90_80mhz_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, gd25wb256e_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25wb256e_dc_144_cfgs));
+
+/* GD25WQ256E (60/50) */
+static const SNOR_DC_CONFIG(gd25wq256e_dc_122_cfgs, SNOR_DC_IDX_VALUE(1, 8, 60), SNOR_DC_IDX_VALUE(3, 8, 60),
+			    SNOR_DC_IDX_VALUE(0, 4, 50), SNOR_DC_IDX_VALUE(2, 4, 50));
+
+static const SNOR_DC_CONFIG(gd25wq256e_dc_144_cfgs, SNOR_DC_IDX_VALUE(1, 10, 60), SNOR_DC_IDX_VALUE(3, 10, 60),
+			    SNOR_DC_IDX_VALUE(0, 6, 50), SNOR_DC_IDX_VALUE(2, 6, 50));
+
+static const SNOR_DC_TABLE(gd_2bit_60_50mhz_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, gd25wq256e_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25wq256e_dc_144_cfgs));
+
+/* GD25LE255E (133/120) */
+static const SNOR_DC_CONFIG(gd25le255e_dc_144_cfgs, SNOR_DC_IDX_VALUE(3, 10, 133), SNOR_DC_IDX_VALUE(2, 8, 133),
+			    SNOR_DC_IDX_VALUE(0, 6, 120), SNOR_DC_IDX_VALUE(1, 6, 120));
+
+static const SNOR_DC_CONFIG(gd25le255e_dc_444_cfgs, SNOR_DC_IDX_VALUE(2, 8, 133), SNOR_DC_IDX_VALUE(1, 6, 108),
+			    SNOR_DC_IDX_VALUE(0, 4, 80));
+
+static const SNOR_DC_TABLE(gd25le255e_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25le255e_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, gd25le255e_dc_444_cfgs));
+
+/* GD25LB256E (133/104/84/66/40) */
+#define DC_TUPLES_10(_freq)	\
+	SNOR_DC_VALUE(10, _freq), SNOR_DC_VALUE(11, _freq), SNOR_DC_VALUE(12, _freq), SNOR_DC_VALUE(13, _freq), \
+	SNOR_DC_VALUE(14, _freq), SNOR_DC_VALUE(15, _freq), SNOR_DC_VALUE(16, _freq), SNOR_DC_VALUE(17, _freq), \
+	SNOR_DC_VALUE(18, _freq), SNOR_DC_VALUE(19, _freq), SNOR_DC_VALUE(20, _freq), SNOR_DC_VALUE(21, _freq), \
+	SNOR_DC_VALUE(22, _freq), SNOR_DC_VALUE(23, _freq), SNOR_DC_VALUE(24, _freq), SNOR_DC_VALUE(25, _freq), \
+	SNOR_DC_VALUE(26, _freq), SNOR_DC_VALUE(27, _freq), SNOR_DC_VALUE(28, _freq), SNOR_DC_VALUE(29, _freq), \
+	SNOR_DC_VALUE(30, _freq)
+
+static const SNOR_DC_CONFIG(gd25lb256e_dc_144_cfgs, DC_TUPLES_10(133), SNOR_DC_VALUE(8, 104), SNOR_DC_VALUE(6, 84),
+			    SNOR_DC_VALUE(4, 40));
+
+static const SNOR_DC_TABLE(gd25lb256e_dc_table, 30,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25lb256e_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, gd25lb256e_dc_144_cfgs));
+
+/* GD25T512ME WSON8(166/152/133/104/84/40) */
+#define DC_TUPLES_14(_freq)	\
+	SNOR_DC_VALUE(14, _freq), SNOR_DC_VALUE(15, _freq), SNOR_DC_VALUE(16, _freq), SNOR_DC_VALUE(17, _freq), \
+	SNOR_DC_VALUE(18, _freq), SNOR_DC_VALUE(19, _freq), SNOR_DC_VALUE(20, _freq), SNOR_DC_VALUE(21, _freq), \
+	SNOR_DC_VALUE(22, _freq), SNOR_DC_VALUE(23, _freq), SNOR_DC_VALUE(24, _freq), SNOR_DC_VALUE(25, _freq), \
+	SNOR_DC_VALUE(26, _freq), SNOR_DC_VALUE(27, _freq), SNOR_DC_VALUE(28, _freq), SNOR_DC_VALUE(29, _freq), \
+	SNOR_DC_VALUE(30, _freq)
+
+static const SNOR_DC_CONFIG(gd25t512me_dc_144_cfgs, DC_TUPLES_14(166), SNOR_DC_VALUE(12, 152), SNOR_DC_VALUE(10, 133),
+			    SNOR_DC_VALUE(8, 104), SNOR_DC_VALUE(6, 84), SNOR_DC_VALUE(4, 40));
+
+static const SNOR_DC_TABLE(gd25t512me_dc_table, 30,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, gd25t512me_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, gd25t512me_dc_144_cfgs));
+
+/* GD25LE80E */
+static const SNOR_DC_CONFIG(gd25le80e_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(2, 8, 133), SNOR_DC_IDX_VALUE(3, 6, 108),
+			    SNOR_DC_IDX_VALUE(1, 4, 80), SNOR_DC_IDX_VALUE(0, 4, 80));
+
+static const SNOR_DC_TABLE(gd25le80e_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, gd25le80e_dc_qpi_cfgs));
+
+/* GD25LF80E */
+static const SNOR_DC_CONFIG(gd25lf80e_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 10, 166), SNOR_DC_IDX_VALUE(2, 8, 133),
+			    SNOR_DC_IDX_VALUE(1, 6, 108), SNOR_DC_IDX_VALUE(0, 4, 80));
+
+static const SNOR_DC_TABLE(gd25lf80e_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, gd25lf80e_dc_qpi_cfgs));
+
+/* GD25LB32D */
+static const SNOR_DC_CONFIG(gd25lb32d_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 120), SNOR_DC_IDX_VALUE(2, 6, 108),
+			    SNOR_DC_IDX_VALUE(1, 4, 80), SNOR_DC_IDX_VALUE(0, 4, 80));
+
+static const SNOR_DC_TABLE(gd25lb32d_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, gd25lb32d_dc_qpi_cfgs));
+
+/* GD25LB128E */
+static const SNOR_DC_CONFIG(gd25lb128e_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(2, 8, 133), SNOR_DC_IDX_VALUE(1, 6, 108),
+			    SNOR_DC_IDX_VALUE(0, 4, 80));
+
+static const SNOR_DC_TABLE(gd25lb128e_dc_table, 2, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, gd25lb128e_dc_qpi_cfgs));
+
+/* GD25LQ128E */
+static const SNOR_DC_CONFIG(gd25lq128e_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(2, 8, 120), SNOR_DC_IDX_VALUE(3, 8, 120),
+			    SNOR_DC_IDX_VALUE(1, 6, 108), SNOR_DC_IDX_VALUE(0, 4, 80));
+
+static const SNOR_DC_TABLE(gd25lq128e_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, gd25lq128e_dc_qpi_cfgs));
+
+static const SNOR_DC_CHIP_SETUP_ACC(gd_dc_acc_srcr_bit12, &srcr_acc, 1, 12);
+static const SNOR_DC_CHIP_SETUP_ACC_NV(gd_dc_acc_cr_bit7_6, &cr_acc, 3, 6);
+static const SNOR_DC_CHIP_SETUP_ACC(gd_dc_acc_sr3_bit0, &sr3_acc, 1, 0);
+static const SNOR_DC_CHIP_SETUP_ACC_NV(gd_dc_acc_sr3_bit1_0, &sr3_acc, 3, 0);
+static const SNOR_DC_CHIP_SETUP_ACC_NV(gd_dc_acc_vcr1, &gd_vcr_1_acc, 0xff, 0);
+
 static const struct spi_nor_otp_info gd25_otp_1_512b = {
 	.start_index = 0,
 	.count = 1,
@@ -751,25 +907,21 @@ static DEFINE_SNOR_ALIAS(gd25ve16c_alias, SNOR_ALIAS_MODEL("GD25VQ16C"));
 static DEFINE_SNOR_ALIAS(gd25le80c_alias, SNOR_ALIAS_MODEL("GD25LQ80C"));
 static DEFINE_SNOR_ALIAS(gd25le80e_alias, SNOR_ALIAS_MODEL("GD25LQ80E"));
 static DEFINE_SNOR_ALIAS(gd25b16c_alias, SNOR_ALIAS_MODEL("GD25Q16C"));
-static DEFINE_SNOR_ALIAS(gd25b16e_alias, SNOR_ALIAS_MODEL("GD25Q16E"));
+static DEFINE_SNOR_ALIAS(gd25lb16e_alias, SNOR_ALIAS_MODEL("GD25LE16E"), SNOR_ALIAS_MODEL("GD25LQ16E"));
 static DEFINE_SNOR_ALIAS(gd25le16c_alias, SNOR_ALIAS_MODEL("GD25LQ16C"));
-static DEFINE_SNOR_ALIAS(gd25le16e_alias, SNOR_ALIAS_MODEL("GD25LQ16E"));
 static DEFINE_SNOR_ALIAS(gd25b32c_alias, SNOR_ALIAS_MODEL("GD25Q32C"));
-static DEFINE_SNOR_ALIAS(gd25b32e_alias, SNOR_ALIAS_MODEL("GD25Q32E"));
 static DEFINE_SNOR_ALIAS(gd25ve32c_alias, SNOR_ALIAS_MODEL("GD25VQ32C"));
+static DEFINE_SNOR_ALIAS(gd25lb32e_alias, SNOR_ALIAS_MODEL("GD25LE32E"), SNOR_ALIAS_MODEL("GD25LQ32E"));
 static DEFINE_SNOR_ALIAS(gd25le32d_alias, SNOR_ALIAS_MODEL("GD25LQ32D"));
-static DEFINE_SNOR_ALIAS(gd25le32e_alias, SNOR_ALIAS_MODEL("GD25LQ32E"));
 static DEFINE_SNOR_ALIAS(gd25b64c_alias, SNOR_ALIAS_MODEL("GD25Q64C"));
-static DEFINE_SNOR_ALIAS(gd25b64e_alias, SNOR_ALIAS_MODEL("GD25Q64E"));
 static DEFINE_SNOR_ALIAS(gd25ve64c_alias, SNOR_ALIAS_MODEL("GD25VQ64C"));
+static DEFINE_SNOR_ALIAS(gd25lb64e_alias, SNOR_ALIAS_MODEL("GD25LE64E"), SNOR_ALIAS_MODEL("GD25LQ64E"));
 static DEFINE_SNOR_ALIAS(gd25le64c_alias, SNOR_ALIAS_MODEL("GD25LQ64C"));
-static DEFINE_SNOR_ALIAS(gd25le64e_alias, SNOR_ALIAS_MODEL("GD25LQ64E"));
 static DEFINE_SNOR_ALIAS(gd25le128d_alias, SNOR_ALIAS_MODEL("GD25LQ128D"));
 static DEFINE_SNOR_ALIAS(gd25b256d_alias, SNOR_ALIAS_MODEL("GD25Q256D"));
 static DEFINE_SNOR_ALIAS(gd25b256e_alias, SNOR_ALIAS_MODEL("GD25Q256E"));
 static DEFINE_SNOR_ALIAS(gd25b257d_alias, SNOR_ALIAS_MODEL("GD25Q257D"));
 static DEFINE_SNOR_ALIAS(gd25le256d_alias, SNOR_ALIAS_MODEL("GD25LQ256D"));
-static DEFINE_SNOR_ALIAS(gd25wb256e_alias, SNOR_ALIAS_MODEL("GD25WQ256D"));
 static DEFINE_SNOR_ALIAS(gd55wb512me_alias, SNOR_ALIAS_MODEL("GD55WR512ME"));
 
 static ufprog_status gd_pre_param_setup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
@@ -800,57 +952,6 @@ static ufprog_status gd25lx10_fixup_model(struct spi_nor *snor, struct spi_nor_v
 
 static const struct spi_nor_flash_part_fixup gd25lx10_fixups = {
 	.pre_param_setup = gd25lx10_fixup_model,
-};
-
-static ufprog_status gd25lb128e_setup_qpi(struct spi_nor *snor, bool enabled)
-{
-	if (enabled) {
-		/* Set QPI read dummy cycles to 8 for maximum speed */
-		return spi_nor_write_reg(snor, SNOR_CMD_SET_READ_PARAMETERS, QPI_READ_DUMMY_CLOCKS_6_8);
-	}
-
-	return UFP_OK;
-}
-
-static const struct spi_nor_flash_part_ops gd25lb128e_ops = {
-	.setup_qpi = gd25lb128e_setup_qpi,
-};
-
-static ufprog_status gd25le128e_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
-				      struct spi_nor_flash_part_blank *bp)
-{
-	uint32_t regval, dc;
-
-	STATUS_CHECK_RET(gd_pre_param_setup(snor, vp, bp));
-
-	/* Handle GD_F_DC_SR3_BIT0_1 but not the same as others */
-
-	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &sr3_acc, 0, BITS(1, 0), true));
-	STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, &sr3_acc, &regval));
-
-	dc = regval & BITS(1, 0);
-	switch (dc) {
-	case 0:
-	case 1:
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = 6;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
-		break;
-
-	case 2:
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = 8;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
-		break;
-
-	case 3:
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = 10;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
-	}
-
-	return UFP_OK;
-}
-
-static const struct spi_nor_flash_part_fixup gd25le128e_fixups = {
-	.pre_param_setup = gd25le128e_fixup,
 };
 
 static ufprog_status gd25q256c_otp_lock_bit(struct spi_nor *snor, uint32_t index, uint32_t *retbit,
@@ -889,56 +990,6 @@ static const struct spi_nor_flash_part_otp_ops gd25q256c_otp_ops = {
 	.lock = secr_otp_lock,
 	.locked = secr_otp_locked,
 	.secr = &gd25q256c_secr_otp_ops,
-};
-
-static ufprog_status gd25q256c_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
-				     struct spi_nor_flash_part_blank *bp)
-{
-	uint32_t cr, lc;
-
-	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &cr_acc, BITS(7, 6), 0, true));
-	STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, &cr_acc, &cr));
-
-	spi_nor_blank_part_fill_default_opcodes(bp);
-
-	lc = (cr & BITS(7, 6)) >> 6;
-
-	switch (lc) {
-	case 0:
-		break;
-
-	case 1:
-	case 2:
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].nmode = 4;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].ndummy = 2;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].nmode = 4;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].ndummy = 2;
-
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 2;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = 6;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].nmode = 2;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].ndummy = 6;
-
-	case 3:
-		bp->read_opcodes_3b[SPI_MEM_IO_1_1_1].ndummy = 0;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_1_1].ndummy = 0;
-
-		bp->read_opcodes_3b[SPI_MEM_IO_1_1_2].nmode = 0;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_1_2].ndummy = 6;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_1_2].nmode = 0;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_1_2].ndummy = 6;
-
-		bp->read_opcodes_3b[SPI_MEM_IO_1_1_4].nmode = 0;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_1_4].ndummy = 6;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_1_4].nmode = 0;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_1_4].ndummy = 6;
-	}
-
-	return UFP_OK;
-}
-
-static const struct spi_nor_flash_part_fixup gd25q256c_fixups = {
-	.pre_param_setup = gd25q256c_fixup,
 };
 
 static ufprog_status gd25q256c_read_uid(struct spi_nor *snor, void *data, uint32_t *retlen)
@@ -1200,11 +1251,12 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD25Q20E", SNOR_ID(0xc8, 0x40, 0x12), SZ_256K,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SRCR_BIT12),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k),
+		  SNOR_DC_INFO(&gd_1bit_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_srcr_bit12),
 	),
 
 	SNOR_PART("GD25D20C", SNOR_ID(0xc8, 0x40, 0x12), SZ_256K,
@@ -1327,11 +1379,12 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD25WQ20E", SNOR_ID(0xc8, 0x65, 0x12), SZ_256K,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SRCR_BIT12),
-		  SNOR_SPI_MAX_SPEED_MHZ(50),
+		  SNOR_SPI_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&gd25qxe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k),
+		  SNOR_DC_INFO(&gd_1bit_60_50mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_srcr_bit12),
 	),
 
 	SNOR_PART("GD25*40", SNOR_ID(0xc8, 0x40, 0x13), SZ_512K,
@@ -1370,11 +1423,12 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD25Q40E", SNOR_ID(0xc8, 0x40, 0x13), SZ_512K,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SRCR_BIT12),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k),
+		  SNOR_DC_INFO(&gd_1bit_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_srcr_bit12),
 	),
 
 	SNOR_PART("GD25D40C", SNOR_ID(0xc8, 0x40, 0x13), SZ_512K,
@@ -1482,11 +1536,12 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD25WQ40E", SNOR_ID(0xc8, 0x65, 0x13), SZ_512K,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SRCR_BIT12),
-		  SNOR_SPI_MAX_SPEED_MHZ(50),
+		  SNOR_SPI_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&gd25qxe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k),
+		  SNOR_DC_INFO(&gd_1bit_60_50mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_srcr_bit12),
 	),
 
 	SNOR_PART("GD25VE40C", SNOR_ID(0xc8, 0x42, 0x13), SZ_512K, /* SFDP 1.0 */
@@ -1574,11 +1629,12 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD25Q80E", SNOR_ID(0xc8, 0x40, 0x14), SZ_1M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SRCR_BIT12),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k),
+		  SNOR_DC_INFO(&gd_1bit_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_srcr_bit12),
 	),
 
 	SNOR_PART("GD25VQ80C", SNOR_ID(0xc8, 0x42, 0x14), SZ_1M, /* SFDP 1.0 */
@@ -1645,14 +1701,17 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25le80e_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LF80E", SNOR_ID(0xc8, 0x63, 0x14), SZ_1M,
-		  SNOR_VENDOR_FLAGS(GD_F_QPI_DUMMY_10),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25lf80e_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25W*80", SNOR_ID(0xc8, 0x64, 0x14), SZ_1M,
@@ -1686,11 +1745,12 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD25WQ80E", SNOR_ID(0xc8, 0x65, 0x14), SZ_1M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SRCR_BIT12),
-		  SNOR_SPI_MAX_SPEED_MHZ(50),
+		  SNOR_SPI_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&gd25qxe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k),
+		  SNOR_DC_INFO(&gd_1bit_60_50mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_srcr_bit12),
 	),
 
 	SNOR_PART("GD25*16", SNOR_ID(0xc8, 0x40, 0x15), SZ_2M,
@@ -1730,12 +1790,21 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD25B16E", SNOR_ID(0xc8, 0x40, 0x15), SZ_2M,
-		  SNOR_ALIAS(&gd25b16e_alias), /* GD25Q16E */
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SRCR_BIT12),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k),
+		  SNOR_DC_INFO(&gd_1bit_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_srcr_bit12),
+	),
+
+	SNOR_PART("GD25Q16E", SNOR_ID(0xc8, 0x40, 0x15), SZ_2M,
+		  SNOR_SPI_MAX_SPEED_MHZ(120),
+		  SNOR_REGS(&gd25qxe_regs),
+		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
+		  SNOR_OTP_INFO(&gd25_otp_2_1k),
+		  SNOR_DC_INFO(&gd_1bit_120_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_srcr_bit12),
 	),
 
 	SNOR_PART("GD25VE16C", SNOR_ID(0xc8, 0x42, 0x15), SZ_2M, /* SFDP 1.0 */
@@ -1777,10 +1846,13 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD25LB16E", SNOR_ID(0xc8, 0x60, 0x15), SZ_2M,
+		  SNOR_ALIAS(&gd25lb16e_alias), /* GD25LE16E, GD25LQ16E */
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25le80e_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LE16C", SNOR_ID(0xc8, 0x60, 0x15), SZ_2M, /* SFDP 1.0 */
@@ -1797,28 +1869,22 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_OTP_INFO(&gd25_otp_3_512b),
 	),
 
-	SNOR_PART("GD25LE16E", SNOR_ID(0xc8, 0x60, 0x15), SZ_2M,
-		  SNOR_ALIAS(&gd25le16e_alias), /* GD25LQ16E*/
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
-		  SNOR_REGS(&w25q_regs),
-		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
-		  SNOR_OTP_INFO(&gd25_otp_3_1k),
-	),
-
 	SNOR_PART("GD25LF16E", SNOR_ID(0xc8, 0x63, 0x15), SZ_2M,
-		  SNOR_VENDOR_FLAGS(GD_F_QPI_DUMMY_10),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25lf80e_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25WQ16E", SNOR_ID(0xc8, 0x65, 0x15), SZ_2M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SRCR_BIT12),
-		  SNOR_SPI_MAX_SPEED_MHZ(50),
+		  SNOR_SPI_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&gd25qxe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k),
+		  SNOR_DC_INFO(&gd_1bit_60_50mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_srcr_bit12),
 	),
 
 	SNOR_PART("GD25*32", SNOR_ID(0xc8, 0x40, 0x16), SZ_4M,
@@ -1858,12 +1924,21 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD25B32E", SNOR_ID(0xc8, 0x40, 0x16), SZ_4M,
-		  SNOR_ALIAS(&gd25b32e_alias), /* GD25Q32E */
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxe_3_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd_1bit_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit0),
+	),
+
+	SNOR_PART("GD25Q32E", SNOR_ID(0xc8, 0x40, 0x16), SZ_4M,
+		  SNOR_SPI_MAX_SPEED_MHZ(120),
+		  SNOR_REGS(&gd25qxe_3_regs),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
+		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd_1bit_120_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit0),
 	),
 
 	SNOR_PART("GD25VE32C", SNOR_ID(0xc8, 0x42, 0x16), SZ_4M, /* SFDP 1.0 */
@@ -1904,13 +1979,18 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25lb32d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LB32E", SNOR_ID(0xc8, 0x60, 0x16), SZ_4M,
+		  SNOR_ALIAS(&gd25lb32e_alias), /* GD25LE32E, GD25LQ32E */
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25le80e_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LE32D", SNOR_ID(0xc8, 0x60, 0x16), SZ_4M, /* SFDP 1.0 */
@@ -1925,30 +2005,26 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
-	),
-
-	SNOR_PART("GD25LE32E", SNOR_ID(0xc8, 0x60, 0x16), SZ_4M,
-		  SNOR_ALIAS(&gd25le32e_alias), /* GD25LQ32E*/
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
-		  SNOR_REGS(&w25q_regs),
-		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
-		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25lb32d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LF32E", SNOR_ID(0xc8, 0x63, 0x16), SZ_4M,
-		  SNOR_VENDOR_FLAGS(GD_F_QPI_DUMMY_10),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25lf80e_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25WQ32E", SNOR_ID(0xc8, 0x65, 0x16), SZ_4M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
-		  SNOR_SPI_MAX_SPEED_MHZ(50),
+		  SNOR_SPI_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&gd25qxe_3_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd_1bit_60_50mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit0),
 	),
 
 	SNOR_PART("GD25*64", SNOR_ID(0xc8, 0x40, 0x17), SZ_8M,
@@ -1988,12 +2064,21 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD25B64E", SNOR_ID(0xc8, 0x40, 0x17), SZ_8M,
-		  SNOR_ALIAS(&gd25b64e_alias), /* GD25Q64E */
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxe_3_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd_1bit_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit0),
+	),
+
+	SNOR_PART("GD25Q64E", SNOR_ID(0xc8, 0x40, 0x17), SZ_8M,
+		  SNOR_SPI_MAX_SPEED_MHZ(120),
+		  SNOR_REGS(&gd25qxe_3_regs),
+		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
+		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd_1bit_120_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit0),
 	),
 
 	SNOR_PART("GD25VE64C", SNOR_ID(0xc8, 0x42, 0x17), SZ_8M, /* SFDP 1.0 */
@@ -2034,13 +2119,18 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25lb32d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LB64E", SNOR_ID(0xc8, 0x60, 0x17), SZ_8M,
+		  SNOR_ALIAS(&gd25lb64e_alias), /* GD25LE64E, GD25LQ64E */
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25le80e_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LE64C", SNOR_ID(0xc8, 0x60, 0x17), SZ_8M, /* SFDP 1.0 */
@@ -2055,30 +2145,26 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
-	),
-
-	SNOR_PART("GD25LE64E", SNOR_ID(0xc8, 0x60, 0x17), SZ_8M,
-		  SNOR_ALIAS(&gd25le64e_alias), /* GD25LQ64E*/
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
-		  SNOR_REGS(&w25q_regs),
-		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
-		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25lb32d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LF64E", SNOR_ID(0xc8, 0x63, 0x17), SZ_8M,
-		  SNOR_VENDOR_FLAGS(GD_F_QPI_DUMMY_10),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25lf80e_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25WQ64E", SNOR_ID(0xc8, 0x65, 0x17), SZ_8M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
-		  SNOR_SPI_MAX_SPEED_MHZ(50),
+		  SNOR_SPI_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&gd25qxe_3_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd_1bit_60_50mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit0),
 	),
 
 	SNOR_PART("GD25*128", SNOR_ID(0xc8, 0x40, 0x18), SZ_16M,
@@ -2142,19 +2228,21 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD25B128E", SNOR_ID(0xc8, 0x40, 0x18), SZ_16M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&gd25qxe_3_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd_1bit_all_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit0),
 	),
 
 	SNOR_PART("GD25Q128E", SNOR_ID(0xc8, 0x40, 0x18), SZ_16M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
-		  SNOR_SPI_MAX_SPEED_MHZ(104),
+		  SNOR_SPI_MAX_SPEED_MHZ(120),
 		  SNOR_REGS(&gd25q128e_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd_1bit_120_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit0),
 	),
 
 	SNOR_PART("GD25VQ127C", SNOR_ID(0xc8, 0x42, 0x18), SZ_16M, /* SFDP 1.0 */
@@ -2192,6 +2280,8 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25lb32d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LB128E", SNOR_ID(0xc8, 0x60, 0x18), SZ_16M,
@@ -2199,7 +2289,8 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
-		  SNOR_OPS(&gd25lb128e_ops),
+		  SNOR_DC_INFO(&gd25lb128e_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LE128D", SNOR_ID(0xc8, 0x60, 0x18), SZ_16M, /* SFDP 1.0 */
@@ -2214,14 +2305,18 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25lb32d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LE128E", SNOR_ID(0xc8, 0x60, 0x18), SZ_16M,
-		  SNOR_SPI_MAX_SPEED_MHZ(120),
+		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&gd25le128e_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
-		  SNOR_FIXUPS(&gd25le128e_fixups),
+		  SNOR_DC_INFO(&gd25le128e_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit1_0),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LQ128E", SNOR_ID(0xc8, 0x60, 0x18), SZ_16M,
@@ -2229,23 +2324,27 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&w25q_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd25lq128e_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LF128E", SNOR_ID(0xc8, 0x63, 0x18), SZ_16M,
-		  SNOR_VENDOR_FLAGS(GD_F_QPI_DUMMY_10),
-		  SNOR_SPI_MAX_SPEED_MHZ(120),
+		  SNOR_SPI_MAX_SPEED_MHZ(166),
 		  SNOR_REGS(&gd25lf128e_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
-		  SNOR_FIXUPS(&gd25le128e_fixups),
+		  SNOR_DC_INFO(&gd25lf128e_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit1_0),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25WQ128E", SNOR_ID(0xc8, 0x65, 0x18), SZ_16M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0),
-		  SNOR_SPI_MAX_SPEED_MHZ(50),
+		  SNOR_SPI_MAX_SPEED_MHZ(60),
 		  SNOR_REGS(&gd25q128e_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&gd25_otp_3_1k),
+		  SNOR_DC_INFO(&gd_1bit_60_50mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit0),
 	),
 
 	SNOR_PART("GD25*256", SNOR_ID(0xc8, 0x40, 0x19), SZ_32M,
@@ -2271,8 +2370,9 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&gd25q256c_regs),
 		  SNOR_WP_RANGES(&gd_wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_3),
+		  SNOR_DC_INFO(&gd25q256c_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_cr_bit7_6),
 		  SNOR_OPS(&gd25q256c_part_ops),
-		  SNOR_FIXUPS(&gd25q256c_fixups),
 	),
 
 	SNOR_PART("GD25B256D", SNOR_ID(0xc8, 0x40, 0x19), SZ_32M,
@@ -2285,11 +2385,12 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 
 	SNOR_PART("GD25B256E", SNOR_ID(0xc8, 0x40, 0x19), SZ_32M,
 		  SNOR_ALIAS(&gd25b256e_alias), /* GD25Q256E */
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&gd25b256e_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_3_2k),
+		  SNOR_DC_INFO(&gd_2bit_133_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit1_0),
 	),
 
 	SNOR_PART("GD25B257D", SNOR_ID(0xc8, 0x40, 0x19), SZ_32M,
@@ -2330,6 +2431,8 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&gd25lb256d_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k_index_2),
+		  SNOR_DC_INFO(&gd25lb32d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 		  SNOR_FIXUPS(&gd25lx256d_fixups),
 	),
 
@@ -2347,6 +2450,8 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&gd25lb256d_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k_index_2),
+		  SNOR_DC_INFO(&gd25lb32d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 		  SNOR_FIXUPS(&gd25lx256d_fixups),
 	),
 
@@ -2356,7 +2461,9 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&gd25le255e_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k_index_2),
-		  SNOR_FIXUPS(&gd25le128e_fixups),
+		  SNOR_DC_INFO(&gd25le255e_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit1_0),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LQ255E", SNOR_ID(0xc8, 0x60, 0x19), SZ_32M,
@@ -2365,40 +2472,56 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&gd25lb256d_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb_cmp),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k_index_2),
+		  SNOR_DC_INFO(&gd25lb128e_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25LF255E", SNOR_ID(0xc8, 0x63, 0x19), SZ_32M,
-		  SNOR_VENDOR_FLAGS(GD_F_QPI_DUMMY_10 | GD_F_QPI_4B_OPCODE),
-		  SNOR_SPI_MAX_SPEED_MHZ(133),
+		  SNOR_VENDOR_FLAGS(GD_F_QPI_4B_OPCODE),
+		  SNOR_SPI_MAX_SPEED_MHZ(166),
 		  SNOR_REGS(&gd25le255e_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_2_1k_index_2),
-		  SNOR_FIXUPS(&gd25le128e_fixups),
+		  SNOR_DC_INFO(&gd25lf128e_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit1_0),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("GD25WB256E", SNOR_ID(0xc8, 0x65, 0x19), SZ_32M,
-		  SNOR_ALIAS(&gd25wb256e_alias), /* GD25WQ256D */
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0_1),
-		  SNOR_SPI_MAX_SPEED_MHZ(50),
+		  SNOR_SPI_MAX_SPEED_MHZ(90),
 		  SNOR_REGS(&gd25b256e_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_3_2k),
+		  SNOR_DC_INFO(&gd_2bit_90_80mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit1_0),
+	),
+
+	SNOR_PART("GD25WQ256E", SNOR_ID(0xc8, 0x65, 0x19), SZ_32M,
+		  SNOR_SPI_MAX_SPEED_MHZ(60),
+		  SNOR_REGS(&gd25b256e_regs),
+		  SNOR_WP_RANGES(&wpr_4bp_tb),
+		  SNOR_OTP_INFO(&gd25_otp_3_2k),
+		  SNOR_DC_INFO(&gd_2bit_60_50mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit1_0),
 	),
 
 	SNOR_PART("GD25WR256E", SNOR_ID(0xc8, 0x65, 0x19), SZ_32M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0_1),
-		  SNOR_SPI_MAX_SPEED_MHZ(80),
+		  SNOR_SPI_MAX_SPEED_MHZ(90),
 		  SNOR_REGS(&gd25b256e_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_3_2k),
+		  SNOR_DC_INFO(&gd_2bit_90_80mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit1_0),
 	),
 
 	SNOR_PART("GD25LB256E", SNOR_ID(0xc8, 0x67, 0x19), SZ_32M, /* Flag Register */
-		  SNOR_VENDOR_FLAGS(GD_F_DC_NVCR1 | GD_F_OTP_LOCK_NVCR2_BIT1 | GD_F_WPS_NVCR4_BIT2),
+		  SNOR_VENDOR_FLAGS(GD_F_OTP_LOCK_NVCR2_BIT1 | GD_F_WPS_NVCR4_BIT2),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&gd25lb256e_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_1_4k),
+		  SNOR_DC_INFO(&gd25lb256e_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_vcr1),
 	),
 
 	SNOR_PART("GD25Q512MC", SNOR_ID(0xc8, 0x40, 0x20), SZ_64M,
@@ -2414,8 +2537,9 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 		  SNOR_REGS(&gd25q256c_regs),
 		  SNOR_WP_RANGES(&gd_wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_3),
+		  SNOR_DC_INFO(&gd25q256c_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_cr_bit7_6),
 		  SNOR_OPS(&gd25q256c_part_ops),
-		  SNOR_FIXUPS(&gd25q256c_fixups),
 	),
 
 	SNOR_PART("GD25S512MD", SNOR_ID(0xc8, 0x40, 0x19), SZ_32M,
@@ -2436,187 +2560,126 @@ static const struct spi_nor_flash_part gigadevice_parts[] = {
 	),
 
 	SNOR_PART("GD55B512ME", SNOR_ID(0xc8, 0x40, 0x1a), SZ_64M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&gd25b256e_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_3_2k),
+		  SNOR_DC_INFO(&gd_2bit_133_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit1_0),
 	),
 
 	SNOR_PART("GD55F512MF", SNOR_ID(0xc8, 0x43, 0x1a), SZ_64M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0_1),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&gd55f512mf_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_3_2k),
+		  SNOR_DC_INFO(&gd_2bit_133_104mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit1_0),
 	),
 
 	SNOR_PART("GD25T512ME", SNOR_ID(0xc8, 0x46, 0x1a), SZ_64M, /* SFDP 1.7 */
-		  SNOR_VENDOR_FLAGS(GD_F_DC_NVCR1 | GD_F_WPS_NVCR4_BIT2 | GD_F_ECC_NVCR4_BIT0_1 |
-				    GD_F_CRC_NVCR4_BIT4_5 | GD_F_IOM_NVCR0 | GD_F_OTP_LOCK_CR_BIT3),
+		  SNOR_VENDOR_FLAGS(GD_F_WPS_NVCR4_BIT2 | GD_F_ECC_NVCR4_BIT0_1 | GD_F_CRC_NVCR4_BIT4_5 |
+				    GD_F_IOM_NVCR0 | GD_F_OTP_LOCK_CR_BIT3),
 		  SNOR_SPI_MAX_SPEED_MHZ(166),
 		  SNOR_REGS(&gd55t512me_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_1_4k),
+		  SNOR_DC_INFO(&gd25t512me_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_vcr1),
 	),
 
 	SNOR_PART("GD25B512ME", SNOR_ID(0xc8, 0x47, 0x1a), SZ_64M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_NVCR1 | GD_F_WPS_NVCR4_BIT2 | GD_F_OTP_LOCK_CR_BIT3),
+		  SNOR_VENDOR_FLAGS(GD_F_WPS_NVCR4_BIT2 | GD_F_OTP_LOCK_CR_BIT3),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&gd25b512me_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_1_4k),
+		  SNOR_DC_INFO(&gd25lb256e_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_vcr1),
 	),
 
 	SNOR_PART("GD55WB512ME", SNOR_ID(0xc8, 0x65, 0x1a), SZ_64M,
 		  SNOR_ALIAS(&gd55wb512me_alias), /* GD55WR512ME */
-		  SNOR_VENDOR_FLAGS(GD_F_DC_SR3_BIT0_1),
-		  SNOR_SPI_MAX_SPEED_MHZ(80),
+		  SNOR_SPI_MAX_SPEED_MHZ(90),
 		  SNOR_REGS(&gd25b256e_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_3_2k),
+		  SNOR_DC_INFO(&gd_2bit_90_80mhz_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_sr3_bit1_0),
 	),
 
 	SNOR_PART("GD25LB512ME", SNOR_ID(0xc8, 0x67, 0x1a), SZ_64M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_NVCR1 | GD_F_OTP_LOCK_NVCR2_BIT1 | GD_F_WPS_NVCR4_BIT2),
+		  SNOR_VENDOR_FLAGS(GD_F_OTP_LOCK_NVCR2_BIT1 | GD_F_WPS_NVCR4_BIT2),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&gd25lb256e_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_1_4k),
+		  SNOR_DC_INFO(&gd25lb256e_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_vcr1),
 	),
 
 	SNOR_PART("GD55T01GE", SNOR_ID(0xc8, 0x46, 0x1b), SZ_128M, /* SFDP 1.7 */
-		  SNOR_VENDOR_FLAGS(GD_F_DC_NVCR1 | GD_F_WPS_NVCR4_BIT2 | GD_F_ECC_NVCR4_BIT0_1 |
-				    GD_F_CRC_NVCR4_BIT4_5 | GD_F_IOM_NVCR0 | GD_F_OTP_LOCK_CR_BIT3),
+		  SNOR_VENDOR_FLAGS(GD_F_WPS_NVCR4_BIT2 | GD_F_ECC_NVCR4_BIT0_1 | GD_F_CRC_NVCR4_BIT4_5 |
+				    GD_F_IOM_NVCR0 | GD_F_OTP_LOCK_CR_BIT3),
 		  SNOR_SPI_MAX_SPEED_MHZ(166),
 		  SNOR_REGS(&gd55t512me_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_1_4k),
+		  SNOR_DC_INFO(&gd25t512me_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_vcr1),
 	),
 
 	SNOR_PART("GD55B01GE", SNOR_ID(0xc8, 0x47, 0x1b), SZ_128M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_NVCR1 | GD_F_WPS_NVCR4_BIT2 | GD_F_OTP_LOCK_CR_BIT3),
+		  SNOR_VENDOR_FLAGS(GD_F_WPS_NVCR4_BIT2 | GD_F_OTP_LOCK_CR_BIT3),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&gd25b512me_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_1_4k),
+		  SNOR_DC_INFO(&gd25lb256e_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_vcr1),
 	),
 
 	SNOR_PART("GD55LB01GE", SNOR_ID(0xc8, 0x67, 0x1b), SZ_128M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_NVCR1 | GD_F_OTP_LOCK_NVCR2_BIT1 | GD_F_WPS_NVCR4_BIT2),
+		  SNOR_VENDOR_FLAGS(GD_F_OTP_LOCK_NVCR2_BIT1 | GD_F_WPS_NVCR4_BIT2),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&gd25lb256e_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_1_4k),
+		  SNOR_DC_INFO(&gd25lb256e_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_vcr1),
 	),
 
 	SNOR_PART("GD55T02GE", SNOR_ID(0xc8, 0x46, 0x1c), SZ_256M, /* SFDP 1.7 */
-		  SNOR_VENDOR_FLAGS(GD_F_DC_NVCR1 | GD_F_WPS_NVCR4_BIT2 | GD_F_ECC_NVCR4_BIT0_1 |
-				    GD_F_CRC_NVCR4_BIT4_5 | GD_F_IOM_NVCR0 | GD_F_OTP_LOCK_CR_BIT3),
+		  SNOR_VENDOR_FLAGS(GD_F_WPS_NVCR4_BIT2 | GD_F_ECC_NVCR4_BIT0_1 | GD_F_CRC_NVCR4_BIT4_5 |
+				    GD_F_IOM_NVCR0 | GD_F_OTP_LOCK_CR_BIT3),
 		  SNOR_SPI_MAX_SPEED_MHZ(166),
 		  SNOR_REGS(&gd55t512me_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_1_4k),
+		  SNOR_DC_INFO(&gd25t512me_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_vcr1),
 	),
 
 	SNOR_PART("GD55B02GE", SNOR_ID(0xc8, 0x47, 0x1c), SZ_256M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_NVCR1 | GD_F_WPS_NVCR4_BIT2 | GD_F_OTP_LOCK_CR_BIT3),
+		  SNOR_VENDOR_FLAGS(GD_F_WPS_NVCR4_BIT2 | GD_F_OTP_LOCK_CR_BIT3),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&gd25b512me_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_1_4k),
+		  SNOR_DC_INFO(&gd25lb256e_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_vcr1),
 	),
 
 	SNOR_PART("GD55LB02GE", SNOR_ID(0xc8, 0x67, 0x1c), SZ_256M,
-		  SNOR_VENDOR_FLAGS(GD_F_DC_NVCR1 | GD_F_OTP_LOCK_NVCR2_BIT1 | GD_F_WPS_NVCR4_BIT2),
+		  SNOR_VENDOR_FLAGS(GD_F_OTP_LOCK_NVCR2_BIT1 | GD_F_WPS_NVCR4_BIT2),
 		  SNOR_SPI_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&gd25lb256e_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&gd25_otp_1_4k),
+		  SNOR_DC_INFO(&gd25lb256e_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&gd_dc_acc_vcr1),
 	),
 };
-
-static ufprog_status gd_part_setup_dummy_cycles_1bit(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp,
-						     const struct spi_nor_reg_access *regacc, uint32_t mask)
-{
-	uint32_t regval;
-
-	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, regacc, 0, mask, true));
-	STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, regacc, &regval));
-
-	if (regval & mask) {
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].ndummy = 8;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].nmode = 0;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = 10;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
-	} else {
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].ndummy = 4;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].nmode = 0;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = 6;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
-	}
-
-	return UFP_OK;
-}
-
-static ufprog_status gd_part_setup_dummy_cycles_2bits(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp,
-						      const struct spi_nor_reg_access *regacc, uint32_t mask,
-						      uint32_t shift)
-{
-	uint32_t regval, dc;
-
-	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, regacc, 0, mask, true));
-	STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, regacc, &regval));
-	dc = (regval & mask) >> shift;
-
-	switch (dc) {
-	case 0:
-	case 2:
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].ndummy = 4;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].nmode = 0;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = 6;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].ndummy = 4;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].nmode = 0;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].ndummy = 6;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].nmode = 0;
-		break;
-
-	case 1:
-	case 3:
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].ndummy = 8;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].nmode = 0;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = 10;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].ndummy = 8;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].nmode = 0;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].ndummy = 10;
-		bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].nmode = 0;
-	}
-
-	return UFP_OK;
-}
-
-static ufprog_status gd_part_setup_dummy_cycles_nvcr(struct spi_nor *snor, struct spi_nor_flash_part_blank *bp,
-						     const struct spi_nor_reg_access *regacc)
-{
-	uint32_t regval;
-
-	STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, regacc, 0xff, 10, true));
-	STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, regacc, &regval));
-
-	bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = regval & 0xff;
-	bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
-	bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].ndummy = regval & 0xff;
-	bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].nmode = 0;
-
-	bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = regval & 0xff;
-	bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 0;
-	bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].ndummy = regval & 0xff;
-	bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].nmode = 0;
-
-	return UFP_OK;
-}
 
 static ufprog_status gd_pre_param_setup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					struct spi_nor_flash_part_blank *bp)
@@ -2645,34 +2708,6 @@ static ufprog_status gd_pre_param_setup(struct spi_nor *snor, struct spi_nor_ven
 			bp->pp_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = bp->pp_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 0;
 		}
 	}
-
-	/* 8/10 dummy cycles will be used for QPI read */
-	if (bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].opcode) {
-		if ((bp->p.vendor_flags & GD_F_QPI_DUMMY_10) || (bp->p.id.id[1] == 0x63))
-			bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = 10;
-		else
-			bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = 8;
-
-		bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 0;
-	}
-
-	if (bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].opcode) {
-		if ((bp->p.vendor_flags & GD_F_QPI_DUMMY_10) || (bp->p.id.id[1] == 0x63))
-			bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].ndummy = 10;
-		else
-			bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].ndummy = 8;
-
-		bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].nmode = 0;
-	}
-
-	if (bp->p.vendor_flags & GD_F_DC_SRCR_BIT12)
-		STATUS_CHECK_RET(gd_part_setup_dummy_cycles_1bit(snor, bp, &srcr_acc, BIT(12)));
-	else if (bp->p.vendor_flags & GD_F_DC_SR3_BIT0)
-		STATUS_CHECK_RET(gd_part_setup_dummy_cycles_1bit(snor, bp, &sr3_acc, BIT(0)));
-	else if (bp->p.vendor_flags & GD_F_DC_SR3_BIT0_1)
-		STATUS_CHECK_RET(gd_part_setup_dummy_cycles_2bits(snor, bp, &sr3_acc, BITS(1, 0), 0));
-	else if (bp->p.vendor_flags & GD_F_DC_NVCR1)
-		STATUS_CHECK_RET(gd_part_setup_dummy_cycles_nvcr(snor, bp, &gd_vcr_1_acc));
 
 	if ((bp->p.a4b_flags & SNOR_4B_F_OPCODE) && !(bp->p.vendor_flags & GD_F_QPI_4B_OPCODE) &&
 	    ((bp->p.read_io_caps & BIT_SPI_MEM_IO_4_4_4) || (bp->p.pp_io_caps & BIT_SPI_MEM_IO_4_4_4))) {
@@ -2874,16 +2909,6 @@ static ufprog_status gd_chip_setup(struct spi_nor *snor)
 	return UFP_OK;
 }
 
-static ufprog_status gd_setup_qpi(struct spi_nor *snor, bool enabled)
-{
-	if (enabled) {
-		/* Set QPI read dummy cycles to 8/10 for maximum speed */
-		return spi_nor_write_reg(snor, SNOR_CMD_SET_READ_PARAMETERS, QPI_READ_DUMMY_CLOCKS_8_10);
-	}
-
-	return UFP_OK;
-}
-
 static ufprog_status gd_read_uid_len(struct spi_nor *snor, void *data, uint32_t len)
 {
 	struct ufprog_spi_mem_op op = SPI_MEM_OP(
@@ -2916,7 +2941,6 @@ static const struct spi_nor_flash_part_ops gd_default_part_ops = {
 	.select_die = spi_nor_select_die,
 	.chip_setup = gd_chip_setup,
 	.read_uid = gd_read_uid,
-	.setup_qpi = gd_setup_qpi,
 };
 
 const struct spi_nor_vendor vendor_gigadevice = {

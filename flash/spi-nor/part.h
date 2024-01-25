@@ -223,6 +223,9 @@ struct spi_nor_flash_part_ops {
 	ufprog_status (*setup_qpi)(struct spi_nor *snor, bool enabled);
 	ufprog_status (*read_uid)(struct spi_nor *snor, void *data, uint32_t *retlen);
 
+	ufprog_status (*set_dc)(struct spi_nor *snor, uint8_t idx);
+	ufprog_status (*get_dc)(struct spi_nor *snor, uint8_t *retidx);
+
 	ufprog_status (*quad_enable)(struct spi_nor *snor);
 	ufprog_status (*a4b_en)(struct spi_nor *snor);
 	ufprog_status (*a4b_dis)(struct spi_nor *snor);
@@ -257,6 +260,74 @@ struct spi_nor_flash_part_alias {
 #define SNOR_ALIAS(_alias)			.alias = (_alias)
 
 #define SNOR_DISPLAY_VENDOR(_vendor)		.display_vendor = (_vendor)
+
+struct spi_nor_dummy_cycle_tuple {
+	uint8_t lower_idx;
+	uint8_t upper_idx;
+	uint8_t ndummy;
+	uint8_t nmode;
+	uint16_t max_freq_mhz;
+};
+
+#define SNOR_DC_TUPLE(_lower_idx, _upper_idx, _ndummy, _nmode, _freq)					\
+	{ .lower_idx = (_lower_idx), .upper_idx = (_upper_idx), .ndummy = (_ndummy), .nmode = (_nmode),	\
+	  .max_freq_mhz = (_freq) }
+
+#define SNOR_DC_VALUE(_dc, _freq)			SNOR_DC_TUPLE(_dc, _dc, _dc, 0, _freq)
+#define SNOR_DCM_VALUE(_dc, _nmode, _freq)		SNOR_DC_TUPLE(_dc, _dc, _dc, _nmode, _freq)
+#define SNOR_DC_IDX_VALUE(_idx, _dc, _freq)		SNOR_DC_TUPLE(_idx, _idx, _dc, 0, _freq)
+#define SNOR_DCM_IDX_VALUE(_idx, _dc, _nmode, _freq)	SNOR_DC_TUPLE(_idx, _idx, _dc, _nmode, _freq)
+
+struct spi_nor_dummy_cycle_config {
+	uint32_t num;
+	const struct spi_nor_dummy_cycle_tuple tuples[];
+};
+
+#define SNOR_DC_CONFIG(_name, ...)			\
+	struct spi_nor_dummy_cycle_config _name = {	\
+		.tuples = { __VA_ARGS__ },		\
+		.num = sizeof((const struct spi_nor_dummy_cycle_tuple[]){ __VA_ARGS__ }) /	\
+		       sizeof(struct spi_nor_dummy_cycle_tuple)	\
+	}
+
+struct spi_nor_dummy_cycle_table {
+	uint8_t max_idx;
+	const struct spi_nor_dummy_cycle_config *configs[__SPI_MEM_IO_MAX];
+};
+
+#define SNOR_DC_TIMING(_timing, _cfg)		[_timing] = (&_cfg)
+
+#define SNOR_DC_TABLE(_name, _max_idx, ...)	\
+	struct spi_nor_dummy_cycle_table _name = { .max_idx = (_max_idx), .configs = { __VA_ARGS__ } }
+
+#define SNOR_DC_INFO(_dc_table)			.dc_table = (_dc_table)
+
+struct spi_nor_chip_setup_dc_acc {
+	const struct spi_nor_reg_access *reg_acc;
+	uint32_t mask;
+	uint32_t shift;
+	bool nonvolatile;
+};
+
+#define SNOR_DC_CHIP_SETUP_ACC(_name, _regacc, _mask /* not shifted */, _shift)	\
+	struct spi_nor_chip_setup_dc_acc _name = { .reg_acc = (_regacc), .mask = (_mask), .shift = (_shift) }
+
+#define SNOR_DC_CHIP_SETUP_ACC_NV(_name, _regacc, _mask /* not shifted */, _shift)	\
+	struct spi_nor_chip_setup_dc_acc _name = { .reg_acc = (_regacc), .mask = (_mask), .shift = (_shift), \
+						   .nonvolatile = true }
+
+#define SNOR_DC_CHIP_SETUP_ACC_INFO(_dc_chip_setup_acc)	\
+	.dc_chip_setup_acc = (_dc_chip_setup_acc)
+
+struct spi_nor_qpi_set_read_param_info {
+	uint8_t dc_shift; /* Valid if > 0 */
+	uint8_t set;
+};
+
+#define SNOR_DC_QPI_SET_READING_PARAM(_shift, _set)	\
+	.dc_qpi_srp = { .dc_shift = (_shift), .set = (_set) }
+#define SNOR_DC_QPI_SET_READING_PARAM_DFL()	SNOR_DC_QPI_SET_READING_PARAM(4, 0)
+#define SNOR_DC_QPI_SET_READING_PARAM_SET(_set)	SNOR_DC_QPI_SET_READING_PARAM(4, _set)
 
 struct spi_nor_flash_part {
 	const char *model;
@@ -301,6 +372,10 @@ struct spi_nor_flash_part {
 	const struct spi_nor_otp_info *otp;
 	const struct spi_nor_wp_info *wp_ranges;
 	const struct spi_nor_reg_access *wp_regacc;
+
+	const struct spi_nor_dummy_cycle_table *dc_table;
+	const struct spi_nor_chip_setup_dc_acc *dc_chip_setup_acc;
+	struct spi_nor_qpi_set_read_param_info dc_qpi_srp;
 
 	const struct spi_nor_flash_part_ops *ops;
 	const struct spi_nor_flash_part_fixup *fixups;

@@ -41,8 +41,6 @@
 #define EON_F_READ_UID_4BH			BIT(5)
 #define EON_F_READ_UID_SFDP_1E0H		BIT(6)
 #define EON_F_HIGH_BANK_LATCH			BIT(7)
-#define EON_F_DC_SR3_BIT5_4			BIT(8)
-#define EON_F_DC_SR3_BIT7			BIT(9)
 
 static const struct spi_nor_part_flag_enum_info eon_vendor_flag_info[] = {
 	{ 0, "otp-type-1" },
@@ -53,8 +51,6 @@ static const struct spi_nor_part_flag_enum_info eon_vendor_flag_info[] = {
 	{ 5, "read-uid-4bh" },
 	{ 6, "read-uid-sfdp-1e0h" },
 	{ 7, "high-bank-latch" },
-	{ 8, "dummy-cycles-sr3-bit5-4" },
-	{ 9, "dummy-cycles-sr3-bit7" },
 };
 
 static ufprog_status eon_otp_sr_pre_acc(struct spi_nor *snor, const struct spi_nor_reg_access *access);
@@ -798,6 +794,25 @@ static const struct spi_nor_wp_info wpr_3bp_tb_sec_cmp_only = SNOR_WP_BP(&sr_acc
 	SNOR_WP_SP_CMP_LO(SR_SEC | SR_TB | SR_BP2 |          SR_BP0, 3),	/* Lower T - 32KB */
 	SNOR_WP_SP_CMP_LO(SR_SEC | SR_TB | SR_BP2 | SR_BP1         , 3),	/* Lower T - 32KB */
 );
+
+/* EN25S80B */
+static const SNOR_DC_CONFIG(en25s80b_dc_144_cfgs, SNOR_DC_IDX_VALUE(0, 6, 104), SNOR_DC_IDX_VALUE(2, 8, 104),
+			    SNOR_DC_IDX_VALUE(3, 10, 104), SNOR_DC_IDX_VALUE(1, 4, 50));
+
+static const SNOR_DC_TABLE(en25s80b_dc_table, 3,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, en25s80b_dc_144_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, en25s80b_dc_144_cfgs));
+
+/* EN25QE16A */
+static const SNOR_DC_CONFIG(en25qe16a_dc_122_cfgs, SNOR_DC_IDX_VALUE(1, 8, 104), SNOR_DC_IDX_VALUE(0, 4, 66));
+static const SNOR_DC_CONFIG(en25qe16a_dc_144_cfgs, SNOR_DC_IDX_VALUE(1, 10, 104), SNOR_DC_IDX_VALUE(0, 6, 66));
+
+static const SNOR_DC_TABLE(en25qe16a_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, en25qe16a_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, en25qe16a_dc_144_cfgs));
+
+static const SNOR_DC_CHIP_SETUP_ACC(eon_dc_acc_sr3_dc5_4, &eon_sr3_acc, 3, 4);
+static const SNOR_DC_CHIP_SETUP_ACC(eon_dc_acc_sr3_dc7, &eon_sr3_acc, 1, 7);
 
 static ufprog_status en25f10_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					 struct spi_nor_flash_part_blank *bp)
@@ -1555,7 +1570,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 	SNOR_PART("EN25S80B", SNOR_ID(0x1c, 0x38, 0x14), SZ_1M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4 | EON_F_DC_SR3_BIT5_4),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4),
 		  SNOR_QE_DONT_CARE, SNOR_QPI_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -1563,6 +1578,8 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&en25qhxb_regs),
 		  SNOR_OTP_INFO(&eon_otp_3x512b),
+		  SNOR_DC_INFO(&en25s80b_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc5_4),
 		  SNOR_FIXUPS(&en25qh16b_wpr_4bp_cmp_fixups),
 	),
 
@@ -1664,7 +1681,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 	SNOR_PART("EN25S16B", SNOR_ID(0x1c, 0x38, 0x15), SZ_2M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4 | EON_F_DC_SR3_BIT5_4),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4),
 		  SNOR_QE_DONT_CARE, SNOR_QPI_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -1672,13 +1689,15 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&en25qhxb_regs),
 		  SNOR_OTP_INFO(&eon_otp_3x512b),
+		  SNOR_DC_INFO(&en25s80b_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc5_4),
 		  SNOR_FIXUPS(&en25qh16b_wpr_4bp_cmp_fixups),
 	),
 
 	SNOR_PART("EN25QE16A", SNOR_ID(0x1c, 0x41, 0x15), SZ_2M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH | EON_F_DC_SR3_BIT7),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH),
 		  SNOR_QE_SR2_BIT1,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
@@ -1687,12 +1706,14 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_REGS(&en25qe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&eon_otp_3x1k),
+		  SNOR_DC_INFO(&en25qe16a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc7),
 	),
 
 	SNOR_PART("EN25SE16A", SNOR_ID(0x1c, 0x48, 0x15), SZ_2M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH | EON_F_DC_SR3_BIT7),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH),
 		  SNOR_QE_SR2_BIT1,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
@@ -1701,12 +1722,14 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_REGS(&en25qe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&eon_otp_3x1k),
+		  SNOR_DC_INFO(&en25qe16a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc7),
 	),
 
 	SNOR_PART("EN25QW16A", SNOR_ID(0x1c, 0x61, 0x15), SZ_2M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH | EON_F_DC_SR3_BIT7),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH),
 		  SNOR_QE_SR2_BIT1,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
@@ -1715,6 +1738,8 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_REGS(&en25qe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&eon_otp_3x1k),
+		  SNOR_DC_INFO(&en25qe16a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc7),
 	),
 
 	SNOR_PART("EN25QH16", SNOR_ID(0x1c, 0x70, 0x15), SZ_2M,
@@ -1747,7 +1772,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 	SNOR_PART("EN25QH16B", SNOR_ID(0x1c, 0x70, 0x15), SZ_2M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4 | EON_F_DC_SR3_BIT5_4),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4),
 		  SNOR_QE_DONT_CARE, SNOR_QPI_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -1755,6 +1780,8 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(86),
 		  SNOR_REGS(&en25qhxb_regs),
 		  SNOR_OTP_INFO(&eon_otp_3x512b),
+		  SNOR_DC_INFO(&en25s80b_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc5_4),
 		  SNOR_FIXUPS(&en25qh16b_wpr_4bp_cmp_fixups),
 	),
 
@@ -1849,7 +1876,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 	SNOR_PART("EN25S32A", SNOR_ID(0x1c, 0x38, 0x16), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4 | EON_F_DC_SR3_BIT5_4),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4),
 		  SNOR_QE_DONT_CARE, SNOR_QPI_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -1858,12 +1885,14 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_REGS(&en25s32a_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &eon_sr1_sr4_acc),
 		  SNOR_OTP_INFO(&eon_otp_3x512b),
+		  SNOR_DC_INFO(&en25s80b_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc5_4),
 	),
 
 	SNOR_PART("EN25QE32A", SNOR_ID(0x1c, 0x41, 0x16), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH | EON_F_DC_SR3_BIT7),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH),
 		  SNOR_QE_SR2_BIT1,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
@@ -1872,12 +1901,14 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_REGS(&en25qe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&eon_otp_3x1k),
+		  SNOR_DC_INFO(&en25qe16a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc7),
 	),
 
 	SNOR_PART("EN25SE32A", SNOR_ID(0x1c, 0x48, 0x16), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH | EON_F_DC_SR3_BIT7),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH),
 		  SNOR_QE_SR2_BIT1,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
@@ -1886,12 +1917,14 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_REGS(&en25qe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&eon_otp_3x1k),
+		  SNOR_DC_INFO(&en25qe16a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc7),
 	),
 
 	SNOR_PART("EN25QW32A", SNOR_ID(0x1c, 0x61, 0x16), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH | EON_F_DC_SR3_BIT7),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_SECR | EON_F_READ_UID_4BH),
 		  SNOR_QE_SR2_BIT1,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
@@ -1900,6 +1933,8 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_REGS(&en25qe_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&eon_otp_3x1k),
+		  SNOR_DC_INFO(&en25qe16a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc7),
 	),
 
 	SNOR_PART("EN25QA32", SNOR_ID(0x1c, 0x60, 0x16), SZ_4M,
@@ -1973,7 +2008,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 	SNOR_PART("EN25QH32B", SNOR_ID(0x1c, 0x70, 0x16), SZ_4M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4 | EON_F_DC_SR3_BIT5_4),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4),
 		  SNOR_QE_DONT_CARE, SNOR_QPI_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -1981,6 +2016,8 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&en25qh32b_regs),
 		  SNOR_OTP_INFO(&eon_otp_3x512b),
+		  SNOR_DC_INFO(&en25s80b_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc5_4),
 		  SNOR_FIXUPS(&en25qa32b_wpr_4bp_tbl_fixups),
 	),
 
@@ -2039,7 +2076,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 	SNOR_PART("EN25S64A", SNOR_ID(0x1c, 0x38, 0x17), SZ_8M, /* SFDP 1.0, INFO_REG */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_1 | EON_F_DC_SR3_BIT5_4),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_1),
 		  SNOR_QE_DONT_CARE, SNOR_QPI_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_1_4_4 |
@@ -2048,13 +2085,15 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&en25qh64a_regs),
 		  SNOR_OTP_INFO(&eon_otp_512b),
+		  SNOR_DC_INFO(&en25s80b_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc5_4),
 		  SNOR_FIXUPS(&en25qa64a_wpr_4bp_tbl_fixups),
 	),
 
 	SNOR_PART("EN25QA64A", SNOR_ID(0x1c, 0x60, 0x17), SZ_8M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_1 | EON_F_DC_SR3_BIT5_4),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_1),
 		  SNOR_QE_DONT_CARE, SNOR_QPI_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -2062,6 +2101,8 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&en25qa64a_regs),
 		  SNOR_OTP_INFO(&eon_otp_512b),
+		  SNOR_DC_INFO(&en25s80b_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc5_4),
 		  SNOR_FIXUPS(&en25qa64a_wpr_4bp_tbl_fixups),
 	),
 
@@ -2097,7 +2138,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 	SNOR_PART("EN25QH64A", SNOR_ID(0x1c, 0x70, 0x17), SZ_8M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_1 | EON_F_DC_SR3_BIT5_4),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_1),
 		  SNOR_QE_DONT_CARE, SNOR_QPI_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -2105,6 +2146,8 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&en25qh64a_regs),
 		  SNOR_OTP_INFO(&eon_otp_512b),
+		  SNOR_DC_INFO(&en25s80b_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc5_4),
 		  SNOR_FIXUPS(&en25qa64a_wpr_4bp_tbl_fixups),
 	),
 
@@ -2134,7 +2177,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 	SNOR_PART("EN25QA128A", SNOR_ID(0x1c, 0x60, 0x18), SZ_16M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_1 | EON_F_DC_SR3_BIT5_4),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_1),
 		  SNOR_QE_DONT_CARE, SNOR_QPI_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -2142,6 +2185,8 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&en25qa64a_regs),
 		  SNOR_OTP_INFO(&eon_otp_512b),
+		  SNOR_DC_INFO(&en25s80b_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc5_4),
 		  SNOR_FIXUPS(&en25qa128a_wpr_4bp_tbl_fixups),
 	),
 
@@ -2177,7 +2222,7 @@ static const struct spi_nor_flash_part eon_parts[] = {
 	SNOR_PART("EN25QH128A", SNOR_ID(0x1c, 0x70, 0x18), SZ_16M, /* SFDP 1.0 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_VOLATILE_WREN_50H | SNOR_F_SR_NON_VOLATILE | SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_1 | EON_F_DC_SR3_BIT5_4),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_1),
 		  SNOR_QE_DONT_CARE, SNOR_QPI_38H_FFH,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
@@ -2185,6 +2230,8 @@ static const struct spi_nor_flash_part eon_parts[] = {
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&en25qh64a_regs),
 		  SNOR_OTP_INFO(&eon_otp_512b),
+		  SNOR_DC_INFO(&en25s80b_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc5_4),
 		  SNOR_FIXUPS(&en25qa128a_wpr_4bp_tbl_fixups),
 	),
 
@@ -2243,11 +2290,13 @@ static const struct spi_nor_flash_part eon_parts[] = {
 
 	SNOR_PART("EN25QH256A", SNOR_ID(0x1c, 0x70, 0x19), SZ_32M, /* SFDP 1.6, INFO_REG */
 		  SNOR_FLAGS(SNOR_F_UNIQUE_ID),
-		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4 | EON_F_DC_SR3_BIT5_4),
+		  SNOR_VENDOR_FLAGS(EON_F_OTP_TYPE_4),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&en25qh256a_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_4bp_tb_cmp, &eon_sr1_sr4_acc),
 		  SNOR_OTP_INFO(&eon_otp_3x512b),
+		  SNOR_DC_INFO(&en25s80b_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&eon_dc_acc_sr3_dc5_4),
 	),
 
 	SNOR_PART("EN25QX256A", SNOR_ID(0x1c, 0x71, 0x19), SZ_32M, /* SFDP 1.6 */
@@ -2688,16 +2737,6 @@ static ufprog_status eon_part_fixup(struct spi_nor *snor, struct spi_nor_vendor_
 		}
 	}
 
-	if (bp->p.read_io_caps & BIT_SPI_MEM_IO_4_4_4) {
-		/* 6/10 dummy cycles will be used for QPI read */
-		if (snor->param.vendor_flags & EON_F_DC_SR3_BIT7)
-			bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = 10;
-		else
-			bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = 6;
-
-		bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 0;
-	}
-
 	return UFP_OK;
 }
 
@@ -2724,31 +2763,8 @@ static const struct spi_nor_flash_part_fixup eon_fixups = {
 
 static ufprog_status eon_chip_setup(struct spi_nor *snor)
 {
-	uint32_t regval;
-	uint8_t val;
-
 	if (snor->param.vendor_flags & EON_F_HIGH_BANK_LATCH)
 		STATUS_CHECK_RET(spi_nor_issue_single_opcode(snor, SNOR_CMD_EON_EX_HIGH_BANK_MODE));
-
-	if (snor->param.vendor_flags & EON_F_DC_SR3_BIT5_4) {
-		STATUS_CHECK_RET(spi_nor_read_reg(snor, SNOR_CMD_EON_READ_SR3, &val));
-		val &= ~BITS(5, 4);
-		STATUS_CHECK_RET(spi_nor_write_reg(snor, SNOR_CMD_EON_READ_SR3, val));
-
-		STATUS_CHECK_RET(spi_nor_read_reg(snor, SNOR_CMD_EON_READ_SR3, &val));
-		if (((val & BITS(5, 4)) >> 4) != 0) {
-			logm_err("Failed to set Read Dummy Cycles to 6\n");
-			return UFP_FAIL;
-		}
-	} else if (snor->param.vendor_flags & EON_F_DC_SR3_BIT7) {
-		STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &sr3_acc, 0, BIT(7), true));
-
-		STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, &sr3_acc, &regval));
-		if (!(regval & BIT(7))) {
-			logm_err("Failed to set Read Dummy Cycles to 10\n");
-			return UFP_FAIL;
-		}
-	}
 
 	return UFP_OK;
 }

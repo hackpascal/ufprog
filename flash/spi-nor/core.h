@@ -91,6 +91,9 @@ struct spi_nor_ext_param {
 	const struct snor_reg_info *regs;
 	const struct spi_nor_wp_info *wp_ranges;
 	const struct spi_nor_reg_access *wp_regacc;
+	const struct spi_nor_chip_setup_dc_acc *dc_setup_acc;
+
+	struct spi_nor_qpi_set_read_param_info dc_qpi_srp;
 
 	struct spi_nor_erase_region *erase_regions;
 	uint32_t num_erase_regions;
@@ -111,6 +114,8 @@ struct spi_nor_state {
 	uint32_t flags;
 	uint32_t vendor_flags;
 
+	uint32_t max_speed;
+
 	uint32_t curr_die;
 	uint32_t curr_high_addr;
 	uint32_t die_read_granularity;
@@ -125,6 +130,8 @@ struct spi_nor_state {
 
 	uint8_t read_opcode;
 	uint8_t read_ndummy;
+	uint8_t read_dc_idx;
+	bool read_dc_valid;
 	uint32_t read_io_info;
 
 	uint8_t pp_opcode;
@@ -190,8 +197,14 @@ ufprog_status spi_nor_set_bus_width(struct spi_nor *snor, uint8_t buswidth);
 
 ufprog_status spi_nor_wait_busy(struct spi_nor *snor, uint32_t wait_ms);
 
-bool spi_nor_test_io_opcode(struct spi_nor *snor, const struct spi_nor_io_opcode *opcodes, enum spi_mem_io_type io_type,
-			    uint8_t naddr, enum ufprog_spi_data_dir data_dir);
+bool spi_nor_test_io_opcode_full(struct spi_nor *snor, enum spi_mem_io_type io_type, uint8_t naddr, uint8_t ndummy,
+				 uint8_t nmode, enum ufprog_spi_data_dir data_dir);
+static inline bool spi_nor_test_io_opcode(struct spi_nor *snor, const struct spi_nor_io_opcode *opcodes,
+				   enum spi_mem_io_type io_type, uint8_t naddr, enum ufprog_spi_data_dir data_dir)
+{
+	return spi_nor_test_io_opcode_full(snor, io_type, naddr, opcodes[io_type].ndummy, opcodes[io_type].nmode,
+					   data_dir);
+}
 
 void spi_nor_gen_erase_info(const struct spi_nor_flash_part *part, const struct spi_nor_erase_info *src,
 			    struct spi_nor_erase_info *retei);

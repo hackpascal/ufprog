@@ -27,10 +27,6 @@
 #define BP_43_10				(SR_BP4 | SR_BP3 | SR_BP1 | SR_BP0)
 #define BP_4_0					(SR_BP4 | SR_BP3 | SR_BP2 | SR_BP1 | SR_BP0)
 
-/* AT25FF SR5 fields */
-#define AT25FF_SR5_DC_SHIFT			4
-#define AT25FF_SR5_DC_MASK			BITS(6, AT25FF_SR5_DC_SHIFT)
-
 /* Atmel vendor flags */
 #define ATMEL_F_SR_BIT5_EPE			BIT(0)
 #define ATMEL_F_SR4_BIT4_EE_BIT5_PE		BIT(1)
@@ -41,9 +37,6 @@
 #define ATMEL_F_OTP_UID_FF			BIT(6)
 #define ATMEL_F_UID_WINBOND_8B			BIT(7)
 #define ATMEL_F_UID_WINBOND_16B			BIT(8)
-#define ATMEL_F_DC_SR5_BIT6_4			BIT(9)
-#define ATMEL_F_QPI_READING_PARAMS_DC_6		BIT(10)
-#define ATMEL_F_QPI_READING_PARAMS_DC_8		BIT(11)
 
 static const struct spi_nor_part_flag_enum_info atmel_vendor_flag_info[] = {
 	{ 0, "program-erase-fail-indicator-in-sr-bit5" },
@@ -55,9 +48,6 @@ static const struct spi_nor_part_flag_enum_info atmel_vendor_flag_info[] = {
 	{ 6, "at25ff-style-otp-and-otp" },
 	{ 7, "winbond-style-uid-8-bytes" },
 	{ 8, "winbond-style-uid-16-bytess" },
-	{ 9, "dc-sr5-bit4-6" },
-	{ 10, "qpi-reading-parameters-dc-6-cycles" },
-	{ 11, "qpi-reading-parameters-dc-8-cycles" },
 };
 
 #define AT25FF_ANY_REG(_addr)											\
@@ -369,6 +359,37 @@ static const struct spi_nor_wp_info at25fs040_wpr = SNOR_WP_BP(&sr_acc, BP_4_0,
 	SNOR_WP_RP_UP(SR_BP4 | SR_BP3 |          SR_BP1 | SR_BP0, 1),	/* Upper 1/2 */
 );
 
+/* AT25QL321 */
+static const SNOR_DC_CONFIG(at25ql321_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(2, 6, 104), SNOR_DC_TUPLE(0, 1, 4, 0, 80));
+
+static const SNOR_DC_TABLE(at25ql321_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, at25ql321_dc_qpi_cfgs));
+
+/* AT25QL641 */
+static const SNOR_DC_CONFIG(at25ql641_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 133), SNOR_DC_IDX_VALUE(2, 6, 104),
+			    SNOR_DC_TUPLE(0, 1, 4, 0, 80));
+
+static const SNOR_DC_TABLE(at25ql641_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, at25ql641_dc_qpi_cfgs));
+
+/* AT25FF041A */
+static const SNOR_DC_CONFIG(at25ff041a_dc_144_cfgs, SNOR_DC_IDX_VALUE(4, 10, 108), SNOR_DC_IDX_VALUE(3, 8, 85),
+			    SNOR_DC_IDX_VALUE(2, 6, 60), SNOR_DC_IDX_VALUE(1, 4, 45), SNOR_DC_IDX_VALUE(0, 2, 25));
+
+static const SNOR_DC_TABLE(at25ff041a_dc_table, 7, SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, at25ff041a_dc_144_cfgs));
+
+/* AT25FF161A */
+static const SNOR_DC_CONFIG(at25ff161a_dc_144_cfgs, SNOR_DC_IDX_VALUE(4, 10, 90), SNOR_DC_IDX_VALUE(3, 8, 70),
+			    SNOR_DC_IDX_VALUE(2, 6, 50), SNOR_DC_IDX_VALUE(1, 4, 40), SNOR_DC_IDX_VALUE(0, 2, 20));
+
+static const SNOR_DC_TABLE(at25ff161a_dc_table, 7, SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, at25ff161a_dc_144_cfgs));
+
+/* AT25FF321A */
+static const SNOR_DC_CONFIG(at25ff321a_dc_144_cfgs, SNOR_DC_IDX_VALUE(4, 10, 100), SNOR_DC_IDX_VALUE(3, 8, 90),
+			    SNOR_DC_IDX_VALUE(2, 6, 75), SNOR_DC_IDX_VALUE(1, 4, 50), SNOR_DC_IDX_VALUE(0, 2, 30));
+
+static const SNOR_DC_TABLE(at25ff321a_dc_table, 7, SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, at25ff321a_dc_144_cfgs));
+
+static const SNOR_DC_CHIP_SETUP_ACC(atmel_dc_acc_sr5_dc6_4, &at25ff_sr5_acc, 7, 4);
+
 static ufprog_status at25sf041_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					   struct spi_nor_flash_part_blank *bp)
 {
@@ -646,20 +667,24 @@ static const struct spi_nor_flash_part atmel_parts[] = {
 
 	SNOR_PART("AT25FF041A", SNOR_ID(0x1f, 0x44, 0x08, 0x01), SZ_512K, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_GLOBAL_UNLOCK | SNOR_F_PP_DUAL_INPUT),
-		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF | ATMEL_F_DC_SR5_BIT6_4),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&at25ff_5_regs),
 		  SNOR_OTP_INFO(&at_otp_4x128b),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
+		  SNOR_DC_INFO(&at25ff041a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&atmel_dc_acc_sr5_dc6_4),
 	),
 
 	SNOR_PART("AT25XE041D", SNOR_ID(0x1f, 0x44, 0x0c, 0x01), SZ_512K, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_GLOBAL_UNLOCK | SNOR_F_PP_DUAL_INPUT),
-		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF | ATMEL_F_DC_SR5_BIT6_4),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&at25xe_regs),
 		  SNOR_OTP_INFO(&at_otp_4x128b),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
+		  SNOR_DC_INFO(&at25ff041a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&atmel_dc_acc_sr5_dc6_4),
 	),
 
 	SNOR_PART("AT25EU0041A", SNOR_ID(0x1f, 0x14, 0x01), SZ_512K, /* SFDP 1.6 */
@@ -744,20 +769,24 @@ static const struct spi_nor_flash_part atmel_parts[] = {
 
 	SNOR_PART("AT25FF081A", SNOR_ID(0x1f, 0x45, 0x08, 0x01), SZ_1M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_GLOBAL_UNLOCK | SNOR_F_PP_DUAL_INPUT),
-		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF | ATMEL_F_DC_SR5_BIT6_4),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&at25ff_5_regs),
 		  SNOR_OTP_INFO(&at_otp_4x128b),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
+		  SNOR_DC_INFO(&at25ff041a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&atmel_dc_acc_sr5_dc6_4),
 	),
 
 	SNOR_PART("AT25XE081D", SNOR_ID(0x1f, 0x45, 0x0c, 0x01), SZ_1M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_GLOBAL_UNLOCK | SNOR_F_PP_DUAL_INPUT),
-		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF | ATMEL_F_DC_SR5_BIT6_4),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&at25xe_regs),
 		  SNOR_OTP_INFO(&at_otp_4x128b),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
+		  SNOR_DC_INFO(&at25ff041a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&atmel_dc_acc_sr5_dc6_4),
 	),
 
 	SNOR_PART("AT25SF081 (Meta)", SNOR_ID(0x1f, 0x85, 0x01), SZ_1M,
@@ -824,20 +853,24 @@ static const struct spi_nor_flash_part atmel_parts[] = {
 
 	SNOR_PART("AT25FF161A", SNOR_ID(0x1f, 0x46, 0x08, 0x01), SZ_2M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_GLOBAL_UNLOCK | SNOR_F_PP_DUAL_INPUT),
-		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF | ATMEL_F_DC_SR5_BIT6_4),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&at25ff_5_regs),
 		  SNOR_OTP_INFO(&at_otp_4x128b),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
+		  SNOR_DC_INFO(&at25ff161a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&atmel_dc_acc_sr5_dc6_4),
 	),
 
 	SNOR_PART("AT25XE161D", SNOR_ID(0x1f, 0x46, 0x0c, 0x01), SZ_2M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_GLOBAL_UNLOCK | SNOR_F_PP_DUAL_INPUT),
-		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF | ATMEL_F_DC_SR5_BIT6_4),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&at25xe_regs),
 		  SNOR_OTP_INFO(&at_otp_4x128b),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
+		  SNOR_DC_INFO(&at25ff161a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&atmel_dc_acc_sr5_dc6_4),
 	),
 
 	SNOR_PART("AT25DQ161", SNOR_ID(0x1f, 0x86, 0x00, 0x01, 0x00), SZ_2M,
@@ -907,28 +940,34 @@ static const struct spi_nor_flash_part atmel_parts[] = {
 
 	SNOR_PART("AT25FF321A", SNOR_ID(0x1f, 0x47, 0x08, 0x01), SZ_4M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_GLOBAL_UNLOCK | SNOR_F_PP_DUAL_INPUT),
-		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF | ATMEL_F_DC_SR5_BIT6_4),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&at25ff_5_regs),
 		  SNOR_OTP_INFO(&at_otp_4x128b),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
+		  SNOR_DC_INFO(&at25ff321a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&atmel_dc_acc_sr5_dc6_4),
 	),
 
 	SNOR_PART("AT25XE321D", SNOR_ID(0x1f, 0x47, 0x0c, 0x01), SZ_4M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_GLOBAL_UNLOCK | SNOR_F_PP_DUAL_INPUT),
-		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF | ATMEL_F_DC_SR5_BIT6_4),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_SR4_BIT4_EE_BIT5_PE | ATMEL_F_OTP_UID_FF),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&at25xe_regs),
 		  SNOR_OTP_INFO(&at_otp_4x128b),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
+		  SNOR_DC_INFO(&at25ff321a_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&atmel_dc_acc_sr5_dc6_4),
 	),
 
 	SNOR_PART("AT25QL321", SNOR_ID(0x1f, 0x42, 0x16), SZ_4M, /* SFDP 1.6 */
 		  SNOR_ALIAS(&at25ql321_alias), /* AT25SL321 */
-		  SNOR_VENDOR_FLAGS(ATMEL_F_OTP_ESN_SCUR | ATMEL_F_QPI_READING_PARAMS_DC_6),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_OTP_ESN_SCUR),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&at25ql321_regs),
 		  SNOR_OTP_INFO(&at_otp_512b),
+		  SNOR_DC_INFO(&at25ql321_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("AT25DQ321", SNOR_ID(0x1f, 0x87, 0x00, 0x01, 0x00), SZ_4M,
@@ -1006,19 +1045,23 @@ static const struct spi_nor_flash_part atmel_parts[] = {
 
 	SNOR_PART("AT25QL641", SNOR_ID(0x1f, 0x43, 0x17), SZ_8M, /* SFDP 1.6 */
 		  SNOR_ALIAS(&at25ql641_alias), /* AT25SL641 */
-		  SNOR_VENDOR_FLAGS(ATMEL_F_OTP_ESN_SCUR | ATMEL_F_QPI_READING_PARAMS_DC_8),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_OTP_ESN_SCUR),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&at25ql_regs),
 		  SNOR_OTP_INFO(&at_otp_512b),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&at25ql641_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("AT25SF641", SNOR_ID(0x1f, 0x32, 0x17), SZ_8M, /* SFDP 1.6 */
-		  SNOR_VENDOR_FLAGS(ATMEL_F_OTP_ESN_SCUR | ATMEL_F_QPI_READING_PARAMS_DC_6),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_OTP_ESN_SCUR),
 		  SNOR_SPI_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&at25ql_regs),
 		  SNOR_OTP_INFO(&at_otp_512b),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&at25ql321_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("AT25SF641B", SNOR_ID(0x1f, 0x88, 0x01), SZ_8M, /* SFDP 1.8 (BFPT 1.7) */
@@ -1046,11 +1089,13 @@ static const struct spi_nor_flash_part atmel_parts[] = {
 
 	SNOR_PART("AT25QL128A", SNOR_ID(0x1f, 0x42, 0x18), SZ_16M, /* SFDP 1.6 */
 		  SNOR_ALIAS(&at25ql128a_alias), /* AT25SL128A */
-		  SNOR_VENDOR_FLAGS(ATMEL_F_OTP_ESN_SCUR | ATMEL_F_QPI_READING_PARAMS_DC_8),
+		  SNOR_VENDOR_FLAGS(ATMEL_F_OTP_ESN_SCUR),
 		  SNOR_SPI_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_DUAL_MAX_SPEED_MHZ(133),
 		  SNOR_REGS(&at25ql_regs),
 		  SNOR_OTP_INFO(&at_otp_512b),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
+		  SNOR_DC_INFO(&at25ql641_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 };
 
@@ -1231,49 +1276,6 @@ static ufprog_status atmel_read_uid_scur_16b(struct spi_nor *snor, void *data, u
 	return scur_otp_read_cust(snor, 0, snor->ext_param.otp->start_index, data, false);
 }
 
-static ufprog_status atmel_chip_setup(struct spi_nor *snor)
-{
-	uint32_t val;
-
-	if (snor->param.vendor_flags & ATMEL_F_DC_SR5_BIT6_4) {
-		/* Set EBh dummy cycles to 10 for now */
-		STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &at25ff_sr5_acc, AT25FF_SR5_DC_MASK,
-							4 << AT25FF_SR5_DC_SHIFT, true));
-		STATUS_CHECK_RET(spi_nor_read_reg_acc(snor, &at25ff_sr5_acc, &val));
-
-		val = (val & AT25FF_SR5_DC_MASK) >> AT25FF_SR5_DC_SHIFT;
-
-		if (val != 4) {
-			logm_err("Failed to set EBh read dummy cycles to %u\n", 10);
-			return UFP_UNSUPPORTED;
-		}
-	}
-
-	return UFP_OK;
-}
-
-static ufprog_status atmel_setup_qpi(struct spi_nor *snor, bool enabled)
-{
-	if (enabled) {
-		if (snor->param.vendor_flags & ATMEL_F_QPI_READING_PARAMS_DC_6) {
-			/* Set QPI read dummy cycles to 6 for maximum speed */
-			return spi_nor_write_reg(snor, SNOR_CMD_SET_READ_PARAMETERS, QPI_READ_DUMMY_CLOCKS_6);
-		}
-
-		if (snor->param.vendor_flags & ATMEL_F_QPI_READING_PARAMS_DC_8) {
-			/* Set QPI read dummy cycles to 8 for maximum speed */
-			return spi_nor_write_reg(snor, SNOR_CMD_SET_READ_PARAMETERS, QPI_READ_DUMMY_CLOCKS_8);
-		}
-
-	}
-
-	return UFP_OK;
-}
-
-static const struct spi_nor_flash_part_ops atmel_part_ops = {
-	.chip_setup = atmel_chip_setup,
-};
-
 static ufprog_status atmel_part_fixup(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					struct spi_nor_flash_part_blank *bp)
 {
@@ -1311,18 +1313,6 @@ static ufprog_status atmel_part_fixup(struct spi_nor *snor, struct spi_nor_vendo
 	else if (bp->p.vendor_flags & ATMEL_F_UID_WINBOND_16B)
 		snor->ext_param.ops.read_uid = atmel_read_uid_winbond_16b;
 
-	if (bp->p.vendor_flags & ATMEL_F_QPI_READING_PARAMS_DC_6) {
-		/* 6 dummy cycles will be used for QPI read */
-		bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = 4;
-		bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 2;
-		snor->ext_param.ops.setup_qpi = atmel_setup_qpi;
-	} else if (bp->p.vendor_flags & ATMEL_F_QPI_READING_PARAMS_DC_8) {
-		/* 8 dummy cycles will be used for QPI read */
-		bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = 6;
-		bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 2;
-		snor->ext_param.ops.setup_qpi = atmel_setup_qpi;
-	}
-
 	return UFP_OK;
 }
 
@@ -1336,7 +1326,6 @@ const struct spi_nor_vendor vendor_atmel = {
 	.name = "Atmel/Adesto/Renesas",
 	.parts = atmel_parts,
 	.nparts = ARRAY_SIZE(atmel_parts),
-	.default_part_ops = &atmel_part_ops,
 	.default_part_fixups = &atmel_fixups,
 	.vendor_flag_names = atmel_vendor_flag_info,
 	.num_vendor_flag_names = ARRAY_SIZE(atmel_vendor_flag_info),

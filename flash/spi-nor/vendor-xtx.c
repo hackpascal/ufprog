@@ -34,16 +34,12 @@
 #define XTX_F_WPS_SR3_BIT2			BIT(1)
 #define XTX_F_OTP_LOCK_SR1_BIT6			BIT(2)
 #define XTX_F_OTP_RW_PAGED			BIT(3)
-#define XTX_F_LC_SR3_BIT0			BIT(4)	/* 0 = 4/6 (Default), 1 = 8/10 */
-#define XTX_F_LC_SR3_BIT1			BIT(5)	/* DTR: 0 = 8 (Default), 1 = 6 */
 
 static const struct spi_nor_part_flag_enum_info xtx_vendor_flag_info[] = {
 	{ 0, "hs-mode" },
 	{ 1, "wps-sr3-bit2" },
 	{ 2, "otp-lock-sr-bit6" },
 	{ 3, "otp-rw-paged" },
-	{ 4, "lc-sr3-bit0" },
-	{ 5, "lc-sr3-bit1" },
 };
 
 static const struct spi_nor_otp_info xtx_otp_2x256b_0 = {
@@ -309,6 +305,46 @@ const struct spi_nor_wp_info xtx_wpr_4bp_cmp_as_tb = SNOR_WP_BP(&srcr_acc, BP_3_
 	SNOR_WP_BP_LO(SR_CMP | SR_BP3 | SR_BP2 | SR_BP1         , 13),	/* Lower 512MB */
 );
 
+/* XT25F32F */
+static const SNOR_DC_CONFIG(xt25f32f_dc_122_cfgs, SNOR_DC_IDX_VALUE(1, 8, 133), SNOR_DC_IDX_VALUE(0, 4, 104));
+static const SNOR_DC_CONFIG(xt25f32f_dc_144_cfgs, SNOR_DC_IDX_VALUE(1, 10, 133), SNOR_DC_IDX_VALUE(0, 6, 104));
+
+static const SNOR_DC_TABLE(xt25f32f_dc_table, 1,
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_2_2, xt25f32f_dc_122_cfgs),
+			   SNOR_DC_TIMING(SPI_MEM_IO_1_4_4, xt25f32f_dc_144_cfgs));
+
+/* XT25Q08D */
+static const SNOR_DC_CONFIG(xt25q08d_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(2, 6, 108), SNOR_DC_IDX_VALUE(3, 8, 108),
+			    SNOR_DC_TUPLE(0, 1, 4, 0, 80));
+
+static const SNOR_DC_TABLE(xt25q08d_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, xt25q08d_dc_qpi_cfgs));
+
+/* XT25F32B (DC 0/1 unusable) */
+static const SNOR_DC_CONFIG(xt25f32b_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 72), SNOR_DC_IDX_VALUE(2, 6, 48));
+
+static const SNOR_DC_TABLE(xt25f32b_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, xt25f32b_dc_qpi_cfgs));
+
+/* XT25Q64D */
+static const SNOR_DC_CONFIG(xt25q64d_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(2, 6, 108), SNOR_DC_IDX_VALUE(3, 8, 108),
+			    SNOR_DC_TUPLE(0, 1, 4, 0, 70));
+
+static const SNOR_DC_TABLE(xt25q64d_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, xt25q64d_dc_qpi_cfgs));
+
+/* XT25Q128D */
+static const SNOR_DC_CONFIG(xt25q128d_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(3, 8, 76), SNOR_DC_IDX_VALUE(2, 6, 57),
+			    SNOR_DC_TUPLE(0, 1, 4, 0, 38));
+
+static const SNOR_DC_TABLE(xt25q128d_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, xt25q128d_dc_qpi_cfgs));
+
+/* XT25F256B */
+static const SNOR_DC_CONFIG(xt25f256b_dc_qpi_cfgs, SNOR_DC_IDX_VALUE(2, 6, 80), SNOR_DC_IDX_VALUE(3, 8, 80),
+			    SNOR_DC_TUPLE(0, 1, 4, 0, 64));
+
+static const SNOR_DC_TABLE(xt25f256b_dc_table, 3, SNOR_DC_TIMING(SPI_MEM_IO_4_4_4, xt25f256b_dc_qpi_cfgs));
+
+static const SNOR_DC_CHIP_SETUP_ACC(xtx_dc_acc_sr3_dc0, &sr3_acc, 1, 0);
+static const SNOR_DC_CHIP_SETUP_ACC(xtx_dc_acc_sr3_dc1_0, &sr3_acc, 3, 0);
+
 static ufprog_status xf25f04x_fixup_model(struct spi_nor *snor, struct spi_nor_vendor_part *vp,
 					  struct spi_nor_flash_part_blank *bp)
 {
@@ -461,11 +497,13 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 	),
 
 	SNOR_PART("XT25Q08D", SNOR_ID(0x0b, 0x60, 0x14), SZ_1M, /* SFDP 1.6, DTR */
-		  SNOR_VENDOR_FLAGS(XTX_F_LC_SR3_BIT1 | XTX_F_WPS_SR3_BIT2),
+		  SNOR_VENDOR_FLAGS(XTX_F_WPS_SR3_BIT2), /* DTR_LC_SR3_BIT1 */
 		  SNOR_SPI_MAX_SPEED_MHZ(108),
 		  SNOR_REGS(&xtx_sr_cr_sr3_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_2x256b), /* DS said 2x1k. Tested to be 2x256b */
+		  SNOR_DC_INFO(&xt25q08d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("XT25F16B", SNOR_ID(0x0b, 0x40, 0x15), SZ_2M,
@@ -483,11 +521,13 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 	),
 
 	SNOR_PART("XT25Q16D", SNOR_ID(0x0b, 0x60, 0x15), SZ_2M, /* SFDP 1.6, DTR */
-		  SNOR_VENDOR_FLAGS(XTX_F_LC_SR3_BIT1 | XTX_F_WPS_SR3_BIT2),
+		  SNOR_VENDOR_FLAGS(XTX_F_WPS_SR3_BIT2), /* DTR_LC_SR3_BIT1 */
 		  SNOR_SPI_MAX_SPEED_MHZ(108),
 		  SNOR_REGS(&xtx_sr_cr_sr3_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_2x256b), /* DS said 2x1k. Tested to be 2x256b */
+		  SNOR_DC_INFO(&xt25q08d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("XT25F32*", SNOR_ID(0x0b, 0x40, 0x16), SZ_4M,
@@ -508,16 +548,18 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4 | BIT_SPI_MEM_IO_4_4_4),
-		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(72),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(86),
 		  SNOR_REGS(&xtx_5bp_srp2_qe_lb_cmp_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp),
 		  SNOR_OTP_INFO(&xtx_otp_1k),
+		  SNOR_DC_INFO(&xt25f32b_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("XT25F32F", SNOR_ID(0x0b, 0x40, 0x16), SZ_4M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
-		  SNOR_VENDOR_FLAGS(XTX_F_HPM | XTX_F_LC_SR3_BIT0),
+		  SNOR_VENDOR_FLAGS(XTX_F_HPM),
 		  SNOR_QE_SR2_BIT1,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
@@ -526,6 +568,8 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_REGS(&xtx_sr_cr_lb23_sr3_lc0_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_2x256b_2), /* DS said 2x1k. Tested to be 2x256b */
+		  SNOR_DC_INFO(&xt25f32f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&xtx_dc_acc_sr3_dc0),
 	),
 
 	SNOR_PART("XT25F64*", SNOR_ID(0x0b, 0x40, 0x17), SZ_8M,
@@ -546,16 +590,18 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4 | BIT_SPI_MEM_IO_4_4_4),
-		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(72),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(86),
 		  SNOR_REGS(&xtx_5bp_srp2_qe_lb_cmp_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
 		  SNOR_OTP_INFO(&xtx_otp_1k),
+		  SNOR_DC_INFO(&xt25f32b_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("XT25F64F", SNOR_ID(0x0b, 0x40, 0x17), SZ_8M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
-		  SNOR_VENDOR_FLAGS(XTX_F_HPM | XTX_F_LC_SR3_BIT0),
+		  SNOR_VENDOR_FLAGS(XTX_F_HPM),
 		  SNOR_QE_SR2_BIT1,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
@@ -564,15 +610,19 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_REGS(&xtx_sr1_sr2_sr3_lc0_drv_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp_ratio, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_3x256b), /* DS said 3x1k. Tested to be 3x256b */
+		  SNOR_DC_INFO(&xt25f32f_dc_table),
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&xtx_dc_acc_sr3_dc0),
 	),
 
 	SNOR_PART("XT25Q64D", SNOR_ID(0x0b, 0x60, 0x17), SZ_8M, /* SFDP 1.6, DTR */
 		  SNOR_ALIAS(&xt25q64d_alias),
-		  SNOR_VENDOR_FLAGS(XTX_F_LC_SR3_BIT1 | XTX_F_WPS_SR3_BIT2),
-		  SNOR_SPI_MAX_SPEED_MHZ(133), SNOR_QUAD_MAX_SPEED_MHZ(108),
+		  SNOR_VENDOR_FLAGS(XTX_F_WPS_SR3_BIT2), /* DTR_LC_SR3_BIT1 */
+		  SNOR_SPI_MAX_SPEED_MHZ(133), SNOR_DUAL_MAX_SPEED_MHZ(108), SNOR_QUAD_MAX_SPEED_MHZ(108),
 		  SNOR_REGS(&xtx_sr_sr2_sr3_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_3x256b), /* DS said 3x1k. Tested to be 3x256b */
+		  SNOR_DC_INFO(&xt25q64d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_SET(QPI_READ_NO_WRAP),
 	),
 
 	SNOR_PART("XT25F128*", SNOR_ID(0x0b, 0x40, 0x18), SZ_16M,
@@ -594,16 +644,18 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_QPI),
 		  SNOR_PP_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_1_1_4 | BIT_SPI_MEM_IO_4_4_4),
-		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(72),
+		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(86), SNOR_QUAD_MAX_SPEED_MHZ(86),
 		  SNOR_REGS(&xtx_5bp_srp2_qe_lb_cmp_regs),
 		  SNOR_WP_RANGES(&wpr_3bp_tb_sec_cmp_ratio),
 		  SNOR_OTP_INFO(&xtx_otp_1k),
+		  SNOR_DC_INFO(&xt25f32b_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_DFL(),
 	),
 
 	SNOR_PART("XT25F128F", SNOR_ID(0x0b, 0x40, 0x18), SZ_16M, /* SFDP 1.6 */
 		  SNOR_FLAGS(SNOR_F_NO_SFDP | SNOR_F_SECT_4K | SNOR_F_SECT_32K | SNOR_F_SECT_64K |
 			     SNOR_F_SR_NON_VOLATILE | SNOR_F_SR_VOLATILE_WREN_50H),
-		  SNOR_VENDOR_FLAGS(XTX_F_HPM | XTX_F_LC_SR3_BIT0 | XTX_F_LC_SR3_BIT1),
+		  SNOR_VENDOR_FLAGS(XTX_F_HPM),
 		  SNOR_QE_SR2_BIT1,
 		  SNOR_SOFT_RESET_FLAGS(SNOR_SOFT_RESET_OPCODE_66H_99H),
 		  SNOR_READ_IO_CAPS(BIT_SPI_MEM_IO_1_1_1 | BIT_SPI_MEM_IO_X2 | BIT_SPI_MEM_IO_X4),
@@ -612,23 +664,29 @@ static const struct spi_nor_flash_part xtx_parts[] = {
 		  SNOR_REGS(&xtx_sr1_sr2_sr3_dc01_drv_hold_rst_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp_ratio, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_3x256b), /* DS said 3x1k. Tested to be 3x256b */
+		  SNOR_DC_INFO(&xt25f32f_dc_table), /* Just ignore the DTR settings for now */
+		  SNOR_DC_CHIP_SETUP_ACC_INFO(&xtx_dc_acc_sr3_dc1_0),
 	),
 
 	SNOR_PART("XT25Q128D", SNOR_ID(0x0b, 0x60, 0x18), SZ_16M, /* SFDP 1.6, DTR */
 		  SNOR_ALIAS(&xt25q128d_alias),
-		  SNOR_VENDOR_FLAGS(XTX_F_LC_SR3_BIT1 | XTX_F_WPS_SR3_BIT2),
+		  SNOR_VENDOR_FLAGS(XTX_F_WPS_SR3_BIT2), /* DTR_LC_SR3_BIT1 */
 		  SNOR_SPI_MAX_SPEED_MHZ(108), SNOR_DUAL_MAX_SPEED_MHZ(76), SNOR_QUAD_MAX_SPEED_MHZ(76),
 		  SNOR_REGS(&xtx_sr_sr2_sr3_regs),
 		  SNOR_WP_RANGES_ACC(&wpr_3bp_tb_sec_cmp, &srcr_comb_acc),
 		  SNOR_OTP_INFO(&xtx_otp_3x256b), /* DS said 3x1k. Tested to be 3x256b */
+		  SNOR_DC_INFO(&xt25q128d_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_SET(QPI_READ_NO_WRAP),
 	),
 
 	SNOR_PART("XT25F256B", SNOR_ID(0x0b, 0x40, 0x19), SZ_32M, /* SFDP 1.6 */
 		  SNOR_ALIAS(&xt25f256b_alias),
-		  SNOR_SPI_MAX_SPEED_MHZ(120), SNOR_DUAL_MAX_SPEED_MHZ(104), SNOR_QUAD_MAX_SPEED_MHZ(80),
+		  SNOR_SPI_MAX_SPEED_MHZ(120), SNOR_DUAL_MAX_SPEED_MHZ(108), SNOR_QUAD_MAX_SPEED_MHZ(104),
 		  SNOR_REGS(&xtx_sr1_cr_sr3_lc1_adp_regs),
 		  SNOR_WP_RANGES(&wpr_4bp_tb),
 		  SNOR_OTP_INFO(&xtx_otp_2x256b), /* DS said 2x1k. Tested to be 2x256b */
+		  SNOR_DC_INFO(&xt25f256b_dc_table),
+		  SNOR_DC_QPI_SET_READING_PARAM_SET(QPI_READ_NO_WRAP),
 	),
 };
 
@@ -670,31 +728,6 @@ static ufprog_status xtx_part_fixup(struct spi_nor *snor, struct spi_nor_vendor_
 		if (bp->p.size >= SZ_32M) {
 			bp->pp_opcodes_4b[SPI_MEM_IO_1_4_4].opcode = SNOR_CMD_4B_PAGE_PROG_QUAD_IO;
 			bp->pp_opcodes_4b[SPI_MEM_IO_1_4_4].ndummy = bp->pp_opcodes_4b[SPI_MEM_IO_1_4_4].nmode = 0;
-		}
-	}
-
-	/* 8 dummy cycles will be used for QPI read */
-	if (bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].opcode) {
-		bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].ndummy = 8;
-		bp->read_opcodes_3b[SPI_MEM_IO_4_4_4].nmode = 0;
-
-		if (bp->p.size >= SZ_32M) {
-			bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].ndummy = 8;
-			bp->read_opcodes_4b[SPI_MEM_IO_4_4_4].nmode = 0;
-		}
-	}
-
-	if (bp->p.vendor_flags & XTX_F_LC_SR3_BIT0) {
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].ndummy = 8;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_2_2].nmode = 0;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].ndummy = 10;
-		bp->read_opcodes_3b[SPI_MEM_IO_1_4_4].nmode = 0;
-
-		if (bp->p.size >= SZ_32M) {
-			bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].ndummy = 8;
-			bp->read_opcodes_4b[SPI_MEM_IO_1_2_2].nmode = 0;
-			bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].ndummy = 10;
-			bp->read_opcodes_4b[SPI_MEM_IO_1_4_4].nmode = 0;
 		}
 	}
 
@@ -764,17 +797,6 @@ static const struct spi_nor_flash_part_otp_ops xtx_paged_otp_ops = {
 	.locked = secr_otp_locked,
 };
 
-static ufprog_status xtx_setup_qpi(struct spi_nor *snor, bool enabled)
-{
-	if (enabled) {
-		/* Set QPI read dummy cycles to 8 for maximum speed */
-		return spi_nor_write_reg(snor, SNOR_CMD_SET_READ_PARAMETERS,
-					 QPI_READ_DUMMY_CLOCKS_8 | QPI_READ_NO_WRAP);
-	}
-
-	return UFP_OK;
-}
-
 static ufprog_status xtx_read_uid(struct spi_nor *snor, void *data, uint32_t *retlen)
 {
 	struct ufprog_spi_mem_op op = SPI_MEM_OP(
@@ -814,19 +836,9 @@ static const struct spi_nor_flash_part_fixup xtx_fixups = {
 	.pre_chip_setup = xtx_part_set_ops,
 };
 
-static ufprog_status xtx_chip_setup(struct spi_nor *snor)
-{
-	if (snor->param.vendor_flags & XTX_F_LC_SR3_BIT0)
-		STATUS_CHECK_RET(spi_nor_update_reg_acc(snor, &sr3_acc, 0, 1, false));
-
-	return UFP_OK;
-}
-
 static const struct spi_nor_flash_part_ops xtx_default_part_ops = {
 	.otp = &secr_otp_ops,
 
-	.chip_setup = xtx_chip_setup,
-	.setup_qpi = xtx_setup_qpi,
 	.qpi_dis = spi_nor_disable_qpi_ffh,
 	.read_uid = xtx_read_uid,
 };
