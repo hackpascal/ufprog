@@ -1540,6 +1540,16 @@ static bool spi_nor_setup_multi_io(struct spi_nor *snor, const struct spi_nor_fl
 	return true;
 }
 
+static bool spi_nor_supports_dpi(struct spi_nor *snor)
+{
+	return spi_nor_supports_read_id_custom(snor, 0, SPI_NOR_MAX_ID_LEN, 0, 2);
+}
+
+static bool spi_nor_supports_qpi(struct spi_nor *snor)
+{
+	return spi_nor_supports_read_id_custom(snor, 0, SPI_NOR_MAX_ID_LEN, 0, 4);
+}
+
 static bool spi_nor_read_and_match_jedec_id(struct spi_nor *snor, uint8_t opcode, uint8_t ndummy,
 					    struct spi_nor_vendor_part *retvp)
 {
@@ -1587,44 +1597,48 @@ retry:
 	if (ret)
 		return ret;
 
-	/* QPI cmd */
-	logm_dbg("Trying reading JEDEC ID in QPI mode\n");
+	if (spi_nor_supports_qpi(snor)) {
+		/* QPI cmd */
+		logm_dbg("Trying reading JEDEC ID in QPI mode\n");
 
-	snor->state.cmd_buswidth_curr = 4;
+		snor->state.cmd_buswidth_curr = 4;
 
-	ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID_MULTI, 1, retvp);
-	if (ret)
-		return ret;
+		ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID_MULTI, 1, retvp);
+		if (ret)
+			return ret;
 
-	ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID_MULTI, 0, retvp);
-	if (ret)
-		return ret;
+		ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID_MULTI, 0, retvp);
+		if (ret)
+			return ret;
 
-	ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID, 0, retvp);
-	if (ret)
-		return ret;
+		ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID, 0, retvp);
+		if (ret)
+			return ret;
 
-	/* Try to exit from QPI mode */
-	spi_nor_disable_qpi_ffh(snor);
-	spi_nor_disable_qpi_66h_99h(snor);
-	os_udelay(10000);
+		/* Try to exit from QPI mode */
+		spi_nor_disable_qpi_ffh(snor);
+		spi_nor_disable_qpi_66h_99h(snor);
+		os_udelay(10000);
+	}
 
-	/* Dual I/O cmd */
-	logm_dbg("Trying reading JEDEC ID in DPI mode\n");
+	if (spi_nor_supports_dpi(snor)) {
+		/* Dual I/O cmd */
+		logm_dbg("Trying reading JEDEC ID in DPI mode\n");
 
-	snor->state.cmd_buswidth_curr = 2;
+		snor->state.cmd_buswidth_curr = 2;
 
-	ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID_MULTI, 0, retvp);
-	if (ret)
-		return ret;
+		ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID_MULTI, 0, retvp);
+		if (ret)
+			return ret;
 
-	ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID, 0, retvp);
-	if (ret)
-		return ret;
+		ret = spi_nor_read_and_match_jedec_id(snor, SNOR_CMD_READ_ID, 0, retvp);
+		if (ret)
+			return ret;
 
-	/* Try to exit from DPI mode */
-	spi_nor_disable_qpi_66h_99h(snor);
-	os_udelay(10000);
+		/* Try to exit from DPI mode */
+		spi_nor_disable_qpi_66h_99h(snor);
+		os_udelay(10000);
+	}
 
 	if (retries) {
 		retries--;
