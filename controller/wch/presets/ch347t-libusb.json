@@ -5,9 +5,6 @@
 		"match": [
 			{
 				"model": "ch347t"
-			},
-			{
-				"model": "ch347f"
 			}
 		],
 		"spi": {

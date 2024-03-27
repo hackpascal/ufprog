@@ -37,6 +37,8 @@ set(ch347_common_src
 set(wch_libusb_files
 	presets/ch341-libusb.json
 	presets/ch347-libusb.json
+	presets/ch347t-libusb.json
+	presets/ch347f-libusb.json
 	presets/ch347-hid.json
 )
 

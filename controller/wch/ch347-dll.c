@@ -25,6 +25,7 @@ static const char *chip_modes[] = {
 	"UART1+SPI+I2C VCP",
 	"UART1+SPI+I2C HID",
 	"UART1+JTAG+I2C VCP",
+	"CH347F",
 };
 
 ufprog_status UFPROG_API ufprog_plugin_init(void)
@@ -72,21 +73,23 @@ static HANDLE ch347_test_open(uint32_t if_type, uint32_t devidx, const char *pat
 
 	switch (if_type) {
 	case IF_SPI:
-		if (DevInfo.FuncType != CH347_FUNC_SPI_I2C) {
+		if (DevInfo.FuncType != CH347_FUNC_SPI_I2C && DevInfo.FuncType != CH347_FUNC_ALL_IN_ONE) {
 			logm_err("Device %u is not in SPI mode\n", devidx);
 			goto cleanup_dev;
 		}
 		break;
 
 	case IF_I2C:
-		if (DevInfo.FuncType != CH347_FUNC_SPI_I2C && DevInfo.FuncType != CH347_FUNC_JTAG_I2C) {
+		if (DevInfo.FuncType != CH347_FUNC_SPI_I2C && DevInfo.FuncType != CH347_FUNC_JTAG_I2C &&
+		    DevInfo.FuncType != CH347_FUNC_ALL_IN_ONE) {
 			logm_err("Device %u is not in I2C mode\n", devidx);
 			goto cleanup_dev;
 		}
 		break;
 	}
 
-	logm_info("Opened device %u in %s mode\n", devidx, chip_modes[DevInfo.ChipMode & 3]);
+	logm_info("Opened device %u in %s mode\n", devidx,
+		  DevInfo.FuncType == CH347_FUNC_ALL_IN_ONE ? "CH347F All-in-one" : chip_modes[DevInfo.ChipMode]);
 
 	return hDevice;
 

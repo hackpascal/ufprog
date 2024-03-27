@@ -15,16 +15,24 @@
 #include "ch347.h"
 
 #define CH347_VCP_SPI_VID		0x1a86
-#define CH347_VCP_SPI_PID		0x55db
-#define CH347_VCP_SPI_IF		2
+#define CH347T_VCP_SPI_PID		0x55db
+#define CH347F_VCP_SPI_PID		0x55de
+#define CH347T_VCP_SPI_IF		2
+#define CH347F_VCP_SPI_IF		4
 #define CH347_VCP_EP_OUT		(6 | LIBUSB_ENDPOINT_OUT)
 #define CH347_VCP_EP_IN			(6 | LIBUSB_ENDPOINT_IN)
 
 /* So, keep sync with vendor dll */
 #define CH347_MAX_PACKET_SIZE		0x1000
 
+struct ch347_libusb_open_info {
+	struct libusb_device_handle *dev_handle;
+	int interface_number;
+};
+
 struct ch34x_handle {
 	struct libusb_device_handle *handle;
+	int interface_number;
 };
 
 const char *UFPROG_API ufprog_plugin_desc(void)
@@ -34,8 +42,9 @@ const char *UFPROG_API ufprog_plugin_desc(void)
 
 static int UFPROG_API ch347_libusb_try_match_open(void *priv, struct json_object *match, int index)
 {
-	struct libusb_device_handle **dev_handle = priv;
+	struct ch347_libusb_open_info *openinfo = priv;
 	struct libusb_match_info info;
+	bool use_ch347t = true;
 	ufprog_status ret;
 
 	ret = libusb_read_config(match, &info, true);
@@ -47,9 +56,33 @@ static int UFPROG_API ch347_libusb_try_match_open(void *priv, struct json_object
 		return 0;
 	}
 
+	/* Device model */
+	if (json_node_exists(match, "model")) {
+		const char *model = NULL;
+
+		ret = json_read_str(match, "model", &model, NULL);
+		if (!ret && *model) {
+			if (!strcasecmp(model, "ch347t")) {
+				use_ch347t = true;
+			} else if (!strcasecmp(model, "ch347f")) {
+				use_ch347t = false;
+			} else {
+				logm_warn("Invalid device model '%s'\n", model ? model : "<NULL>");
+				return 0;
+			}
+		}
+	}
+
+	if (use_ch347t) {
+		info.pid = CH347T_VCP_SPI_PID;
+		openinfo->interface_number = CH347T_VCP_SPI_IF;
+	} else {
+		info.pid = CH347F_VCP_SPI_PID;
+		openinfo->interface_number = CH347F_VCP_SPI_IF;
+	}
+
 	/* All we need are index and path */
 	info.vid = CH347_VCP_SPI_VID;
-	info.pid = CH347_VCP_SPI_PID;
 	info.bcd_device = 0;
 	info.match_bcd_device = false;
 
@@ -68,7 +101,7 @@ static int UFPROG_API ch347_libusb_try_match_open(void *priv, struct json_object
 		info.manufacturer = NULL;
 	}
 
-	ret = libusb_open_matched(ufprog_global_libusb_context(), &info, dev_handle);
+	ret = libusb_open_matched(ufprog_global_libusb_context(), &info, &openinfo->dev_handle);
 	if (ret) {
 		if (index >= 0)
 			logm_dbg("Failed to open device specified by match#%u\n", index);
@@ -83,7 +116,7 @@ static int UFPROG_API ch347_libusb_try_match_open(void *priv, struct json_object
 ufprog_status UFPROG_API ufprog_device_open(uint32_t if_type, struct json_object *config, ufprog_bool thread_safe,
 					    struct ufprog_interface **outifdev)
 {
-	struct libusb_device_handle *dev_handle = NULL;
+	struct ch347_libusb_open_info openinfo;
 	struct ufprog_interface *wchdev;
 	ufprog_status ret = UFP_OK;
 	struct json_object *ifcfg;
@@ -108,14 +141,17 @@ ufprog_status UFPROG_API ufprog_device_open(uint32_t if_type, struct json_object
 		return UFP_DEVICE_MISSING_CONFIG;
 	}
 
-	STATUS_CHECK_RET(json_array_foreach(config, "match", ch347_libusb_try_match_open, &dev_handle, NULL));
+	openinfo.dev_handle = NULL;
+	openinfo.interface_number = 0;
 
-	if (!dev_handle) {
+	STATUS_CHECK_RET(json_array_foreach(config, "match", ch347_libusb_try_match_open, &openinfo, NULL));
+
+	if (!openinfo.dev_handle) {
 		logm_errdbg("No matched device opened\n");
 		return UFP_DEVICE_NOT_FOUND;
 	}
 
-	libusb_set_auto_detach_kernel_driver(dev_handle, 1);
+	libusb_set_auto_detach_kernel_driver(openinfo.dev_handle, 1);
 
 	wchdev = calloc(1, sizeof(*wchdev) + sizeof(struct ch34x_handle));
 	if (!wchdev) {
@@ -126,12 +162,12 @@ ufprog_status UFPROG_API ufprog_device_open(uint32_t if_type, struct json_object
 
 	wchdev->handle = (struct ch34x_handle *)((uintptr_t)wchdev + sizeof(*wchdev));
 
-	wchdev->handle->handle = dev_handle;
+	wchdev->handle->handle = openinfo.dev_handle;
 	wchdev->max_payload_len = CH347_PACKET_LEN - CH347_SPI_CMD_LEN;
 
 	STATUS_CHECK_GOTO_RET(ch347_init(wchdev, thread_safe), ret, cleanup);
 
-	err = libusb_claim_interface(dev_handle, CH347_VCP_SPI_IF);
+	err = libusb_claim_interface(openinfo.dev_handle, openinfo.interface_number);
 	if (err < 0) {
 		logm_err("Unable to claim interface: %s\n", libusb_strerror(err));
 		goto cleanup;
@@ -152,14 +188,16 @@ ufprog_status UFPROG_API ufprog_device_open(uint32_t if_type, struct json_object
 	/* case IF_I2C: */
 	}
 
+	wchdev->handle->interface_number = openinfo.interface_number;
+
 	*outifdev = wchdev;
 	return UFP_OK;
 
 cleanup_handle:
-	libusb_release_interface(wchdev->handle->handle, CH347_VCP_SPI_IF);
+	libusb_release_interface(wchdev->handle->handle, openinfo.interface_number);
 
 cleanup:
-	libusb_close(dev_handle);
+	libusb_close(openinfo.dev_handle);
 
 	if (wchdev) {
 		if (wchdev->lock)
@@ -177,7 +215,7 @@ ufprog_status UFPROG_API ufprog_device_free(struct ufprog_interface *wchdev)
 		return UFP_INVALID_PARAMETER;
 
 	if (wchdev->handle->handle) {
-		libusb_release_interface(wchdev->handle->handle, CH347_VCP_SPI_IF);
+		libusb_release_interface(wchdev->handle->handle, wchdev->handle->interface_number);
 		libusb_close(wchdev->handle->handle);
 	}
 

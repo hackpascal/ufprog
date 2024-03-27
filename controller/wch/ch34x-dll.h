@@ -24,6 +24,7 @@
 #define CH347_FUNC_UART			0
 #define CH347_FUNC_SPI_I2C		1
 #define CH347_FUNC_JTAG_I2C		2
+#define CH347_FUNC_ALL_IN_ONE		3
 
 #pragma pack(push)
 #pragma pack(1)
