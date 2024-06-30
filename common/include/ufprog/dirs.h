@@ -36,7 +36,7 @@ ufprog_status UFPROG_API add_dir(enum dir_category cat, const char *dir);
 const char *UFPROG_API get_dir(enum dir_category cat, uint32_t index);
 void UFPROG_API dir_enum(enum dir_category cat, dir_enum_cb cb, void *priv);
 
-char *UFPROG_API path_concat(bool end_sep, size_t extra_len, const char *base, ...);
+char *UFPROG_API path_concat(ufprog_bool end_sep, size_t extra_len, const char *base, ...);
 
 EXTERN_C_END
 

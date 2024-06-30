@@ -126,7 +126,7 @@ void UFPROG_API dir_enum(enum dir_category cat, dir_enum_cb cb, void *priv)
 	}
 }
 
-char *UFPROG_API path_concat(bool end_sep, size_t extra_len, const char *base, ...)
+char *UFPROG_API path_concat(ufprog_bool end_sep, size_t extra_len, const char *base, ...)
 {
 	size_t len, new_len = 0, n = 0;
 	char *new_path, *p;
