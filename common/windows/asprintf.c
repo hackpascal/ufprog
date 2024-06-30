@@ -11,17 +11,27 @@
 
 int vasprintf(char **strp, const char *fmt, va_list arg)
 {
+	va_list args;
 	int len;
 
+	va_copy(args, arg);
+
 	len = vsnprintf(NULL, 0, fmt, arg);
-	if (len < 0)
+	if (len < 0) {
+		va_end(args);
 		return len;
+	}
 
 	*strp = malloc(len + 1);
-	if (!*strp)
+	if (!*strp) {
+		va_end(args);
 		return -1;
+	}
 
-	return vsnprintf(*strp, len + 1, fmt, arg);
+	len = vsnprintf(*strp, len + 1, fmt, args);
+	va_end(args);
+
+	return len;
 }
 
 int asprintf(char **strp, const char *fmt, ...)
