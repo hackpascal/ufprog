@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <ufprog/common.h>
+#include <ufprog/string.h>
 
 EXTERN_C_BEGIN
 
@@ -22,21 +23,8 @@ typedef int (*os_main_entry)(int argc, char *argv[]);
 
 #define PATH_SEP			'\\'
 #define MODULE_SUFFIX			".dll"
-#define os_strdup			_strdup
-#define strcasecmp			_stricmp
-#define strncasecmp			_strnicmp
-
-typedef intptr_t ssize_t;
 
 int os_main(os_main_entry entry, int argc, wchar_t *argv[]);
-
-char *strcasestr(const char *s, const char *find);
-size_t strlcpy(char *dst, const char *src, size_t dsize);
-size_t strlcat(char *dst, const char *src, size_t dsize);
-char * strndup(const char *str, size_t n);
-ssize_t wgetdelim(wchar_t **bufptr, size_t *n, int delim, FILE *fp);
-int vasprintf(char **strp, const char *fmt, va_list ap);
-int asprintf(char **strp, const char *fmt, ...);
 
 ufprog_status UFPROG_API os_vfprintf(FILE *f, const char *fmt, va_list args);
 ufprog_status UFPROG_API os_fprintf(FILE *f, const char *fmt, ...);
@@ -58,7 +46,6 @@ static inline ufprog_status os_printf(const char *fmt, ...)
 #else
 #define PATH_SEP			'/'
 #define MODULE_SUFFIX			".so"
-#define os_strdup			strdup
 
 #define os_vfprintf			vfprintf
 #define os_fprintf			fprintf

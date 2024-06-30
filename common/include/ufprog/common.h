@@ -33,6 +33,13 @@
 #define UFPROG_API
 #endif
 
+#if defined(_MSC_VER)
+typedef intptr_t				ssize_t;
+#define SSIZE_MAX				INTPTR_MAX
+#else
+#include <sys/types.h>
+#endif
+
 /* Version helper */
 #define MAKE_VERSION(_major, _minor)		(((uint32_t)(_major) & 0xffff) << 16) | \
 						 ((uint32_t)(_minor) & 0xffff)
