@@ -29,7 +29,7 @@ typedef enum log_level {
 #define DEFAULT_LOG_LEVEL			LOG_INFO
 
 struct log_data {
-	log_level level;
+	uint32_t /* log_level */ level;
 	const char *module;
 	const char *body;
 };
@@ -40,13 +40,13 @@ typedef void (UFPROG_API *log_print_t)(void *priv, const struct log_data *data);
 ufprog_status UFPROG_API set_log_print_cb(void *priv, log_print_t fn);
 
 /* Useful functions provided by this library */
-log_level UFPROG_API set_log_print_level(log_level level);
+uint32_t /* log_level */ UFPROG_API set_log_print_level(uint32_t /* log_level */ level);
 
-ufprog_status UFPROG_API log_print(log_level level, const char *module, const char *text);
-ufprog_status UFPROG_API log_vprintf(log_level level, const char *module, const char *fmt, va_list args);
-ufprog_status log_printf(log_level level, const char *module, const char *fmt, ...);
+ufprog_status UFPROG_API log_print(uint32_t /* log_level */ level, const char *module, const char *text);
+ufprog_status UFPROG_API log_vprintf(uint32_t /* log_level */ level, const char *module, const char *fmt, va_list args);
+ufprog_status log_printf(uint32_t /* log_level */ level, const char *module, const char *fmt, ...);
 
-typedef void (UFPROG_API *console_print_t)(void *priv, log_level level, const char *text);
+typedef void (UFPROG_API *console_print_t)(void *priv, uint32_t /* log_level */ level, const char *text);
 ufprog_status UFPROG_API default_console_log(const struct log_data *data, void *priv, console_print_t cprint);
 
 #define log_dbg(...)		log_printf(LOG_DEBUG, NULL, __VA_ARGS__)

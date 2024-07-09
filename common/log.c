@@ -22,7 +22,7 @@ static const char *log_prefixes[] = {
 };
 
 /* Default log level is INFO */
-static log_level current_log_level = DEFAULT_LOG_LEVEL;
+static uint32_t current_log_level = DEFAULT_LOG_LEVEL;
 
 /* Registered log callback */
 static log_print_t log_print_fn;
@@ -39,11 +39,11 @@ ufprog_status UFPROG_API set_log_print_cb(void *priv, log_print_t fn)
 	return UFP_OK;
 }
 
-log_level UFPROG_API set_log_print_level(log_level level)
+uint32_t /* log_level */ UFPROG_API set_log_print_level(uint32_t /* log_level */ level)
 {
 	log_level old_level = current_log_level;
 
-	if (level < 0 || level >= __MAX_LOG_LEVEL)
+	if (level >= __MAX_LOG_LEVEL)
 		return old_level;
 
 	current_log_level = level;
@@ -51,7 +51,7 @@ log_level UFPROG_API set_log_print_level(log_level level)
 	return old_level;
 }
 
-ufprog_status UFPROG_API log_print(log_level level, const char *module, const char *text)
+ufprog_status UFPROG_API log_print(uint32_t /* log_level */ level, const char *module, const char *text)
 {
 	struct log_data ld;
 
@@ -76,7 +76,7 @@ ufprog_status UFPROG_API log_print(log_level level, const char *module, const ch
 	return UFP_OK;
 }
 
-ufprog_status UFPROG_API log_vprintf(log_level level, const char *module, const char *fmt, va_list args)
+ufprog_status UFPROG_API log_vprintf(uint32_t /* log_level */ level, const char *module, const char *fmt, va_list args)
 {
 	ufprog_status ret = UFP_OK;
 	char *buf = NULL;
@@ -124,7 +124,7 @@ out:
 	return ret;
 }
 
-ufprog_status log_printf(log_level level, const char *module, const char *fmt, ...)
+ufprog_status log_printf(uint32_t /* log_level */ level, const char *module, const char *fmt, ...)
 {
 	ufprog_status ret;
 	va_list args;

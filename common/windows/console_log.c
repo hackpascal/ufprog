@@ -8,7 +8,7 @@
 #include <ufprog/log.h>
 #include "win32.h"
 
-static void UFPROG_API win_console_print(void *priv, log_level level, const char *text)
+static void UFPROG_API win_console_print(void *priv, uint32_t level, const char *text)
 {
 	FILE *con = level > LOG_WARN ? stderr : stdout;
 
