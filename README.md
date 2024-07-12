@@ -92,6 +92,34 @@ Pull requests are welcome.
 * MSVC (Windows only. Suggested to use with vcpkg)
 * GCC (Windows (mingw) and Linux)
 
+## Install
+
+### Linux
+
+```bash
+git clone https://github.com/hackpascal/ufprog.git
+
+cd ufprog
+
+cmake -DCMAKE_BUILD_TYPE=None \
+    -DBUILD_PORTABLE=OFF \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -B build \
+    -G Ninja
+
+ninja -C build
+
+ninja -C build install
+```
+
+### Arch Linux
+
+Installation can be done via [AUR ufprog-git](https://aur.archlinux.org/pkgbase/ufprog-git).
+
+```bash
+yay -Syu ufprog
+```
+
 ## License
 * For executable programs, GPL-2.0-only
 * For libraries, LGPL-2.1-only
