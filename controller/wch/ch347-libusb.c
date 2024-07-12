@@ -12,6 +12,7 @@
 #include <ufprog/config.h>
 #include <ufprog/libusb.h>
 #include <ufprog/log.h>
+#include <ufprog/string.h>
 #include "ch347.h"
 
 #define CH347_VCP_SPI_VID		0x1a86
