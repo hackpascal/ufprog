@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 project(nand_ftl_nmbm)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 if(MSVC)
 	add_compile_options(
 		/wd4018 /wd4242 /wd4244 /wd4389 /wd4701

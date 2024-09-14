@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 project(ufprog_spi_nand)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 set(ufprog_spi_nand_src
 	spi-nand.c
 	init.c

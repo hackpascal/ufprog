@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 project(nand_ecc_mt7622)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_library(nand_ecc_mt7622 SHARED mt7622-ecc.c mt7622-ecc.def)
 target_link_libraries(nand_ecc_mt7622 PRIVATE ufprog_common ufprog_nand_core)
 target_compile_definitions(nand_ecc_mt7622 PRIVATE UFP_MODULE_NAME=\"MT7622-ECC\")

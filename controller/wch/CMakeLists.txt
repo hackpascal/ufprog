@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 project(wch-controllers)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 if(USE_VCPKG)
 	find_package(hidapi CONFIG REQUIRED)
 	set(HIDAPI_INC hidapi::include)

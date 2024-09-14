@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 project(ftdi-controllers)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 include_directories(${LIBUSB_INC})
 include_directories(${ufprog_common_SOURCE_DIR}/include)
 include_directories(${ufprog_controller_SOURCE_DIR}/include)

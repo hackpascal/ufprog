@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 project(ufprog_controller)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 set(ufprog_controller_src
 	driver.c
 	device.c

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 project(serprog)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 include_directories(${ufprog_common_SOURCE_DIR}/include)
 include_directories(${ufprog_controller_SOURCE_DIR}/include)
 

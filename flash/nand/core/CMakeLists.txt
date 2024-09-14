@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 project(ufprog_nand_core)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 set(ufprog_nand_core_src
 	init.c
 	nand.c
