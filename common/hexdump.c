@@ -15,6 +15,9 @@ void UFPROG_API hexdump(const void *data, size_t size, uint64_t addr, ufprog_boo
 	const uint8_t *p = data;
 	uint32_t i, chklen, padding;
 
+	if (!data)
+		return;
+
 	while (size) {
 		if (head_align)
 			padding = addr % 16;
