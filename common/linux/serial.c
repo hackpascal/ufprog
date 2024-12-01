@@ -25,6 +25,14 @@
 #include <ufprog/osdef.h>
 #include <ufprog/serial.h>
 
+#ifndef TCGETS2
+#define termios2	termios
+#define TCGETS2		TCGETS
+#define TCSETS2		TCSETS
+#define c_ispeed	__c_ispeed
+#define c_ospeed	__c_ospeed
+#endif
+
 struct os_serial_port {
 	int fd;
 	struct termios tty_old;
