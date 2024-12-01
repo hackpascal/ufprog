@@ -86,10 +86,6 @@ uint32_t UFPROG_API generic_hweight8(uint8_t w);
 #define ffs			ffs64
 #define fls			fls64
 #else
-#ifndef __GLIBC__
-#define ffs(_word)		(__builtin_constant_p(_word) ?  (uint32_t)__builtin_ffsl(_word) : generic_ffs(_word))
-#endif
-
 #define __builtin_flsl(_word)	((_word) ? sizeof(long) * 8 - __builtin_clzl(_word) : 0)
 #define fls(_word)		(__builtin_constant_p(_word) ?  (uint32_t)__builtin_flsl(_word) : generic_fls(_word))
 #endif
