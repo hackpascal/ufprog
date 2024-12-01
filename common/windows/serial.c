@@ -197,27 +197,38 @@ ufprog_status UFPROG_API serial_port_set_config(serial_port dev, const struct se
 	else
 		dcb.fParity = FALSE;
 
-	if (config->flags & SERIAL_F_DTR_DSR) {
+	dcb.fRtsControl = RTS_CONTROL_DISABLE;
+	dcb.fOutxCtsFlow = FALSE;
+	dcb.fDtrControl = DTR_CONTROL_DISABLE;
+	dcb.fOutxDsrFlow = FALSE;
+	dcb.fDsrSensitivity = FALSE;
+	dcb.fOutX = FALSE;
+	dcb.fInX = FALSE;
+	dcb.XonChar = 0;
+	dcb.XoffChar = 0;
+
+	switch (config->fc) {
+	case SERIAL_FC_DTR_DSR:
 		dcb.fDtrControl = DTR_CONTROL_ENABLE;
 		dcb.fOutxDsrFlow = TRUE;
-	} else {
-		dcb.fDtrControl = DTR_CONTROL_DISABLE;
-		dcb.fOutxDsrFlow = FALSE;
-	}
+		break;
 
-	dcb.fDsrSensitivity = FALSE;
-
-	if (config->flags & SERIAL_F_RTS_CTS) {
+	case SERIAL_FC_RTS_CTS:
 		dcb.fRtsControl = RTS_CONTROL_ENABLE;
 		dcb.fOutxCtsFlow = TRUE;
-	} else {
-		dcb.fRtsControl = RTS_CONTROL_DISABLE;
-		dcb.fOutxCtsFlow = FALSE;
+		break;
+
+	case SERIAL_FC_XON_XOFF:
+		dcb.fOutX = TRUE;
+		dcb.fInX = TRUE;
+		dcb.XonChar = config->xon;
+		dcb.XoffChar = config->xoff;
+		break;
+
+	default:;
 	}
 
 	dcb.fAbortOnError = FALSE;
-	dcb.fOutX = FALSE;
-	dcb.fInX = FALSE;
 
 	if (!SetCommState(dev->hPort, &dcb)) {
 		log_sys_error_utf8(GetLastError(), "Failed to set serial port config");
@@ -288,10 +299,11 @@ ufprog_status UFPROG_API serial_port_get_config(serial_port dev, struct serial_p
 	}
 
 	if (dcb.fDtrControl != DTR_CONTROL_DISABLE || dcb.fOutxDsrFlow)
-		retconfig->flags |= SERIAL_F_DTR_DSR;
-
-	if (dcb.fRtsControl != RTS_CONTROL_DISABLE || dcb.fOutxCtsFlow)
-		retconfig->flags |= SERIAL_F_RTS_CTS;
+		retconfig->fc = SERIAL_FC_DTR_DSR;
+	else if (dcb.fRtsControl != RTS_CONTROL_DISABLE || dcb.fOutxCtsFlow)
+		retconfig->fc = SERIAL_FC_RTS_CTS;
+	else if (dcb.fOutX || dcb.fInX)
+		retconfig->fc = SERIAL_FC_XON_XOFF;
 
 	retconfig->timeout_ms = dev->timeout_ms;
 

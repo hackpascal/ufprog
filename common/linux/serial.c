@@ -210,15 +210,25 @@ ufprog_status UFPROG_API serial_port_set_config(serial_port dev, const struct se
 	if (config->parity != SERIAL_PARITY_NONE)
 		tty.c_cflag |= PARENB;
 
-	if (config->flags & SERIAL_F_RTS_CTS)
+	/* Don't enable parity check here */
+	tty.c_iflag &= ~(INPCK | PARMRK);
+
+	/* Flow control */
+	tty.c_cflag &= ~CRTSCTS;
+	tty.c_iflag &= ~(IXON | IXOFF);
+
+	if (config->fc == SERIAL_FC_RTS_CTS) {
 		tty.c_cflag |= CRTSCTS;
-	else
-		tty.c_cflag &= ~CRTSCTS;
+	} else if (config->fc == SERIAL_FC_XON_XOFF) {
+		tty.c_iflag |= IXON | IXOFF;
+		tty.c_cc[VSTOP] = config->xoff;
+		tty.c_cc[VSTART] = config->xon;
+	}
 
 	tty.c_cflag |= CLOCAL | CREAD;
 
-	tty.c_lflag &= ~(ISIG | ICANON | ECHO | ECHOE | ECHOK | ECHONL | IEXTEN | INPCK);
-	tty.c_iflag &= ~(IGNBRK | INLCR | IGNCR | ICRNL | IXON | IXANY | IXOFF);
+	tty.c_lflag &= ~(ISIG | ICANON | ECHO | ECHOE | ECHOK | ECHONL | IEXTEN);
+	tty.c_iflag &= ~(IGNBRK | INLCR | IGNCR | ICRNL | IXANY | IGNPAR);
 	tty.c_oflag &= ~(OPOST | ONLCR | OCRNL | ONOCR | ONLRET | OFILL);
 
 	rc = tcsetattr(dev->fd, TCSANOW, &tty);
@@ -235,7 +245,7 @@ ufprog_status UFPROG_API serial_port_set_config(serial_port dev, const struct se
 		return UFP_FAIL;
 	}
 
-	if (config->flags & SERIAL_F_DTR_DSR)
+	if (config->fc == SERIAL_FC_DTR_DSR)
 		st |= TIOCM_DTR | TIOCM_DSR;
 	else
 		st &= ~(TIOCM_DTR | TIOCM_DSR);
@@ -328,7 +338,9 @@ ufprog_status UFPROG_API serial_port_get_config(serial_port dev, struct serial_p
 	}
 
 	if (tty.c_cflag & CRTSCTS)
-		retconfig->flags |= SERIAL_F_RTS_CTS;
+		retconfig->fc = SERIAL_FC_RTS_CTS;
+	else if ((tty.c_iflag & (IXON | IXOFF)) == (IXON | IXOFF))
+		retconfig->fc = SERIAL_FC_XON_XOFF;
 
 	rc = ioctl(dev->fd, TIOCMGET, &st);
 	if (rc < 0) {
@@ -338,7 +350,7 @@ ufprog_status UFPROG_API serial_port_get_config(serial_port dev, struct serial_p
 	}
 
 	if (st & (TIOCM_DTR | TIOCM_DSR))
-		retconfig->flags |= SERIAL_F_DTR_DSR;
+		retconfig->fc = SERIAL_FC_DTR_DSR;
 
 	rc = ioctl(dev->fd, TCGETS2, &tio);
 	if (rc < 0) {

@@ -96,9 +96,9 @@ static ufprog_status serprog_config_from_match(struct json_object *match, const 
 	if (!strcmp(str, "none")) {
 		/* Nothing to do */
 	} else if (!strcmp(str, "dtr/dsr")) {
-		retconfig->flags |= SERIAL_F_DTR_DSR;
+		retconfig->fc = SERIAL_FC_DTR_DSR;
 	} else if (!strcmp(str, "rts/cts")) {
-		retconfig->flags |= SERIAL_F_RTS_CTS;
+		retconfig->fc = SERIAL_FC_RTS_CTS;
 	} else {
 		logm_err("Invalid flow-control type %s. Only none/\"dtr/dsr\"/\"rts/cts\" are valid\n", str);
 		return UFP_JSON_DATA_INVALID;

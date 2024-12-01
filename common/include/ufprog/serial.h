@@ -14,10 +14,6 @@
 
 EXTERN_C_BEGIN
 
-/* Serial port config flags */
-#define SERIAL_F_DTR_DSR			BIT(0)
-#define SERIAL_F_RTS_CTS			BIT(1)
-
 typedef struct os_serial_port *serial_port;
 
 enum serial_stop_bits {
@@ -38,6 +34,14 @@ enum serial_parity_config {
 	__MAX_SERIAL_PARITY
 };
 
+enum serial_fc_config {
+	SERIAL_FC_DTR_DSR,
+	SERIAL_FC_RTS_CTS,
+	SERIAL_FC_XON_XOFF,
+
+	__MAX_SERIAL_FCY
+};
+
 struct serial_port_config {
 	uint32_t flags;
 	uint32_t baudrate;
@@ -45,6 +49,9 @@ struct serial_port_config {
 	uint8_t data_bits;
 	uint8_t /* enum serial_stop_bits */ stop_bits;
 	uint8_t /* enum serial_parity_config */ parity;
+	uint8_t /* enum serial_fc_config */ fc;
+	uint8_t xon;
+	uint8_t xoff;
 };
 
 ufprog_status UFPROG_API serial_port_open(const char *path, serial_port *outdev);
