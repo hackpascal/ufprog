@@ -1,0 +1,132 @@
+name: Build and Release UFProg
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout UFProg
+        uses: actions/checkout@v5
+        with:
+          repository: hackpascal/ufprog
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y cmake ninja-build gcc g++ pkg-config \
+            libusb-1.0-0-dev libhidapi-dev libjson-c-dev zip
+
+      - name: Configure
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_PORTABLE=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Install
+        run: cmake --install build --prefix package
+
+      - name: Package
+        run: |
+          mkdir -p dist/ufprog
+          cp -a package/* dist/ufprog/
+          cd dist
+          zip -r ../ufprog-linux-x64.zip ufprog
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ufprog-linux-x64
+          path: ufprog-linux-x64.zip
+
+
+  build-windows:
+    runs-on: windows-2022
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          pacboy: >-
+            toolchain:p
+            cmake:p
+            ninja:p
+            json-c:p
+            libusb:p
+            hidapi:p
+            7zip
+
+      - name: Checkout UFProg
+        uses: actions/checkout@v5
+        with:
+          repository: hackpascal/ufprog
+
+      - name: Configure
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_PORTABLE=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Install
+        run: cmake --install build --prefix package
+
+      - name: Copy runtime DLLs
+        run: |
+          cp /ucrt64/bin/libusb-1.0.dll package/ || true
+          cp /ucrt64/bin/libhidapi-0.dll package/ || true
+          cp /ucrt64/bin/libstdc++-6.dll package/ || true
+          cp /ucrt64/bin/libgcc_s_seh-1.dll package/ || true
+          cp /ucrt64/bin/libwinpthread-1.dll package/ || true
+
+      - name: Package
+        run: |
+          mkdir dist
+          mv package dist/ufprog
+          7z a ufprog-windows-x64.zip dist/ufprog
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ufprog-windows-x64
+          path: ufprog-windows-x64.zip
+
+
+  release:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate tag
+        id: tag
+        run: |
+          echo "tag=build-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: UFProg ${{ steps.tag.outputs.tag }}
+          files: |
+            ufprog-linux-x64/ufprog-linux-x64.zip
+            ufprog-windows-x64/ufprog-windows-x64.zip
+          generate_release_notes: true
